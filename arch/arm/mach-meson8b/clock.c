@@ -820,8 +820,8 @@ static int _clk_set_rate_cpu(struct clk *clk, unsigned long cpu, unsigned long g
 		aml_set_reg32_bits(P_HHI_SYS_CPU_CLK_CNTL, 2, 0, 2);    // select to mpll
 			aml_set_reg32_bits(P_HHI_SYS_CPU_CLK_CNTL, 0, 2, 2);    // cancel external od
 		    udelay_scaled(500, oldcpu / 1000000, 24 /*clk_get_rate_xtal*/);
-	        printk(KERN_DEBUG"CTS_CPU_CLK %4ld --> %4ld (MHz)\n",
-									clk->rate / 1000000, cpu / 1000000);
+	        /*printk(KERN_DEBUG"CTS_CPU_CLK %4ld --> %4ld (MHz)\n",
+									clk->rate / 1000000, cpu / 1000000);*/
             clk->parent->rate = cpu;
         } else {
 		set_sys_pll(clk->parent, cpu);
@@ -1198,8 +1198,8 @@ static int set_sys_pll(struct clk *clk,  unsigned long dst)
 	cpu_clk_cntl = sys_pll_settings[idx][1];
 	latency.d32 =  sys_pll_settings[idx][2];
 
-	printk(KERN_DEBUG"CTS_CPU_CLK %4ld --> %4ld (MHz)\n",
-									clk->rate / 1000000, dst / 1000000);
+	/*printk(KERN_DEBUG"CTS_CPU_CLK %4ld --> %4ld (MHz)\n",
+									clk->rate / 1000000, dst / 1000000);*/
 	pr_debug("CTS_CPU_CLK old_cntl=0x%x new_cntl=0x%x, latency: %x\n",
 									curr_cntl, cpu_clk_cntl, latency.d32);
 
