@@ -40,15 +40,7 @@ static struct mali_gpu_device_data mali_gpu_data =
 	.shared_mem_size = 1024 * 1024 * 1024,
 	.max_job_runtime = 60000, /* 60 seconds */
 	.pmu_switch_delay = 0xFFFF, /* do not have to be this high on FPGA, but it is good for testing to have a delay */
-#if defined(CONFIG_ARCH_MESON8B)||defined(CONFIG_ARCH_MESONG9BB)
-	.pmu_domain_config = {0x1, 0x2, 0x4, 0x0,
-						  0x0, 0x0, 0x0, 0x0,
-						  0x0, 0x1, 0x2, 0x0},
-#else
-	.pmu_domain_config = {0x1, 0x2, 0x4, 0x4,
-                          0x0, 0x8, 0x8, 0x8,
-                          0x0, 0x1, 0x2, 0x8},
-#endif
+	.pmu_domain_config = { 0 },
 };
 
 static void mali_platform_device_release(struct device *device);
