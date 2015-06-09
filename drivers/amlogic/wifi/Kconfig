@@ -8,6 +8,11 @@ config AM_WIFI_SD_MMC
 	depends on AM_WIFI
 	default n
 
+config AM_WIFI_DUMMY
+	tristate "Amlogic SDIO WiFi turn on and rescan module"
+	depends on AM_WIFI_SD_MMC
+	default m
+
 config DHD_USE_STATIC_BUF
     bool "broadcom wifi static buff support"
     default n
