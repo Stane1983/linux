@@ -35,7 +35,7 @@
 #include <linux/firmware.h>
 #include <linux/suspend.h>
 
-#define CONFIG_BLUEDROID		1 /* bleuz 0, bluedroid 1 */
+#define CONFIG_BLUEDROID		0 /* bleuz 0, bluedroid 1 */
 
 /* Some Android system may use standard Linux kernel, while
  * standard Linux may also implement early suspend feature.
