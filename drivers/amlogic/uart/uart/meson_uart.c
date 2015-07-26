@@ -353,7 +353,7 @@ static void meson_uart_change_speed(struct meson_uart_port *mup, unsigned long n
 	if (!newbaud || newbaud == mup->baud)
 		return;
 
-	if (IS_MESON_M8B_CPU || IS_MESON_M8M2_CPU) {
+	if (IS_MESON_M8M2_CPU) {
 		msleep(1);
 		xtal = clk_get_sys("xtal", NULL);
 		value = (clk_get_rate(xtal) / 3) / newbaud - 1;
@@ -382,7 +382,7 @@ static void meson_uart_change_speed(struct meson_uart_port *mup, unsigned long n
 	value |= 0x800000;
 
 	//Set USE_XTAL_CLK bit
-	if(IS_MESON_M8B_CPU || IS_MESON_M8M2_CPU)
+	if(IS_MESON_M8M2_CPU)
 		value  |= 1<<24;
 
 	writel(value, &uart->reg5);
