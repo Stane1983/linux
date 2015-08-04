@@ -39,6 +39,10 @@ else ifeq ($(CONFIG_KERNEL_XZ),y)
 UIMAGE_COMPRESSION ?= xz
 kcomp=xz
 karg="-z"
+else ifeq ($(CONFIG_KERNEL_LZ4),y)
+UIMAGE_COMPRESSION ?= lz4
+kcomp=lz4
+karg="-z9"
 endif
 
 export ZRELADDR INITRD_PHYS PARAMS_PHYS UIMAGE_COMPRESSION
