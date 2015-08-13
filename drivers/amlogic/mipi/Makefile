@@ -1,7 +1,6 @@
 #
 # Makefile for Amlogic MIPI.
 #
-EXTRA_AFLAGS=-mfloat-abi=softfp -mfpu=neon
 aml_mipi-objs := am_mipi_csi2.o
 aml_mipi_mem-objs := mem/mipi_mem.o mem/convert_mem.o mem/swap_mem.o
 aml_mipi_vdin-objs := vdin/mipi_vdin.o vdin/convert_vdin.o vdin/swap_vdin_y.o vdin/swap_vdin_uv.o vdin/csi.o
