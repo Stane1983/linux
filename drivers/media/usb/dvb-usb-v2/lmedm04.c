@@ -350,7 +350,6 @@ static int lme2510_int_read(struct dvb_usb_adapter *adap)
 {
 	struct dvb_usb_device *d = adap_to_d(adap);
 	struct lme2510_state *lme_int = adap_to_priv(adap);
-	struct usb_host_endpoint *ep;
 
 	lme_int->lme_urb = usb_alloc_urb(0, GFP_ATOMIC);
 
@@ -371,12 +370,6 @@ static int lme2510_int_read(struct dvb_usb_adapter *adap)
 				lme2510_int_response,
 				adap,
 				8);
-
-	/* Quirk of pipe reporting PIPE_BULK but behaves as interrupt */
-	ep = usb_pipe_endpoint(d->udev, lme_int->lme_urb->pipe);
-
-	if (usb_endpoint_type(&ep->desc) == USB_ENDPOINT_XFER_BULK)
-		lme_int->lme_urb->pipe = usb_rcvbulkpipe(d->udev, 0xa),
 
 	lme_int->lme_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
@@ -1232,7 +1225,7 @@ static int lme2510_identify_state(struct dvb_usb_device *d, const char **name)
 	usb_reset_configuration(d->udev);
 
 	usb_set_interface(d->udev,
-		d->intf->cur_altsetting->desc.bInterfaceNumber, 1);
+		d->props->bInterfaceNumber, 1);
 
 	st->dvb_usb_lme2510_firmware = dvb_usb_lme2510_firmware;
 

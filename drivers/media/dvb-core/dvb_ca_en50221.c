@@ -1638,16 +1638,14 @@ static const struct file_operations dvb_ca_fops = {
 	.llseek = noop_llseek,
 };
 
-static const struct dvb_device dvbdev_ca = {
+static struct dvb_device dvbdev_ca = {
 	.priv = NULL,
 	.users = 1,
 	.readers = 1,
 	.writers = 1,
-#if defined(CONFIG_MEDIA_CONTROLLER_DVB)
-	.name = "dvb-ca-en50221",
-#endif
 	.fops = &dvb_ca_fops,
 };
+
 
 /* ******************************************************************************** */
 /* Initialisation/shutdown functions */

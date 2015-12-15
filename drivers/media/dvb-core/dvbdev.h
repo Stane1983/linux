@@ -27,7 +27,6 @@
 #include <linux/poll.h>
 #include <linux/fs.h>
 #include <linux/list.h>
-#include <media/media-device.h>
 
 #define DVB_MAJOR 212
 
@@ -72,10 +71,6 @@ struct dvb_adapter {
 	int mfe_shared;			/* indicates mutually exclusive frontends */
 	struct dvb_device *mfe_dvbdev;	/* frontend device in use */
 	struct mutex mfe_lock;		/* access lock for thread creation */
-
-#if defined(CONFIG_MEDIA_CONTROLLER_DVB)
-	struct media_device *mdev;
-#endif
 };
 
 
@@ -97,15 +92,6 @@ struct dvb_device {
 	/* don't really need those !? -- FIXME: use video_usercopy  */
 	int (*kernel_ioctl)(struct file *file, unsigned int cmd, void *arg);
 
-	/* Needed for media controller register/unregister */
-#if defined(CONFIG_MEDIA_CONTROLLER_DVB)
-	const char *name;
-
-	/* Allocated and filled inside dvbdev.c */
-	struct media_entity *entity;
-	struct media_pad *pads;
-#endif
-
 	void *priv;
 };
 
@@ -122,19 +108,6 @@ extern int dvb_register_device (struct dvb_adapter *adap,
 				int type);
 
 extern void dvb_unregister_device (struct dvb_device *dvbdev);
-
-#ifdef CONFIG_MEDIA_CONTROLLER_DVB
-void dvb_create_media_graph(struct dvb_adapter *adap);
-static inline void dvb_register_media_controller(struct dvb_adapter *adap,
-						 struct media_device *mdev)
-{
-	adap->mdev = mdev;
-}
-
-#else
-static inline void dvb_create_media_graph(struct dvb_adapter *adap) {}
-#define dvb_register_media_controller(a, b) {}
-#endif
 
 extern int dvb_generic_open (struct inode *inode, struct file *file);
 extern int dvb_generic_release (struct inode *inode, struct file *file);
@@ -163,22 +136,11 @@ extern int dvb_usercopy(struct file *file, unsigned int cmd, unsigned long arg,
 	__r; \
 })
 
-#define dvb_detach(FUNC)	symbol_put_addr(FUNC)
-
 #else
 #define dvb_attach(FUNCTION, ARGS...) ({ \
 	FUNCTION(ARGS); \
 })
 
-#define dvb_detach(FUNC)	{}
-
 #endif
-
-#define replace_fops(f, fops) \
-	do {	\
-		struct file *__file = (f); \
-		fops_put(__file->f_op); \
-		BUG_ON(!(__file->f_op = (fops))); \
-	} while(0)
 
 #endif /* #ifndef _DVBDEV_H_ */

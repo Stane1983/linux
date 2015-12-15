@@ -39,7 +39,6 @@ config MEDIA_ANALOG_TV_SUPPORT
 
 config MEDIA_DIGITAL_TV_SUPPORT
 	bool "Digital TV support"
-	default y
 	---help---
 	  Enable digital TV support.
 
@@ -81,20 +80,12 @@ config MEDIA_RC_SUPPORT
 
 config MEDIA_CONTROLLER
 	bool "Media Controller API"
-	depends on MEDIA_CAMERA_SUPPORT || MEDIA_ANALOG_TV_SUPPORT || MEDIA_DIGITAL_TV_SUPPORT
+	depends on MEDIA_CAMERA_SUPPORT
 	---help---
 	  Enable the media controller API used to query media devices internal
 	  topology and configure it dynamically.
 
 	  This API is mostly used by camera interfaces in embedded platforms.
-
-config MEDIA_CONTROLLER_DVB
-	bool "Enable Media controller for DVB"
-	depends on MEDIA_CONTROLLER
-	---help---
-	  Enable the media controller API support for DVB.
-
-	  This is currently experimental.
 
 #
 # Video4Linux support
@@ -104,7 +95,7 @@ config MEDIA_CONTROLLER_DVB
 config VIDEO_DEV
 	tristate
 	depends on MEDIA_SUPPORT
-	depends on MEDIA_CAMERA_SUPPORT || MEDIA_ANALOG_TV_SUPPORT || MEDIA_RADIO_SUPPORT || MEDIA_SDR_SUPPORT
+	depends on MEDIA_CAMERA_SUPPORT || MEDIA_ANALOG_TV_SUPPORT || MEDIA_RADIO_SUPPORT
 	default y
 
 config VIDEO_V4L2_SUBDEV_API
@@ -180,7 +171,7 @@ comment "Media ancillary drivers (tuners, sensors, i2c, frontends)"
 
 config MEDIA_SUBDRV_AUTOSELECT
 	bool "Autoselect ancillary drivers (tuners, sensors, i2c, frontends)"
-	depends on MEDIA_ANALOG_TV_SUPPORT || MEDIA_DIGITAL_TV_SUPPORT || MEDIA_CAMERA_SUPPORT || MEDIA_SDR_SUPPORT
+	depends on MEDIA_ANALOG_TV_SUPPORT || MEDIA_DIGITAL_TV_SUPPORT || MEDIA_CAMERA_SUPPORT
 	depends on HAS_IOMEM
 	select I2C
 	select I2C_MUX
