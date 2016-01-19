@@ -234,3 +234,4 @@ s32	rtl8723au_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmit
 s32 rtl8723au_xmit_buf_handler(PADAPTER padapter);
 #endif
 #endif
+

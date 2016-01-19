@@ -214,3 +214,4 @@ void rtw_odm_adaptivity_parm_set(_adapter *adapter, s8 TH_L2H_ini, s8 TH_EDCCA_H
 	odm->AdapEn_RSSI = AdapEn_RSSI;
 	odm->IGI_LowerBound = IGI_LowerBound;
 }
+

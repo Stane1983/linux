@@ -85,10 +85,10 @@
 //#define CONFIG_TDLS
 #ifdef CONFIG_TDLS
 //	#ifndef CONFIG_WFD
-//		#define CONFIG_WFD
+//		#define CONFIG_WFD	
 //	#endif
-//	#define CONFIG_TDLS_AUTOSETUP
-//	#define CONFIG_TDLS_AUTOCHECKALIVE
+//	#define CONFIG_TDLS_AUTOSETUP			
+//	#define CONFIG_TDLS_AUTOCHECKALIVE		
 #endif
 
 #define CONFIG_LAYER2_ROAMING
@@ -143,7 +143,7 @@
 #endif
 
 
-//#define CONFIG_CONCURRENT_MODE
+//#define CONFIG_CONCURRENT_MODE 
 #ifdef CONFIG_CONCURRENT_MODE
 	#define CONFIG_TSF_RESET_OFFLOAD 			// For 2 PORT TSF SYNC.
 	//#define CONFIG_HWPORT_SWAP				//Port0->Sec , Port1 -> Pri
@@ -257,3 +257,4 @@
 
 //#define DBG_XMIT_BUF
 //#define DBG_XMIT_BUF_EXT
+

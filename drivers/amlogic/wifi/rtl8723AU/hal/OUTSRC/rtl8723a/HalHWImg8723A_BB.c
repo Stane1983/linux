@@ -1,21 +1,21 @@
-/******************************************************************************
-*
-* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
+/****************************************************************************** 
+* 
+* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved. 
+* 
+* This program is free software; you can redistribute it and/or modify it 
+* under the terms of version 2 of the GNU General Public License as 
+* published by the Free Software Foundation. 
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT 
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+* more details. 
+* 
+* You should have received a copy of the GNU General Public License along with 
+* this program; if not, write to the Free Software Foundation, Inc., 
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA 
+* 
+* 
 ******************************************************************************/
 
 #include "../odm_precomp.h"
@@ -56,7 +56,7 @@ CheckCondition(
 *                           AGC_TAB_1T.TXT
 ******************************************************************************/
 
-u4Byte Array_AGC_TAB_1T_8723A[] = {
+u4Byte Array_AGC_TAB_1T_8723A[] = { 
 		0xC78, 0x7B000001,
 		0xC78, 0x7B010001,
 		0xC78, 0x7B020001,
@@ -222,8 +222,8 @@ u4Byte Array_AGC_TAB_1T_8723A[] = {
 
 void
 ODM_ReadAndConfig_AGC_TAB_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -233,7 +233,7 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_AGC_TAB_1T_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_AGC_TAB_1T_8723A;
 
@@ -246,20 +246,20 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 	{
 	    u4Byte v1 = Array[i];
 	    u4Byte v2 = Array[i+1];
-
+	
 	    // This (offset, data) pair meets the condition.
 	    if ( v1 < 0xCDCDCDCD )
 	    {
 		    odm_ConfigBB_AGC_8723A(pDM_Odm, v1, bMaskDWord, v2);
 		    continue;
-		}
+	 	}
 		else
 		{ // This line is the start line of branch.
 		    if ( !CheckCondition(Array[i], hex) )
 		    { // Discard the following (offset, data) pairs.
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
@@ -269,11 +269,11 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 		    else // Configure matched pairs and skip to end of if-else.
 		    {
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
-				odm_ConfigBB_AGC_8723A(pDM_Odm, v1, bMaskDWord, v2);
+		     		odm_ConfigBB_AGC_8723A(pDM_Odm, v1, bMaskDWord, v2);
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
 
@@ -281,9 +281,9 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
-
+		        
 		    }
-		}
+		}	
 	}
 
 }
@@ -293,7 +293,7 @@ ODM_ReadAndConfig_AGC_TAB_1T_8723A(
 *                           PHY_REG_1T.TXT
 ******************************************************************************/
 
-u4Byte Array_PHY_REG_1T_8723A[] = {
+u4Byte Array_PHY_REG_1T_8723A[] = { 
 		0x800, 0x80040000,
 		0x804, 0x00000003,
 		0x808, 0x0000FC00,
@@ -493,8 +493,8 @@ u4Byte Array_PHY_REG_1T_8723A[] = {
 
 void
 ODM_ReadAndConfig_PHY_REG_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -504,7 +504,7 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_PHY_REG_1T_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_PHY_REG_1T_8723A;
 
@@ -517,20 +517,20 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 	{
 	    u4Byte v1 = Array[i];
 	    u4Byte v2 = Array[i+1];
-
+	
 	    // This (offset, data) pair meets the condition.
 	    if ( v1 < 0xCDCDCDCD )
 	    {
-			odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
+		   	odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
 		    continue;
-		}
+	 	}
 		else
 		{ // This line is the start line of branch.
 		    if ( !CheckCondition(Array[i], hex) )
 		    { // Discard the following (offset, data) pairs.
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
@@ -540,11 +540,11 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 		    else // Configure matched pairs and skip to end of if-else.
 		    {
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
-					odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
+		   			odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
 
@@ -552,9 +552,9 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
-
+		        
 		    }
-		}
+		}	
 	}
 
 }
@@ -564,7 +564,7 @@ ODM_ReadAndConfig_PHY_REG_1T_8723A(
 *                           PHY_REG_MP.TXT
 ******************************************************************************/
 
-u4Byte Array_PHY_REG_MP_8723A[] = {
+u4Byte Array_PHY_REG_MP_8723A[] = { 
 		0xC30, 0x69E9AC4A,
 		0xC3C, 0x0A979718,
 
@@ -572,8 +572,8 @@ u4Byte Array_PHY_REG_MP_8723A[] = {
 
 void
 ODM_ReadAndConfig_PHY_REG_MP_8723A(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -583,7 +583,7 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_PHY_REG_MP_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_PHY_REG_MP_8723A;
 
@@ -596,20 +596,20 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 	{
 	    u4Byte v1 = Array[i];
 	    u4Byte v2 = Array[i+1];
-
+	
 	    // This (offset, data) pair meets the condition.
 	    if ( v1 < 0xCDCDCDCD )
 	    {
-			odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
+		   	odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
 		    continue;
-		}
+	 	}
 		else
 		{ // This line is the start line of branch.
 		    if ( !CheckCondition(Array[i], hex) )
 		    { // Discard the following (offset, data) pairs.
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
@@ -619,11 +619,11 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 		    else // Configure matched pairs and skip to end of if-else.
 		    {
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
-					odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
+		   			odm_ConfigBB_PHY_8723A(pDM_Odm, v1, bMaskDWord, v2);
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
 
@@ -631,9 +631,9 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
-
+		        
 		    }
-		}
+		}	
 	}
 
 }
@@ -643,7 +643,7 @@ ODM_ReadAndConfig_PHY_REG_MP_8723A(
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-u4Byte Array_PHY_REG_PG_8723A[] = {
+u4Byte Array_PHY_REG_PG_8723A[] = { 
 		0xE00, 0xFFFFFFFF, 0x0A0C0C0C,
 		0xE04, 0xFFFFFFFF, 0x02040608,
 		0xE08, 0x0000FF00, 0x00000000,
@@ -761,8 +761,8 @@ u4Byte Array_PHY_REG_PG_8723A[] = {
 
 void
 ODM_ReadAndConfig_PHY_REG_PG_8723A(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	u4Byte     hex = 0;
 	u4Byte     i           = 0;
@@ -770,7 +770,7 @@ ODM_ReadAndConfig_PHY_REG_PG_8723A(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_PHY_REG_PG_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_PHY_REG_PG_8723A;
 
@@ -787,8 +787,8 @@ ODM_ReadAndConfig_PHY_REG_PG_8723A(
 	    // this line is a line of pure_body
 	    if ( v1 < 0xCDCDCDCD )
 	    {
-			 odm_ConfigBB_PHY_REG_PG_8723A(pDM_Odm, v1, v2, v3);
-			 continue;
+		 	 odm_ConfigBB_PHY_REG_PG_8723A(pDM_Odm, v1, v2, v3);
+		 	 continue;
 	    }
 	    else
 	    { // this line is the start of branch
@@ -812,3 +812,4 @@ ODM_ReadAndConfig_PHY_REG_PG_8723A(
 
 
 #endif // end of HWIMG_SUPPORT
+

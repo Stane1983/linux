@@ -34,3 +34,4 @@ void rtl8188es_set_hal_ops(PADAPTER padapter);
 #endif
 
 #endif //__GSPI_HAL_H__
+

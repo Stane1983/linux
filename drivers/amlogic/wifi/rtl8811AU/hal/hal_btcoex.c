@@ -436,7 +436,7 @@ u32 halbtcoutsrc_GetWifiLinkStatus(PBTC_COEXIST pBtCoexist)
 #endif // CONFIG_CONCURRENT_MODE
 
 	retVal = (numOfConnectedPort << 16) | portConnectedStatus;
-
+	
 	return retVal;
 }
 
@@ -565,7 +565,7 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 			break;
 
 		case BTC_GET_BL_WIFI_SCAN:
-#if 0
+#if 0			
 			*pu8 = check_fwstate(&padapter->mlmepriv, WIFI_SITE_MONITOR);
 #ifdef CONFIG_CONCURRENT_MODE
 			if ((_FALSE == *pu8) && padapter->pbuddy_adapter)
@@ -573,8 +573,8 @@ u8 halbtcoutsrc_Get(void *pBtcContext, u8 getType, void *pOutBuf)
 				*pu8 = check_fwstate(&padapter->pbuddy_adapter->mlmepriv, WIFI_SITE_MONITOR);
 			}
 #endif // CONFIG_CONCURRENT_MODE
-#else
-			/* Use the value of the new variable GLBtcWiFiInScanState to judge whether WiFi is in scan state or not, since the originally used flag
+#else		
+			/* Use the value of the new variable GLBtcWiFiInScanState to judge whether WiFi is in scan state or not, since the originally used flag 
 				WIFI_SITE_MONITOR in fwstate may not be cleared in time */
 			*pu8 = GLBtcWiFiInScanState;
 #endif
@@ -1187,7 +1187,7 @@ void halbtcoutsrc_SetBtReg(void *pBtcContext, u8 RegType, u32 RegAddr, u32 Data)
 	u8 CmdBuffer1[4] = {0};
 	u8 CmdBuffer2[4] = {0};
 	u8* AddrToSet = (u8*)&RegAddr;
-	u8* ValueToSet = (u8*)&Data;
+	u8* ValueToSet = (u8*)&Data;	
 	u8 OperVer = 0;
 	u8 ReqNum = 0;
 
@@ -2599,7 +2599,7 @@ void hal_btcoex_BtInfoNotify(PADAPTER padapter, u8 length, u8 *tmpBuf)
 {
 	if (GLBtcWiFiInIQKState == _TRUE)
 		return;
-
+	
 	EXhalbtcoutsrc_BtInfoNotify(&GLBtCoexist, tmpBuf, length);
 }
 
@@ -2791,7 +2791,7 @@ u32 hal_btcoex_GetDBG(PADAPTER padapter, u8 *pStrBuf, u32 bufSize)
 		goto exit;
 	pstr += count;
 	leftSize -= count;
-
+	
 	count = rtw_sprintf(pstr, leftSize, "ALGORITHM Debug Setting Definition:\n");
 	if ((count < 0) || (count >= leftSize))
 		goto exit;
@@ -2884,3 +2884,4 @@ u8 hal_btcoex_IsBtLinkExist(PADAPTER padapter)
 	return _FALSE;
 }
 #endif // CONFIG_BT_COEXIST
+

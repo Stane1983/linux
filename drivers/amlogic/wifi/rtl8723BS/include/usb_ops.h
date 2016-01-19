@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -35,50 +35,21 @@ enum{
 #define MAX_USB_IO_CTL_SIZE		(MAX_VENDOR_REQ_CMD_SIZE +ALIGNMENT_UNIT)
 
 #ifdef PLATFORM_LINUX
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)) 
 #define rtw_usb_control_msg(dev, pipe, request, requesttype, value, index, data, size, timeout_ms) \
-	usb_control_msg((dev), (pipe), (request), (requesttype), (value), (index), (data), (size), (timeout_ms))
+	usb_control_msg((dev), (pipe), (request), (requesttype), (value), (index), (data), (size), (timeout_ms)) 
 #define rtw_usb_bulk_msg(usb_dev, pipe, data, len, actual_length, timeout_ms) \
 	usb_bulk_msg((usb_dev), (pipe), (data), (len), (actual_length), (timeout_ms))
 #else
 #define rtw_usb_control_msg(dev, pipe, request, requesttype, value, index, data, size,timeout_ms) \
 	usb_control_msg((dev), (pipe), (request), (requesttype), (value), (index), (data), (size), \
-		((timeout_ms) == 0) ||((timeout_ms)*HZ/1000>0)?((timeout_ms)*HZ/1000):1)
+		((timeout_ms) == 0) ||((timeout_ms)*HZ/1000>0)?((timeout_ms)*HZ/1000):1) 
 #define rtw_usb_bulk_msg(usb_dev, pipe, data, len, actual_length, timeout_ms) \
 	usb_bulk_msg((usb_dev), (pipe), (data), (len), (actual_length), \
-		((timeout_ms) == 0) ||((timeout_ms)*HZ/1000>0)?((timeout_ms)*HZ/1000):1)
+		((timeout_ms) == 0) ||((timeout_ms)*HZ/1000>0)?((timeout_ms)*HZ/1000):1) 
 #endif
 #include <usb_ops_linux.h>
 #endif //PLATFORM_LINUX
-
-#ifdef CONFIG_RTL8192C
-void rtl8192cu_set_hw_type(_adapter *padapter);
-void rtl8192cu_set_intf_ops(struct _io_ops *pops);
-void rtl8192cu_recv_tasklet(void *priv);
-void rtl8192cu_xmit_tasklet(void *priv);
-#endif
-
-#ifdef CONFIG_RTL8723A
-void rtl8723au_set_hw_type(_adapter *padapter);
-void rtl8723au_set_intf_ops(struct _io_ops *pops);
-void rtl8192cu_recv_tasklet(void *priv);
-void rtl8192cu_xmit_tasklet(void *priv);
-#endif
-
-#ifdef CONFIG_RTL8192D
-void rtl8192du_set_hw_type(_adapter *padapter);
-void rtl8192du_set_intf_ops(struct _io_ops *pops);
-#ifndef PLATFORM_FREEBSD
-void rtl8192du_recv_tasklet(void *priv);
-#else	// PLATFORM_FREEBSD
-void rtl8192du_recv_tasklet(void *priv, int npending);
-#ifdef CONFIG_RX_INDICATE_QUEUE
-void rtw_rx_indicate_tasklet(void *priv, int npending);
-#endif	// CONFIG_RX_INDICATE_QUEUE
-#endif	// PLATFORM_FREEBSD
-
-void rtl8192du_xmit_tasklet(void *priv);
-#endif
 
 #ifdef CONFIG_RTL8188E
 void rtl8188eu_set_hw_type(_adapter *padapter);
@@ -89,6 +60,11 @@ void rtl8188eu_set_intf_ops(struct _io_ops *pops);
 void rtl8812au_set_hw_type(_adapter *padapter);
 void rtl8812au_set_intf_ops(struct _io_ops *pops);
 #endif
+
+#ifdef CONFIG_RTL8814A
+void rtl8814au_set_hw_type(_adapter *padapter);
+void rtl8814au_set_intf_ops(struct _io_ops	*pops);
+#endif /* CONFIG_RTL8814 */
 
 #ifdef CONFIG_RTL8192E
 void rtl8192eu_set_hw_type(_adapter *padapter);
@@ -125,11 +101,12 @@ static inline u8 rtw_usb_bulk_size_boundary(_adapter * padapter,int buf_len)
 	if (IS_SUPER_SPEED_USB(padapter))
 		rst = (0 == (buf_len) % USB_SUPER_SPEED_BULK_SIZE)?_TRUE:_FALSE;
 	if (IS_HIGH_SPEED_USB(padapter))
-		rst = (0 == (buf_len) % USB_HIGH_SPEED_BULK_SIZE)?_TRUE:_FALSE;
-	else
-		rst = (0 == (buf_len) % USB_FULL_SPEED_BULK_SIZE)?_TRUE:_FALSE;
+		rst = (0 == (buf_len) % USB_HIGH_SPEED_BULK_SIZE)?_TRUE:_FALSE;	
+	else	
+		rst = (0 == (buf_len) % USB_FULL_SPEED_BULK_SIZE)?_TRUE:_FALSE;		
 	return rst;
 }
 
 
 #endif //__USB_OPS_H_
+

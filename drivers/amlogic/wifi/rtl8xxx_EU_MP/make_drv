@@ -226,7 +226,7 @@ case "$card" in
 	conf_driver;
 	nic_8188e;
 	intf_usb;
-	ch_obj_eu;;
+	ch_obj_eu;;	
 	[Rr][Tt][Ll]8188[Ee][Ee])
 	conf_driver;
 	nic_8188e;

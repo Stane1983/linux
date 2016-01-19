@@ -48,7 +48,7 @@
 
 //OFFSET 8
 #define AGG_EN		BIT(29)
-
+#define AMPDU_DENSITY_SHT 20
 //OFFSET 12
 #define SEQ_SHT		16
 
@@ -234,3 +234,4 @@ s32	rtl8723au_hal_xmitframe_enqueue(_adapter *padapter, struct xmit_frame *pxmit
 s32 rtl8723au_xmit_buf_handler(PADAPTER padapter);
 #endif
 #endif
+

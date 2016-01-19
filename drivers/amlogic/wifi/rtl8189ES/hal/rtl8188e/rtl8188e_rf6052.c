@@ -235,7 +235,7 @@ phy_RF6052_Config_ParaFile(
 			{
 #ifdef CONFIG_EMBEDDED_FWIMG
 				if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,CONFIG_RF_RADIO, (ODM_RF_RADIO_PATH_E)eRFPath))
-					rtStatus= _FAIL;
+					rtStatus= _FAIL;			
 #endif
 			}
 			break;
@@ -246,7 +246,7 @@ phy_RF6052_Config_ParaFile(
 			{
 #ifdef CONFIG_EMBEDDED_FWIMG
 				if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,CONFIG_RF_RADIO, (ODM_RF_RADIO_PATH_E)eRFPath))
-					rtStatus= _FAIL;
+					rtStatus= _FAIL;		
 #endif
 			}
 			break;
@@ -278,7 +278,7 @@ phy_RF6052_Config_ParaFile(
 
 
 	//3 -----------------------------------------------------------------
-	//3 Configuration of Tx Power Tracking
+	//3 Configuration of Tx Power Tracking 
 	//3 -----------------------------------------------------------------
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
@@ -345,3 +345,4 @@ PHY_RF6052_Config8188E(
 }
 
 /* End of HalRf6052.c */
+

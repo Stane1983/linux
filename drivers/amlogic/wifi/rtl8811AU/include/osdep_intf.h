@@ -162,3 +162,4 @@ int rtw_resume_common(_adapter *padapter);
 
 
 #endif	//_OSDEP_INTF_H_
+

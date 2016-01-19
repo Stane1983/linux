@@ -91,3 +91,4 @@ u4Byte Rtl8192CEMAC_2T_Array[Rtl8192CEMAC_2T_ArrayLength] = {
 0x70a,0x00000065,
 0x70b,0x00000087,
 };
+

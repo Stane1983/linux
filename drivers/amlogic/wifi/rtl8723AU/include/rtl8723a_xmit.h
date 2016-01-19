@@ -235,3 +235,4 @@ s32 rtl8723au_xmit_buf_handler(PADAPTER padapter);
 #define hal_xmit_handler rtl8723au_xmit_buf_handler
 #endif
 #endif
+

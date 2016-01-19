@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -53,7 +53,7 @@ enum ioreg_cmd{
 	IOREG_CMD_W_RF 		= 0x07,
 	IOREG_CMD_DELAY_US 	= 0x10,
 	IOREG_CMD_DELAY_MS	= 0x11,
-	IOREG_CMD_END 		= 0xFF,
+	IOREG_CMD_END 		= 0xFF,		
 };
 void read_efuse_from_txpktbuf(ADAPTER *adapter, int bcnhead, u8 *content, u16 *size);
 
@@ -136,3 +136,4 @@ int dbg_rtw_IOL_append_WD_cmd(struct xmit_frame *xmit_frame, u16 addr, u32 value
 
 
 #endif //__RTW_IOL_H_
+

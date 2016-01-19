@@ -31,3 +31,4 @@ PHY_RF6052_Config_8192E(
 	IN	PADAPTER	Adapter	);
 
 #endif//__RTL8192E_RF_H__
+

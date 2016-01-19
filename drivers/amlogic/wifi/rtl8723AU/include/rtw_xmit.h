@@ -449,7 +449,7 @@ struct xmit_buf
 	u8 *ptail;
 	u8 *pend;
 	u32 ff_hwaddr;
-	u8	pg_num;
+	u8	pg_num;	
 	u8	agg_num;
 #ifdef PLATFORM_OS_XP
 	PMDL pxmitbuf_mdl;
@@ -669,11 +669,11 @@ struct	xmit_priv	{
 	#ifdef CONFIG_TX_EARLY_MODE
 
 	#ifdef CONFIG_SDIO_HCI
-	#define MAX_AGG_PKT_NUM 20
+	#define MAX_AGG_PKT_NUM 20	
 	#else
-	#define MAX_AGG_PKT_NUM 256 //Max tx ampdu coounts
+	#define MAX_AGG_PKT_NUM 256 //Max tx ampdu coounts		
 	#endif
-
+	
 	struct agg_pkt_info agg_pkt[MAX_AGG_PKT_NUM];
 	#endif
 
@@ -763,3 +763,4 @@ void rtw_ack_tx_done(struct xmit_priv *pxmitpriv, int status);
 #include <xmit_osdep.h>
 
 #endif	//_RTL871X_XMIT_H_
+

@@ -3,3 +3,4 @@ config RTL8192CU
 	depends on USB
 	---help---
 	  Help message of RTL8192CU
+

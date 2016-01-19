@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -68,6 +68,16 @@ void	rtl8812ae_prepare_bcn_tasklet(void *priv);
 void	rtl8812ae_set_intf_ops(struct _io_ops	*pops);
 #endif
 
+#ifdef CONFIG_RTL8192E
+u32	rtl8192ee_init_desc_ring(_adapter * padapter);
+u32	rtl8192ee_free_desc_ring(_adapter * padapter);
+void	rtl8192ee_reset_desc_ring(_adapter * padapter);
+void	rtl8192ee_recv_tasklet(void *priv);
+void	rtl8192ee_prepare_bcn_tasklet(void *priv);
+int	rtl8192ee_interrupt(PADAPTER Adapter);
+void	rtl8192ee_set_intf_ops(struct _io_ops	*pops);
+#endif
+
 #ifdef CONFIG_RTL8723B
 u32	rtl8723be_init_desc_ring(_adapter * padapter);
 u32	rtl8723be_free_desc_ring(_adapter * padapter);
@@ -79,3 +89,4 @@ void	rtl8723be_set_intf_ops(struct _io_ops	*pops);
 #endif
 
 #endif
+

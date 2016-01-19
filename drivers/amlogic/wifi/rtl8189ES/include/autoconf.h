@@ -31,8 +31,12 @@
 #define AUTOCONF_INCLUDED
 #define RTL871X_MODULE_NAME "8189ES"
 #define DRV_NAME "rtl8189es"
+
+#ifdef CONFIG_EFUSE_CONFIG_FILE
+#ifndef EFUSE_MAP_PATH
 #define EFUSE_MAP_PATH "/system/etc/wifi/wifi_efuse_8189e.map"
-#define WIFIMAC_PATH "/data/wifimac.txt"
+#endif //EFUSE_MAP_PATH
+#endif
 
 #define CONFIG_SDIO_HCI
 #define PLATFORM_LINUX
@@ -40,7 +44,7 @@
 //#define CONFIG_IOCTL_CFG80211
 
 #ifdef CONFIG_IOCTL_CFG80211
-	#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
+	//#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
 	#define CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER
 	//#define CONFIG_DEBUG_CFG80211
 	#define CONFIG_SET_SCAN_DENY_TIMER
@@ -68,20 +72,20 @@
 #define CONFIG_AP_MODE
 #ifdef CONFIG_AP_MODE
 
-	#define CONFIG_INTERRUPT_BASED_TXBCN // Tx Beacon when driver early interrupt occurs
+	#define CONFIG_INTERRUPT_BASED_TXBCN
 	#if defined(CONFIG_CONCURRENT_MODE) && defined(CONFIG_INTERRUPT_BASED_TXBCN)
 		#undef CONFIG_INTERRUPT_BASED_TXBCN
 	#endif
 	#ifdef CONFIG_INTERRUPT_BASED_TXBCN
 		//#define CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-		#define CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
+		#define CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR		
 	#endif
-
+	
 	#define CONFIG_NATIVEAP_MLME
 	#ifndef CONFIG_NATIVEAP_MLME
 		#define CONFIG_HOSTAPD_MLME
 	#endif
-	#define CONFIG_FIND_BEST_CHANNEL
+	//#define CONFIG_FIND_BEST_CHANNEL
 	//#define CONFIG_NO_WIRELESS_HANDLERS
 #endif
 
@@ -92,7 +96,7 @@
 #ifdef CONFIG_P2P
 	//The CONFIG_WFD is for supporting the Wi-Fi display
 	#define CONFIG_WFD
-
+	
 	#ifndef CONFIG_WIFI_TEST
 		#define CONFIG_P2P_REMOVE_GROUP_INFO
 	#endif
@@ -109,10 +113,10 @@
 //#define CONFIG_TDLS
 #ifdef CONFIG_TDLS
 //	#ifndef CONFIG_WFD
-//		#define CONFIG_WFD
+//		#define CONFIG_WFD	
 //	#endif
-//	#define CONFIG_TDLS_AUTOSETUP
-//	#define CONFIG_TDLS_AUTOCHECKALIVE
+//	#define CONFIG_TDLS_AUTOSETUP			
+//	#define CONFIG_TDLS_AUTOCHECKALIVE		
 #endif
 
 #define CONFIG_SKB_COPY	//for amsdu
@@ -151,7 +155,7 @@
  * Auto Config Section
  */
 #if defined(CONFIG_RTL8188E) && defined(CONFIG_SDIO_HCI)
-#define CONFIG_RTL8188E_SDIO
+#define CONFIG_RTL8188E_SDIO 
 #define CONFIG_XMIT_THREAD_MODE
 #endif
 
@@ -171,7 +175,7 @@
 #endif
 //#define CONFIG_LPS_LCLK_WD_TIMER // Watch Dog timer in LPS LCLK
 #endif
-
+	
 #endif
 
 #ifdef CONFIG_MAC_LOOPBACK_DRIVER
@@ -195,7 +199,7 @@
 #else// #ifdef CONFIG_MP_INCLUDED
 
 	#define MP_DRIVER		0
-
+	
 #endif // #ifdef CONFIG_MP_INCLUDED
 
 #define CONFIG_IOL
@@ -209,22 +213,22 @@
 	//#define CONFIG_IOL_IOREG_CFG_DBG
 #endif
 
-
-#ifdef CONFIG_PLATFORM_ACTIONS_ATV5201
-#define CONFIG_SDIO_DISABLE_RXFIFO_POLLING_LOOP
+#ifdef CONFIG_WOWLAN
+#define CONFIG_ARP_KEEP_ALIVE
 #endif
 
 /*
  * Outsource  Related Config
  */
+#define TESTCHIP_SUPPORT				0
 
 #define 	RTL8192CE_SUPPORT 				0
 #define 	RTL8192CU_SUPPORT 			0
-#define 	RTL8192C_SUPPORT 				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)
+#define 	RTL8192C_SUPPORT 				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)	
 
 #define 	RTL8192DE_SUPPORT 				0
 #define 	RTL8192DU_SUPPORT 			0
-#define 	RTL8192D_SUPPORT 				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)
+#define 	RTL8192D_SUPPORT 				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)	
 
 #define 	RTL8723_FPGA_VERIFICATION		0
 #define 	RTL8723AU_SUPPORT				0
@@ -232,29 +236,19 @@
 #define 	RTL8723AE_SUPPORT				0
 #define 	RTL8723A_SUPPORT				(RTL8723AU_SUPPORT|RTL8723AS_SUPPORT|RTL8723AE_SUPPORT)
 
-#define RTL8188EE_SUPPORT				0
-#define RTL8188EU_SUPPORT				0
-#define RTL8188ES_SUPPORT				1
-#define RTL8188E_SUPPORT				(RTL8188EE_SUPPORT|RTL8188EU_SUPPORT|RTL8188ES_SUPPORT)
-#define TESTCHIP_SUPPORT			0
-
-#define RTL8812E_SUPPORT				0
-#define RTL8812AU_SUPPORT				0
-#define RTL8812A_SUPPORT				(RTL8812E_SUPPORT|RTL8812AU_SUPPORT)
-
-#define RTL8821A_SUPPORT				0
-
-#define RTL8723B_SUPPORT				0
-
-#define RTL8192E_SUPPORT				0
-
-#define RTL8813A_SUPPORT				0
+#define 	RTL8188E_SUPPORT				1
+#define 	RTL8812A_SUPPORT				0
+#define 	RTL8821A_SUPPORT				0
+#define 	RTL8723B_SUPPORT				0
+#define 	RTL8192E_SUPPORT				0
+#define 	RTL8814A_SUPPORT				0
+#define 	RTL8195A_SUPPORT				0
 
 //#if (RTL8188E_SUPPORT==1)
 #define RATE_ADAPTIVE_SUPPORT 			1
 #define POWER_TRAINING_ACTIVE			1
-//#define 	CONFIG_TX_EARLY_MODE
 
+//#define 	CONFIG_TX_EARLY_MODE
 #ifdef CONFIG_TX_EARLY_MODE
 #define	RTL8188E_EARLY_MODE_PKT_NUM_10	0
 #endif
@@ -262,11 +256,6 @@
 
 #define CONFIG_ATTEMPT_TO_FIX_AP_BEACON_ERROR
 
-#ifdef CONFIG_GPIO_WAKEUP
-#define WAKEUP_GPIO_IDX 7
-#endif
-
-#define CONFIG_GPIO_API
 /*
  * HAL	Related Config
  */
@@ -279,7 +268,11 @@
 #define CONFIG_RF_GAIN_OFFSET
 #define CONFIG_80211D
 
-#define CONFIG_ARP_KEEP_ALIVE
+#ifdef CONFIG_GPIO_WAKEUP
+#define WAKEUP_GPIO_IDX 7
+#endif
+
+#define CONFIG_GPIO_API
 
 /*
  * Debug Related Config
@@ -293,8 +286,6 @@
 
 #define DBG_CONFIG_ERROR_DETECT
 #define DBG_CONFIG_ERROR_RESET
-
-//#define CONFIG_DISABLE_ODM
 
 //#define DBG_IO
 //#define DBG_DELAY_OS
@@ -312,10 +303,7 @@
 //#define DBG_RX_SIGNAL_DISPLAY_SSID_MONITORED "jeff-ap"
 
 
-//#define HAL_8195A_USB 0
-
-//#define RTL8188E_FOR_MP_TEST 1
-
 //#define DOWNLOAD_FW_TO_TXPKT_BUF 0
 
 //#define DBG_HAL_INIT_PROFILING
+

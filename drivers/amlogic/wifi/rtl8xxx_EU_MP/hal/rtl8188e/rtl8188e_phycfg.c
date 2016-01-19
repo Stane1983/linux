@@ -94,7 +94,7 @@ sic_IsSICReady(
 	u8		sic_cmd=0xff;
 
 	while(1)
-	{
+	{		
 		if(retryCnt++ >= SIC_MAX_POLL_CNT)
 		{
 			//RTPRINT(FPHY, (PHY_SICR|PHY_SICW), ("[SIC], sic_IsSICReady() return FALSE\n"));
@@ -152,7 +152,7 @@ sic_Read4Byte(
 #endif
 
 	//RTPRINT(FPHY, PHY_SICR, ("[SIC], sic_Read4Byte(): read offset(%#x)\n", offset));
-
+	
 	if(sic_IsSICReady(Adapter))
 	{
 #if(SIC_HW_SUPPORT == 1)
@@ -172,7 +172,7 @@ sic_Read4Byte(
 
 #if RTL8188E_SUPPORT == 1
 		retry = 4;
-		while(retry--){
+		while(retry--){			
 			rtw_udelay_os(50);
 			//PlatformStallExecution(50);
 		}
@@ -189,7 +189,7 @@ sic_Read4Byte(
 			//DbgPrint("<===Read 0x%x = 0x%x\n", offset, u4ret);
 		}
 	}
-
+	
 	return u4ret;
 }
 
@@ -262,19 +262,19 @@ SIC_SetBBReg(
 		{// Wait too long, return FALSE to avoid to be stuck here.
 			RTPRINT(FPHY, PHY_SICW, ("[SIC], SIC_SetBBReg(), Fail to set BB offset(%#x)!!, WaitCnt(%d)\n", RegAddr, BBWaitCounter));
 			return;
-		}
+		}		
 	}
 */
 	//
 	// Critical section start
-	//
-
+	// 
+	
 	//RTPRINT(FPHY, PHY_SICW, ("[SIC], SIC_SetBBReg(), mask=0x%x, addr[0x%x]=0x%x\n", BitMask, RegAddr, Data));
 
 	if(BitMask!= bMaskDWord){//if not "double word" write
 		OriginalValue = sic_Read4Byte(Adapter, RegAddr);
 		//BitShift = sic_CalculateBitShift(BitMask);
-		BitShift = phy_CalculateBitShift(BitMask);
+		BitShift = phy_CalculateBitShift(BitMask);		
 		Data = (((OriginalValue) & (~BitMask)) | (Data << BitShift));
 	}
 
@@ -307,7 +307,7 @@ SIC_QueryBBReg(
 		{// Wait too long, return FALSE to avoid to be stuck here.
 			RTPRINT(FPHY, PHY_SICW, ("[SIC], SIC_QueryBBReg(), Fail to query BB offset(%#x)!!, WaitCnt(%d)\n", RegAddr, BBWaitCounter));
 			return ReturnValue;
-		}
+		}		
 	}
 */
 	OriginalValue = sic_Read4Byte(Adapter, RegAddr);
@@ -318,7 +318,7 @@ SIC_QueryBBReg(
 	//RTPRINT(FPHY, PHY_SICR, ("[SIC], SIC_QueryBBReg(), 0x%x=0x%x\n", RegAddr, OriginalValue));
 	//RTPRINT(FPHY, PHY_SICR, ("[SIC], SIC_QueryBBReg() end\n"));
 
-	//PlatformAtomicExchange(&pHalData->bChangeBBInProgress, _FALSE);
+	//PlatformAtomicExchange(&pHalData->bChangeBBInProgress, _FALSE);	
 	return (ReturnValue);
 }
 
@@ -331,11 +331,11 @@ SIC_Init(
 	// because for 8723E at beginning 0x1b8=0x1e, that will cause
 	// sic always not be ready
 #if(SIC_HW_SUPPORT == 1)
-	//RTPRINT(FPHY, PHY_SICR, ("[SIC], SIC_Init(), write 0x%x = 0x%x\n",
+	//RTPRINT(FPHY, PHY_SICR, ("[SIC], SIC_Init(), write 0x%x = 0x%x\n", 
 	//	SIC_INIT_REG, SIC_INIT_VAL));
 	rtw_write8(Adapter, SIC_INIT_REG, SIC_INIT_VAL);
 	//PlatformEFIOWrite1Byte(Adapter, SIC_INIT_REG, SIC_INIT_VAL);
-	//RTPRINT(FPHY, PHY_SICR, ("[SIC], SIC_Init(), write 0x%x = 0x%x\n",
+	//RTPRINT(FPHY, PHY_SICR, ("[SIC], SIC_Init(), write 0x%x = 0x%x\n", 
 	//	SIC_CMD_REG, SIC_CMD_INIT));
 	rtw_write8(Adapter, SIC_CMD_REG, SIC_CMD_INIT);
 	//PlatformEFIOWrite1Byte(Adapter, SIC_CMD_REG, SIC_CMD_INIT);
@@ -380,7 +380,7 @@ rtl8188e_PHY_QueryBBReg(
 	IN	u32		BitMask
 	)
 {
-	u32	ReturnValue = 0, OriginalValue, BitShift;
+  	u32	ReturnValue = 0, OriginalValue, BitShift;
 	u16	BBWaitCounter = 0;
 
 #if (DISABLE_BB_RF == 1)
@@ -441,7 +441,7 @@ rtl8188e_PHY_SetBBReg(
 
 #if(SIC_ENABLE == 1)
 	SIC_SetBBReg(Adapter, RegAddr, BitMask, Data);
-	return;
+	return; 
 #endif
 
 	//RT_TRACE(COMP_RF, DBG_TRACE, ("--->PHY_SetBBReg(): RegAddr(%#lx), BitMask(%#lx), Data(%#lx)\n", RegAddr, BitMask, Data));
@@ -921,13 +921,13 @@ s32 PHY_MACConfig8188E(PADAPTER Adapter)
 
 	// Not make sure EEPROM, add later
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("Read MACREG.txt\n"));
-	rtStatus = phy_ConfigMACWithParaFile(Adapter, pszMACRegFile);
+	rtStatus = phy_ConfigMACWithParaFile(Adapter, pszMACRegFile);	
 #endif//CONFIG_EMBEDDED_FWIMG
 
 
 	// 2010.07.13 AMPDU aggregation number B
 	rtw_write16(Adapter, REG_MAX_AGGR_NUM, MAX_AGGR_NUM);
-	//rtw_write8(Adapter, REG_MAX_AGGR_NUM, 0x0B);
+	//rtw_write8(Adapter, REG_MAX_AGGR_NUM, 0x0B); 
 
 	return rtStatus;
 
@@ -960,7 +960,7 @@ phy_InitBBRFRegisterDefinition(
 	pHalData->PHYRegDef[RF_PATH_D].rfintfs = rFPGA0_XCD_RFInterfaceSW;// 16 MSBs if read 32-bit from 0x874 (16-bit for 0x876)
 
 	// RF Interface Readback Value
-	pHalData->PHYRegDef[RF_PATH_A].rfintfi = rFPGA0_XAB_RFInterfaceRB; // 16 LSBs if read 32-bit from 0x8E0
+	pHalData->PHYRegDef[RF_PATH_A].rfintfi = rFPGA0_XAB_RFInterfaceRB; // 16 LSBs if read 32-bit from 0x8E0	
 	pHalData->PHYRegDef[RF_PATH_B].rfintfi = rFPGA0_XAB_RFInterfaceRB;// 16 MSBs if read 32-bit from 0x8E0 (16-bit for 0x8E2)
 	pHalData->PHYRegDef[RF_PATH_C].rfintfi = rFPGA0_XCD_RFInterfaceRB;// 16 LSBs if read 32-bit from 0x8E4
 	pHalData->PHYRegDef[RF_PATH_D].rfintfi = rFPGA0_XCD_RFInterfaceRB;// 16 MSBs if read 32-bit from 0x8E4 (16-bit for 0x8E6)
@@ -1019,37 +1019,37 @@ phy_InitBBRFRegisterDefinition(
 	pHalData->PHYRegDef[RF_PATH_A].rfRxIQImbalance = rOFDM0_XARxIQImbalance;
 	pHalData->PHYRegDef[RF_PATH_B].rfRxIQImbalance = rOFDM0_XBRxIQImbalance;
 	pHalData->PHYRegDef[RF_PATH_C].rfRxIQImbalance = rOFDM0_XCRxIQImbalance;
-	pHalData->PHYRegDef[RF_PATH_D].rfRxIQImbalance = rOFDM0_XDRxIQImbalance;
+	pHalData->PHYRegDef[RF_PATH_D].rfRxIQImbalance = rOFDM0_XDRxIQImbalance;	
 
 	// RX AFE control 1
 	pHalData->PHYRegDef[RF_PATH_A].rfRxAFE = rOFDM0_XARxAFE;
 	pHalData->PHYRegDef[RF_PATH_B].rfRxAFE = rOFDM0_XBRxAFE;
 	pHalData->PHYRegDef[RF_PATH_C].rfRxAFE = rOFDM0_XCRxAFE;
-	pHalData->PHYRegDef[RF_PATH_D].rfRxAFE = rOFDM0_XDRxAFE;
+	pHalData->PHYRegDef[RF_PATH_D].rfRxAFE = rOFDM0_XDRxAFE;	
 
 	// Tx AFE control 1
 	pHalData->PHYRegDef[RF_PATH_A].rfTxIQImbalance = rOFDM0_XATxIQImbalance;
 	pHalData->PHYRegDef[RF_PATH_B].rfTxIQImbalance = rOFDM0_XBTxIQImbalance;
 	pHalData->PHYRegDef[RF_PATH_C].rfTxIQImbalance = rOFDM0_XCTxIQImbalance;
-	pHalData->PHYRegDef[RF_PATH_D].rfTxIQImbalance = rOFDM0_XDTxIQImbalance;
+	pHalData->PHYRegDef[RF_PATH_D].rfTxIQImbalance = rOFDM0_XDTxIQImbalance;	
 
 	// Tx AFE control 2
 	pHalData->PHYRegDef[RF_PATH_A].rfTxAFE = rOFDM0_XATxAFE;
 	pHalData->PHYRegDef[RF_PATH_B].rfTxAFE = rOFDM0_XBTxAFE;
 	pHalData->PHYRegDef[RF_PATH_C].rfTxAFE = rOFDM0_XCTxAFE;
-	pHalData->PHYRegDef[RF_PATH_D].rfTxAFE = rOFDM0_XDTxAFE;
+	pHalData->PHYRegDef[RF_PATH_D].rfTxAFE = rOFDM0_XDTxAFE;	
 
 	// Tranceiver LSSI Readback SI mode
 	pHalData->PHYRegDef[RF_PATH_A].rfLSSIReadBack = rFPGA0_XA_LSSIReadBack;
 	pHalData->PHYRegDef[RF_PATH_B].rfLSSIReadBack = rFPGA0_XB_LSSIReadBack;
 	pHalData->PHYRegDef[RF_PATH_C].rfLSSIReadBack = rFPGA0_XC_LSSIReadBack;
-	pHalData->PHYRegDef[RF_PATH_D].rfLSSIReadBack = rFPGA0_XD_LSSIReadBack;
+	pHalData->PHYRegDef[RF_PATH_D].rfLSSIReadBack = rFPGA0_XD_LSSIReadBack;	
 
 	// Tranceiver LSSI Readback PI mode
 	pHalData->PHYRegDef[RF_PATH_A].rfLSSIReadBackPi = TransceiverA_HSPI_Readback;
 	pHalData->PHYRegDef[RF_PATH_B].rfLSSIReadBackPi = TransceiverB_HSPI_Readback;
 	//pHalData->PHYRegDef[RF_PATH_C].rfLSSIReadBackPi = rFPGA0_XC_LSSIReadBack;
-	//pHalData->PHYRegDef[RF_PATH_D].rfLSSIReadBackPi = rFPGA0_XD_LSSIReadBack;
+	//pHalData->PHYRegDef[RF_PATH_D].rfLSSIReadBackPi = rFPGA0_XD_LSSIReadBack;	
 
 }
 
@@ -1171,7 +1171,7 @@ phy_ConfigBBWithHeaderFile(
 			for(i=0;i<PHY_REGArrayLen;i=i+2)
 			{
 				tmp_value=Rtl819XPHY_REGArray_Table[i+1];
-
+				
 				if (Rtl819XPHY_REGArray_Table[i] == 0xfe)
 					rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 50);
 				else if (Rtl819XPHY_REGArray_Table[i] == 0xfd)
@@ -1185,12 +1185,12 @@ phy_ConfigBBWithHeaderFile(
 				else if (Rtl819XPHY_REGArray_Table[i] == 0xf9)
 					rtw_IOL_append_DELAY_US_cmd(xmit_frame, 1);
 				else if (Rtl819XPHY_REGArray_Table[i] == 0xa24)
-					podmpriv->RFCalibrateInfo.RegA24 = Rtl819XPHY_REGArray_Table[i+1];
+					podmpriv->RFCalibrateInfo.RegA24 = Rtl819XPHY_REGArray_Table[i+1];	
 
-				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XPHY_REGArray_Table[i], tmp_value);
+				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XPHY_REGArray_Table[i], tmp_value);	
 				//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XPHY_REGArray_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XPHY_REGArray_Table[i], Rtl819XPHY_REGArray_Table[i+1]));
 			}
-
+		
 			ret = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
 		}
 		#else
@@ -1214,8 +1214,8 @@ phy_ConfigBBWithHeaderFile(
 			else if (Rtl819XPHY_REGArray_Table[i] == 0xf9)
 				rtw_udelay_os(1);
 			else if (Rtl819XPHY_REGArray_Table[i] == 0xa24)
-				podmpriv->RFCalibrateInfo.RegA24 = Rtl819XPHY_REGArray_Table[i+1];
-
+				podmpriv->RFCalibrateInfo.RegA24 = Rtl819XPHY_REGArray_Table[i+1];	
+				
 			PHY_SetBBReg(Adapter, Rtl819XPHY_REGArray_Table[i], bMaskDWord, Rtl819XPHY_REGArray_Table[i+1]);
 
 			// Add 1us delay between BB/RF register setting.
@@ -1240,10 +1240,10 @@ phy_ConfigBBWithHeaderFile(
 
 			for(i=0;i<AGCTAB_ArrayLen;i=i+2)
 			{
-				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]);
+				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]);							
 				//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XAGCTAB_Array_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]));
 			}
-
+		
 			ret = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
 		}
 		#else
@@ -1273,7 +1273,7 @@ storePwrIndexDiffRateOffset(
 	)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
+	
 	if(RegAddr == rTxAGC_A_Rate18_06)
 	{
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][0] = Data;
@@ -1323,7 +1323,7 @@ storePwrIndexDiffRateOffset(
 		if(pHalData->rf_type== RF_1T1R)
 		{
 			//printk("pwrGroupCnt = %d\n", pHalData->pwrGroupCnt);
-			pHalData->pwrGroupCnt++;
+			pHalData->pwrGroupCnt++;			
 		}
 	}
 	if(RegAddr == rTxAGC_B_Rate18_06)
@@ -1373,10 +1373,10 @@ storePwrIndexDiffRateOffset(
 		pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][13] = Data;
 		//printk("MCSTxPowerLevelOriginalOffset[%d][13]-TxAGC_B_Mcs15_Mcs12 = 0x%x\n", pHalData->pwrGroupCnt,
 		//	pHalData->MCSTxPowerLevelOriginalOffset[pHalData->pwrGroupCnt][13]);
-
+		
 		if(pHalData->rf_type != RF_1T1R)
 		{
-			//printk("pwrGroupCnt = %d\n", pHalData->pwrGroupCnt);
+			//printk("pwrGroupCnt = %d\n", pHalData->pwrGroupCnt);	
 			pHalData->pwrGroupCnt++;
 		}
 	}
@@ -1464,9 +1464,9 @@ phy_ConfigBBWithPgHeaderFile(
 				rtw_udelay_os(5);
 			else if (Rtl819XPHY_REGArray_Table_PG[i] == 0xf9)
 				rtw_udelay_os(1);
-			//PHY_SetBBReg(Adapter, Rtl819XPHY_REGArray_Table_PG[i], Rtl819XPHY_REGArray_Table_PG[i+1], Rtl819XPHY_REGArray_Table_PG[i+2]);
+			//PHY_SetBBReg(Adapter, Rtl819XPHY_REGArray_Table_PG[i], Rtl819XPHY_REGArray_Table_PG[i+1], Rtl819XPHY_REGArray_Table_PG[i+2]);		
 			#endif
-
+			
 			storePwrIndexDiffRateOffset(Adapter, Rtl819XPHY_REGArray_Table_PG[i],
 				Rtl819XPHY_REGArray_Table_PG[i+1],
 				Rtl819XPHY_REGArray_Table_PG[i+2]);
@@ -1595,7 +1595,7 @@ phy_BB8188E_Config_ParaFile(
 		pHalData->pwrGroupCnt = 0;
 
 #ifdef CONFIG_EMBEDDED_FWIMG
-		#ifdef CONFIG_PHY_SETTING_WITH_ODM
+		#ifdef CONFIG_PHY_SETTING_WITH_ODM	
 		if(HAL_STATUS_FAILURE ==ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG_PG))
 			rtStatus = _FAIL;
 		#else
@@ -1615,12 +1615,12 @@ phy_BB8188E_Config_ParaFile(
 	// 3. BB AGC table Initialization
 	//
 #ifdef CONFIG_EMBEDDED_FWIMG
-	#ifdef CONFIG_PHY_SETTING_WITH_ODM
+	#ifdef CONFIG_PHY_SETTING_WITH_ODM	
 	if(HAL_STATUS_FAILURE ==ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv,  CONFIG_BB_AGC_TAB))
 		rtStatus = _FAIL;
 	#else
 	rtStatus = phy_ConfigBBWithHeaderFile(Adapter, CONFIG_BB_AGC_TAB);
-	#endif//#ifdef CONFIG_PHY_SETTING_WITH_ODM
+	#endif//#ifdef CONFIG_PHY_SETTING_WITH_ODM	
 #else
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("phy_BB8192S_Config_ParaFile AGC_TAB.txt\n"));
 	rtStatus = phy_ConfigBBWithParaFile(Adapter, pszAGCTableFile);
@@ -1697,13 +1697,13 @@ PHY_BBConfig8188E(
 	// Config BB and AGC
 	//
 	rtStatus = phy_BB8188E_Config_ParaFile(Adapter);
-
+	
 	// write 0x24[16:11] = 0x24[22:17] = CrystalCap
 	CrystalCap = pHalData->CrystalCap & 0x3F;
 	PHY_SetBBReg(Adapter, REG_AFE_XTAL_CTRL, 0x7ff800, (CrystalCap | (CrystalCap << 6)));
 
 	return rtStatus;
-
+	
 }
 
 
@@ -2326,13 +2326,13 @@ void getTxPowerIndex88E(
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 	u8				index = (channel -1);
 	u8				TxCount=0,path_nums;
-
-
-	if((RF_1T2R == pHalData->rf_type) ||(RF_1T1R ==pHalData->rf_type ))
+		
+	
+	if((RF_1T2R == pHalData->rf_type) ||(RF_1T1R ==pHalData->rf_type ))	
 		path_nums = 1;
-	else
+	else	
 		path_nums = 2;
-
+	
 	for(TxCount=0;TxCount< path_nums ;TxCount++)
 	{
 		if(TxCount==RF_PATH_A)
@@ -2341,13 +2341,13 @@ void getTxPowerIndex88E(
 			cckPowerLevel[TxCount]		= pHalData->Index24G_CCK_Base[TxCount][index];
 			//2. OFDM
 			ofdmPowerLevel[TxCount]		= pHalData->Index24G_BW40_Base[RF_PATH_A][index]+
-				pHalData->OFDM_24G_Diff[TxCount][RF_PATH_A];
+				pHalData->OFDM_24G_Diff[TxCount][RF_PATH_A];	
 			// 1. BW20
 			BW20PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[RF_PATH_A][index]+
 				pHalData->BW20_24G_Diff[TxCount][RF_PATH_A];
 			//2. BW40
 			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];
-			//RTPRINT(FPHY, PHY_TXPWR, ("getTxPowerIndex88E(): 40MBase=0x%x  20Mdiff=%d  20MBase=0x%x!!\n",
+			//RTPRINT(FPHY, PHY_TXPWR, ("getTxPowerIndex88E(): 40MBase=0x%x  20Mdiff=%d  20MBase=0x%x!!\n", 
 			//	pHalData->Index24G_BW40_Base[RF_PATH_A][index],
 			//	pHalData->BW20_24G_Diff[TxCount][RF_PATH_A],
 			//	BW20PowerLevel[TxCount]));
@@ -2359,13 +2359,13 @@ void getTxPowerIndex88E(
 			//2. OFDM
 			ofdmPowerLevel[TxCount]		= pHalData->Index24G_BW40_Base[RF_PATH_A][index]+
 			pHalData->BW20_24G_Diff[RF_PATH_A][index]+
-			pHalData->BW20_24G_Diff[TxCount][index];
+			pHalData->BW20_24G_Diff[TxCount][index];	
 			// 1. BW20
 			BW20PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[RF_PATH_A][index]+
 			pHalData->BW20_24G_Diff[TxCount][RF_PATH_A]+
 			pHalData->BW20_24G_Diff[TxCount][index];
 			//2. BW40
-			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];
+			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];		
 		}
 		else if(TxCount==RF_PATH_C)
 		{
@@ -2382,7 +2382,7 @@ void getTxPowerIndex88E(
 			pHalData->BW20_24G_Diff[RF_PATH_B][index]+
 			pHalData->BW20_24G_Diff[TxCount][index];
 			//2. BW40
-			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];
+			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];		
 		}
 		else if(TxCount==RF_PATH_D)
 		{
@@ -2403,8 +2403,8 @@ void getTxPowerIndex88E(
 				pHalData->BW20_24G_Diff[TxCount][index];
 
 			//2. BW40
-			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];
-		}
+			BW40PowerLevel[TxCount]	= pHalData->Index24G_BW40_Base[TxCount][index];		
+		}	
 		else
 		{
 		}
@@ -2418,30 +2418,30 @@ void getTxPowerIndex88E(
 			cckPowerLevel[0] -= 3;
 			cckPowerLevel[1] -= 3;
 			ofdmPowerLevel[0] -=3;
-			ofdmPowerLevel[1] -= 3;
+			ofdmPowerLevel[1] -= 3; 
 			break;
 		case 3: // 50%
 			cckPowerLevel[0] -= 6;
 			cckPowerLevel[1] -= 6;
 			ofdmPowerLevel[0] -=6;
-			ofdmPowerLevel[1] -= 6;
+			ofdmPowerLevel[1] -= 6; 
 			break;
 		case 4: // 35%
 			cckPowerLevel[0] -= 9;
 			cckPowerLevel[1] -= 9;
 			ofdmPowerLevel[0] -=9;
-			ofdmPowerLevel[1] -= 9;
+			ofdmPowerLevel[1] -= 9; 
 			break;
 		case 5: // 15%
 			cckPowerLevel[0] -= 17;
 			cckPowerLevel[1] -= 17;
 			ofdmPowerLevel[0] -=17;
-			ofdmPowerLevel[1] -= 17;
+			ofdmPowerLevel[1] -= 17; 
 			break;
-
+	
 		default:
 			break;
-	}
+	}	
 #endif
 	//RTPRINT(FPHY, PHY_TXPWR, ("Channel-%d, set tx power index !!\n", channel));
 }
@@ -2452,7 +2452,7 @@ void phy_PowerIndexCheck88E(
 	IN OUT u8 *		cckPowerLevel,
 	IN OUT u8 *		ofdmPowerLevel,
 	IN OUT u8 *		BW20PowerLevel,
-	IN OUT u8 *		BW40PowerLevel
+	IN OUT u8 *		BW40PowerLevel	
 	)
 {
 
@@ -2466,13 +2466,13 @@ void phy_PowerIndexCheck88E(
 	// 1. We shall not exceed Cell Power Limit as possible as we can.
 	// 2. Tolerance is +/- 5dB.
 	// 3. 802.11h Power Contraint takes higher precedence over CCX Cell Power Limit.
-	//
-	// TODO:
-	// 1. 802.11h power contraint
+	// 
+	// TODO: 
+	// 1. 802.11h power contraint 
 	//
 	// 071011, by rcnjko.
 	//
-	if(	pMgntInfo->OpMode == RT_OP_MODE_INFRASTRUCTURE &&
+	if(	pMgntInfo->OpMode == RT_OP_MODE_INFRASTRUCTURE && 
 		pMgntInfo->mAssoc &&
 		pCcxInfo->bUpdateCcxPwr &&
 		pCcxInfo->bWithCcxCellPwr &&
@@ -2482,12 +2482,12 @@ void phy_PowerIndexCheck88E(
 		u1Byte	LegacyOfdmCellPwrIdx = phy_DbmToTxPwrIdx(Adapter, WIRELESS_MODE_G, pCcxInfo->CcxCellPwr);
 		u1Byte	OfdmCellPwrIdx = phy_DbmToTxPwrIdx(Adapter, WIRELESS_MODE_N_24G, pCcxInfo->CcxCellPwr);
 
-		RT_TRACE(COMP_TXAGC, DBG_LOUD,
-		("CCX Cell Limit: %d dbm => CCK Tx power index : %d, Legacy OFDM Tx power index : %d, OFDM Tx power index: %d\n",
+		RT_TRACE(COMP_TXAGC, DBG_LOUD, 
+		("CCX Cell Limit: %d dbm => CCK Tx power index : %d, Legacy OFDM Tx power index : %d, OFDM Tx power index: %d\n", 
 		pCcxInfo->CcxCellPwr, CckCellPwrIdx, LegacyOfdmCellPwrIdx, OfdmCellPwrIdx));
-		RT_TRACE(COMP_TXAGC, DBG_LOUD,
+		RT_TRACE(COMP_TXAGC, DBG_LOUD, 
 		("EEPROM channel(%d) => CCK Tx power index: %d, Legacy OFDM Tx power index : %d, OFDM Tx power index: %d\n",
-		channel, cckPowerLevel[0], ofdmPowerLevel[0] + pHalData->LegacyHTTxPowerDiff, ofdmPowerLevel[0]));
+		channel, cckPowerLevel[0], ofdmPowerLevel[0] + pHalData->LegacyHTTxPowerDiff, ofdmPowerLevel[0])); 
 
 		// CCK
 		if(cckPowerLevel[0] > CckCellPwrIdx)
@@ -2505,8 +2505,8 @@ void phy_PowerIndexCheck88E(
 			}
 		}
 
-		RT_TRACE(COMP_TXAGC, DBG_LOUD,
-		("Altered CCK Tx power index : %d, Legacy OFDM Tx power index: %d, OFDM Tx power index: %d\n",
+		RT_TRACE(COMP_TXAGC, DBG_LOUD, 
+		("Altered CCK Tx power index : %d, Legacy OFDM Tx power index: %d, OFDM Tx power index: %d\n", 
 		cckPowerLevel[0], ofdmPowerLevel[0] + pHalData->LegacyHTTxPowerDiff, ofdmPowerLevel[0]));
 	}
 #else
@@ -2518,7 +2518,7 @@ void phy_PowerIndexCheck88E(
 	pHalData->CurrentBW2024GTxPwrIdx = BW20PowerLevel[0];
 	pHalData->CurrentBW4024GTxPwrIdx = BW40PowerLevel[0];
 
-	//DBG_871X("PHY_SetTxPowerLevel8188E(): CurrentCckTxPwrIdx : 0x%x,CurrentOfdm24GTxPwrIdx: 0x%x, CurrentBW2024GTxPwrIdx: 0x%dx, CurrentBW4024GTxPwrIdx: 0x%x \n",
+	//DBG_871X("PHY_SetTxPowerLevel8188E(): CurrentCckTxPwrIdx : 0x%x,CurrentOfdm24GTxPwrIdx: 0x%x, CurrentBW2024GTxPwrIdx: 0x%dx, CurrentBW4024GTxPwrIdx: 0x%x \n", 
 	//	pHalData->CurrentCckTxPwrIdx, pHalData->CurrentOfdm24GTxPwrIdx, pHalData->CurrentBW2024GTxPwrIdx, pHalData->CurrentBW4024GTxPwrIdx);
 }
 /*-----------------------------------------------------------------------------
@@ -2545,7 +2545,7 @@ PHY_SetTxPowerLevel8188E(
 	)
 {
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
-
+	
 	u8	cckPowerLevel[MAX_TX_COUNT], ofdmPowerLevel[MAX_TX_COUNT];// [0]:RF-A, [1]:RF-B
 	u8	BW20PowerLevel[MAX_TX_COUNT], BW40PowerLevel[MAX_TX_COUNT];
 	u8	i=0;
@@ -2558,9 +2558,9 @@ PHY_SetTxPowerLevel8188E(
 	//getTxPowerIndex(Adapter, channel, &cckPowerLevel[0], &ofdmPowerLevel[0]);
 	getTxPowerIndex88E(Adapter, channel, &cckPowerLevel[0], &ofdmPowerLevel[0],&BW20PowerLevel[0],&BW40PowerLevel[0]);
 
-	//printk("Channel-%d, cckPowerLevel =  0x%x,   ofdmPowerLeve = 0x%x, BW20PowerLevel  =  0x%x,   BW40PowerLevel = 0x%x,\n",
+	//printk("Channel-%d, cckPowerLevel =  0x%x,   ofdmPowerLeve = 0x%x, BW20PowerLevel  =  0x%x,   BW40PowerLevel = 0x%x,\n", 
 	//		channel, cckPowerLevel[0],  ofdmPowerLevel[0], BW20PowerLevel[0] ,BW40PowerLevel[0]);
-
+	
 	//RTPRINT(FPHY, PHY_TXPWR, ("Channel-%d, cckPowerLevel (A / B) = 0x%x / 0x%x,   ofdmPowerLevel (A / B) = 0x%x / 0x%x\n",
 	//	channel, cckPowerLevel[0], cckPowerLevel[1], ofdmPowerLevel[0], ofdmPowerLevel[1]));
 
@@ -2933,7 +2933,7 @@ PHY_SetBWMode8188E(
 		//pHalData->SetBWModeInProgress= FALSE;
 		pHalData->CurrentChannelBW = tmpBW;
 	}
-
+	
 }
 
 
@@ -3530,3 +3530,4 @@ DumpBBDbgPort_92CU(
 
 }
 #endif
+

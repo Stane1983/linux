@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -109,6 +109,10 @@
 // General definitions
 //========================================================
 
+#define MACID_NUM_92D 32
+#define CAM_ENTRY_NUM_92D 32
+
 #include "basic_types.h"
 
-#endif
+#endif /* __RTL8192D_SPEC_H__ */
+

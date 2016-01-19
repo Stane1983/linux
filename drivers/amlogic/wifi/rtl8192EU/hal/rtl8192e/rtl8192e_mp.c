@@ -28,7 +28,7 @@
 s32 Hal_SetPowerTracking(PADAPTER padapter, u8 enable)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
+	
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 
@@ -56,7 +56,7 @@ s32 Hal_SetPowerTracking(PADAPTER padapter, u8 enable)
 void Hal_GetPowerTracking(PADAPTER padapter, u8 *enable)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
-
+	
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 
@@ -108,7 +108,7 @@ static void Hal_disable_dm(PADAPTER padapter)
  *
  *---------------------------------------------------------------------------*/
 void Hal_mpt_SwitchRfSetting(PADAPTER pAdapter)
-{
+{	
 	//HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 	struct mp_priv	*pmp = &pAdapter->mppriv;
 	u1Byte				ChannelToSw = pmp->channel;
@@ -274,7 +274,7 @@ void Hal_MPT_CCKTxPowerAdjustbyIndex(PADAPTER pAdapter, BOOLEAN beven)
 				}
 			}
 		}
-
+		
 		if (Action == 1) {
 			if (CCK_index_old == 0)
 				CCK_index_old = 1;
@@ -341,7 +341,7 @@ void Hal_SetChannel(PADAPTER pAdapter)
 	struct mp_priv	*pmp = &pAdapter->mppriv;
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
-
+	
 	u8		channel = pmp->channel;
 	u8		bandwidth = pmp->bandwidth;
 	u8		rate = pmp->rateidx;
@@ -350,7 +350,7 @@ void Hal_SetChannel(PADAPTER pAdapter)
 	// set RF channel register
 	for (eRFPath = 0; eRFPath < pHalData->NumTotalRFPath; eRFPath++)
 	{
-		if(IS_HARDWARE_TYPE_8192D(pAdapter))
+      		if(IS_HARDWARE_TYPE_8192D(pAdapter))
 			_write_rfreg(pAdapter, eRFPath, ODM_CHANNEL, 0xFF, channel);
 		else
 			_write_rfreg(pAdapter, eRFPath, ODM_CHANNEL, 0x3FF, channel);
@@ -392,12 +392,12 @@ void Hal_SetCCKTxPower(PADAPTER pAdapter, u8 *TxPower)
 	// rf-A cck tx power
 	write_bbreg(pAdapter, rTxAGC_A_CCK1_Mcs32, bMaskByte1, TxPower[RF_PATH_A]);
 	tmpval = (TxPower[RF_PATH_A]<<16) | (TxPower[RF_PATH_A]<<8) | TxPower[RF_PATH_A];
-	write_bbreg(pAdapter, rTxAGC_B_CCK11_A_CCK2_11, 0xffffff00, tmpval);
+	write_bbreg(pAdapter, rTxAGC_B_CCK11_A_CCK2_11, bMaskH3Bytes, tmpval);
 
 	// rf-B cck tx power
 	write_bbreg(pAdapter, rTxAGC_B_CCK11_A_CCK2_11, bMaskByte0, TxPower[RF_PATH_B]);
 	tmpval = (TxPower[RF_PATH_B]<<16) | (TxPower[RF_PATH_B]<<8) | TxPower[RF_PATH_B];
-	write_bbreg(pAdapter, rTxAGC_B_CCK1_55_Mcs32, 0xffffff00, tmpval);
+	write_bbreg(pAdapter, rTxAGC_B_CCK1_55_Mcs32, bMaskH3Bytes, tmpval);
 
 	RT_TRACE(_module_mp_, _drv_notice_,
 		 ("-SetCCKTxPower: A[0x%02x] B[0x%02x]\n",
@@ -748,9 +748,8 @@ s32 Hal_SetThermalMeter(PADAPTER pAdapter, u8 target_ther)
 
 void Hal_TriggerRFThermalMeter(PADAPTER pAdapter)
 {
-
+  
 	PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_T_METER_8192E, BIT17 | BIT16, 0x03);
-
 //	RT_TRACE(_module_mp_,_drv_alert_, ("TriggerRFThermalMeter() finished.\n" ));
 }
 
@@ -761,8 +760,7 @@ u8 Hal_ReadRFThermalMeter(PADAPTER pAdapter)
 	//ThermalValue = _read_rfreg(pAdapter, RF_PATH_A, RF_T_METER, 0x1F);	// 0x24: RF Reg[4:0]
 	ThermalValue = (u1Byte)PHY_QueryRFReg(pAdapter, ODM_RF_PATH_A, RF_T_METER_8192E, 0xfc00);	// 0x42: RF Reg[15:10]
 	DBG_871X("%s ThermalValue = 0x%x\n", __FUNCTION__,ThermalValue);
-	printk("%s ### REG_C80:0x%08x,REG_C88:0x%08x ####\n",__FUNCTION__,
-		rtw_read32(pAdapter,0xc80),rtw_read32(pAdapter,0xc88));
+//	RT_TRACE(_module_mp_, _drv_alert_, ("ThermalValue = 0x%x\n", ThermalValue));
 	return (u8)ThermalValue;
 }
 
@@ -809,7 +807,7 @@ void Hal_SetSingleCarrierTx(PADAPTER pAdapter, u8 bStart)
 		//for dynamic set Power index.
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
+		
 	}
 	else// Stop Single Carrier.
 	{
@@ -833,7 +831,7 @@ void Hal_SetSingleCarrierTx(PADAPTER pAdapter, u8 bStart)
 		//Stop for dynamic set Power index.
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
-
+		
 	}
 }
 
@@ -841,7 +839,7 @@ void Hal_SetSingleCarrierTx(PADAPTER pAdapter, u8 bStart)
 void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 {
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
-	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);
+	PMPT_CONTEXT	pMptCtx = &(pAdapter->mppriv.MptCtx);	
 
 	switch (pAdapter->mppriv.antenna_tx)
 	{
@@ -851,9 +849,9 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 			break;
 		case ANTENNA_B:
 			pMptCtx->MptRfPath = RF_PATH_B;
-			break;
+			break;	
 	}
-
+	
 	pAdapter->mppriv.MptCtx.bSingleTone = bStart;
 	if (bStart)// Start Single Tone.
 	{
@@ -861,18 +859,19 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 		//rtw_write32(pAdapter,0x88C,0xCCF000C0);
 		PHY_SetMacReg(pAdapter, 0x88C, 0xF00000, 0xF);
 		PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x1); // RF LO disabled
-		PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x2); // Tx mode
-
+		PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x2); // Tx mode		
+		
 	}
 	else// Stop Single Tone.
 	{
 		PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, RF_AC, 0xF0000, 0x3); // Tx mode
-		PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x0); // RF LO disabled
+		PHY_SetRFReg(pAdapter, pMptCtx->MptRfPath, LNA_Low_Gain_3, BIT1, 0x0); // RF LO disabled    	
 		//rtw_write32(pAdapter,0x88C,0xCC0000C0);
-		PHY_SetMacReg(pAdapter, 0x88C, 0xF00000, 0x0);
+		PHY_SetMacReg(pAdapter, 0x88C, 0xF00000, 0x0);	
 	}
-
+	
 }
+
 
 
 void Hal_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
@@ -904,7 +903,7 @@ void Hal_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 		//for dynamic set Power index.
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
+		
 	}
 	else// Stop Carrier Suppression.
 	{
@@ -922,7 +921,7 @@ void Hal_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 		//Stop for dynamic set Power index.
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
-
+		
 	}
 	//DbgPrint("\n MPT_ProSetCarrierSupp() is finished. \n");
 }
@@ -1028,7 +1027,7 @@ void Hal_SetOFDMContinuousTx(PADAPTER pAdapter, u8 bStart)
 		//for dynamic set Power index.
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
+		
 	} else {
 		RT_TRACE(_module_mp_,_drv_info_, ("SetOFDMContinuousTx: test stop\n"));
 		write_bbreg(pAdapter, rOFDM1_LSTF, bOFDMContinueTx, bDisable);
@@ -1080,3 +1079,4 @@ void Hal_SetContinuousTx(PADAPTER pAdapter, u8 bStart)
 }
 
 #endif // CONFIG_MP_INCLUDE
+

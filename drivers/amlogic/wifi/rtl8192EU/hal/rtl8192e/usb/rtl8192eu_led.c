@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -34,7 +34,7 @@
 
 
 //================================================================================
-// LED_819xUsb routines.
+// LED_819xUsb routines. 
 //================================================================================
 
 //
@@ -43,7 +43,7 @@
 //
 static void
 SwLedOn_8192EU(
-	PADAPTER		padapter,
+	PADAPTER		padapter, 
 	PLED_USB		pLed
 )
 {
@@ -56,7 +56,7 @@ SwLedOn_8192EU(
 	}
 
 	if(	RT_GetInterfaceSelection(padapter) == INTF_SEL2_MINICARD ||
-		RT_GetInterfaceSelection(padapter) == INTF_SEL3_USB_Solo ||
+	 	RT_GetInterfaceSelection(padapter) == INTF_SEL3_USB_Solo ||
 		RT_GetInterfaceSelection(padapter) == INTF_SEL4_USB_Combo)
 	{
 		LedCfg = rtw_read8(padapter, REG_LEDCFG2);
@@ -68,7 +68,7 @@ SwLedOn_8192EU(
 
 			case LED_PIN_LED0:
 				RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("In SwLedOn,LedAddr:%X LEDPIN=%d\n",REG_LEDCFG1, pLed->LedPin));
-				LedCfg = rtw_read8(padapter, REG_LEDCFG0);
+				LedCfg = rtw_read8(padapter, REG_LEDCFG0);						
 				rtw_write8(padapter, REG_LEDCFG1, (LedCfg&~BIT7)); // SW control led1 on.
 				break;
 
@@ -108,7 +108,7 @@ SwLedOn_8192EU(
 				rtw_write8(padapter, (REG_LEDCFG2), (LedCfg&~BIT7)); // SW control led1 on.
 				RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("SwLedOn LED2 0x%x\n", rtw_read32(padapter, REG_LEDCFG2)));
 				break;
-
+				
 			default:
 				break;
 		}
@@ -124,7 +124,7 @@ SwLedOn_8192EU(
 //
 static void
 SwLedOff_8192EU(
-	PADAPTER		padapter,
+	PADAPTER		padapter, 
 	PLED_USB		pLed
 )
 {
@@ -139,13 +139,13 @@ SwLedOff_8192EU(
 	if(	RT_GetInterfaceSelection(padapter) == INTF_SEL2_MINICARD ||
 		RT_GetInterfaceSelection(padapter) == INTF_SEL3_USB_Solo ||
 		RT_GetInterfaceSelection(padapter) == INTF_SEL4_USB_Combo)
-	{
+	{		
 		RT_TRACE(_module_rtl8712_led_c_,_drv_info_,("In SwLedOff,LedAddr:%X LEDPIN=%d\n",REG_LEDCFG2, pLed->LedPin));
 		LedCfg = rtw_read8(padapter, REG_LEDCFG2);
-
+		
 		// 2009/10/23 MH Issau eed to move the LED GPIO from bit  0 to bit3.
 		// 2009/10/26 MH Issau if tyhe device is 8c DID is 0x8176, we need to enable bit6 to
-		// enable GPIO8 for controlling LED.
+		// enable GPIO8 for controlling LED.	
 		// 2010/07/02 Supprt Open-drain arrangement for controlling the LED. Added by Roger.
 		//
 		switch(pLed->LedPin)
@@ -247,3 +247,4 @@ rtl8192eu_DeInitSwLeds(
 	DeInitLed( &(ledpriv->SwLed0) );
 	DeInitLed( &(ledpriv->SwLed1) );
 }
+

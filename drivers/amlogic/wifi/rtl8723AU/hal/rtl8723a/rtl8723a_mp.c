@@ -47,7 +47,7 @@
 
 	HAL_DATA_TYPE *pHalData = GET_HAL_DATA(pAdapter);
     u32					u4RF_IPA[3], u4RF_TXBIAS, u4RF_SYN_G2;
-
+    
 		DBG_8192C("phy_SwitchRfSetting8723A channel=%d\n",channel);
 
 
@@ -60,96 +60,96 @@
 	{
 				DBG_8192C("phy_SwitchRfSetting8723A REG_AFE_PLL_CTRL 0xF2FFFF83\n");
 				PHY_SetBBReg(pAdapter, REG_AFE_PLL_CTRL, bMaskDWord, 0xF2FFFF83);
-	}
-
-
+	}	
+		
+		
 #if	DEV_BUS_TYPE==RT_PCI_INTERFACE
 		u4Byte				u4RF_IPA[3], u4RF_TXBIAS, u4RF_SYN_G2;
 		//default value
 		{
 			u4RF_IPA[0] = 0x4F424;			//CCK
 			u4RF_IPA[1] = 0xCF424;			//OFDM
-			u4RF_IPA[2] = 0x8F424;			//MCS
-			u4RF_TXBIAS = 0xC0356;
-			u4RF_SYN_G2 = 0x4F200;
+			u4RF_IPA[2] = 0x8F424;			//MCS	
+			u4RF_TXBIAS = 0xC0356;							
+			u4RF_SYN_G2 = 0x4F200;																
 		}
-
+	
 		switch(channel)
 		{
 			case 1:
-				u4RF_IPA[0] = 0x4F40C;
-				u4RF_IPA[1] = 0xCF466;
-				u4RF_TXBIAS = 0xC0350;
-				u4RF_SYN_G2 = 0x0F400;
+				u4RF_IPA[0] = 0x4F40C;			
+				u4RF_IPA[1] = 0xCF466;	
+				u4RF_TXBIAS = 0xC0350;						
+				u4RF_SYN_G2 = 0x0F400;																			
 				break;
-
+	
 			case 2:
-				u4RF_IPA[0] =  0x4F407;
-				u4RF_TXBIAS =  0xC0350;
-				u4RF_SYN_G2 = 0x0F400;
+				u4RF_IPA[0] =  0x4F407; 		
+				u4RF_TXBIAS =  0xC0350; 								
+				u4RF_SYN_G2 = 0x0F400;																						
 				break;
-
+	
 			case 3:
-				u4RF_IPA[0] =  0x4F407;
-				u4RF_IPA[2] =  0x8F466;
-				u4RF_TXBIAS =  0xC0350;
-				u4RF_SYN_G2 = 0x0F400;
+				u4RF_IPA[0] =  0x4F407; 		
+				u4RF_IPA[2] =  0x8F466; 			
+				u4RF_TXBIAS =  0xC0350; 								
+				u4RF_SYN_G2 = 0x0F400;																						
 				break;
-
+	
 			case 5:
-			case 8:
-				u4RF_SYN_G2 =  0x0F400;
+			case 8: 
+				u4RF_SYN_G2 =  0x0F400; 											
 				break;
-
+	
 			case 6:
-			case 13:
-				u4RF_IPA[0] =  0x4F40C;
+			case 13:	
+				u4RF_IPA[0] =  0x4F40C; 		
 				break;
-
-			case 7:
-				u4RF_IPA[0] =  0x4F40C;
-				u4RF_SYN_G2 =  0x0F400;
-				break;
-
+	
+			case 7: 
+				u4RF_IPA[0] =  0x4F40C; 		
+				u4RF_SYN_G2 =  0x0F400; 														
+				break;			
+	
 			case 9:
-				u4RF_IPA[2] =  0x8F454;
-				u4RF_SYN_G2 =  0x0F400;
+				u4RF_IPA[2] =  0x8F454; 		
+				u4RF_SYN_G2 =  0x0F400; 														
 				break;
-
-			case 11:
-				u4RF_IPA[0] =  0x4F40C;
-				u4RF_IPA[1] =  0xCF454;
-				u4RF_SYN_G2 =  0x0F400;
+	
+			case 11:	
+				u4RF_IPA[0] =  0x4F40C; 		
+				u4RF_IPA[1] =  0xCF454; 
+				u4RF_SYN_G2 =  0x0F400; 														
 				break;
-
+	
 			default:
-				u4RF_IPA[0] =  0x4F424;
-				u4RF_IPA[1] =  0x8F424;
-				u4RF_IPA[2] =  0xCF424;
-				u4RF_TXBIAS =  0xC0356;
-				u4RF_SYN_G2 =  0x4F200;
+				u4RF_IPA[0] =  0x4F424; 		
+				u4RF_IPA[1] =  0x8F424; 			
+				u4RF_IPA[2] =  0xCF424; 				
+				u4RF_TXBIAS =  0xC0356; 						
+				u4RF_SYN_G2 =  0x4F200; 																
 				break;
 		}
-
+	
 		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_IPA, bRFRegOffsetMask, u4RF_IPA[0]);
 		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_IPA, bRFRegOffsetMask, u4RF_IPA[1]);
 		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_IPA, bRFRegOffsetMask, u4RF_IPA[2]);
-		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_TXBIAS, bRFRegOffsetMask, u4RF_TXBIAS);
+		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_TXBIAS, bRFRegOffsetMask, u4RF_TXBIAS);	
 		PHY_SetRFReg(pAdapter, ODM_RF_PATH_A, RF_SYN_G2, bRFRegOffsetMask, u4RF_SYN_G2);
-
+	
 		if((channel >= 1 && channel <= 5) || (channel >= 8 && channel <= 9))
 		{
 			PHY_SetBBReg(pAdapter, REG_AFE_PLL_CTRL, bMaskDWord, 0xF0FFFF83);
 		}
-		else
+		else 
 		{
 			PHY_SetBBReg(pAdapter, REG_AFE_PLL_CTRL, bMaskDWord, 0xF2FFFF83);
-		}
-
+		}		
+	
 #endif
+	
 
-
-}
+}	
 
 
 
@@ -159,12 +159,12 @@ void Hal_mpt_SwitchRfSetting(PADAPTER pAdapter)
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(pAdapter);
 	PMPT_CONTEXT		pMptCtx = &(pAdapter->mppriv.MptCtx);
 	u8				ChannelToSw ;
-
+	
 	pMptCtx->MptChannelToSw=pAdapter->mppriv.channel;
 	ChannelToSw =pMptCtx->MptChannelToSw;
-
+	
 	phy_SwitchRfSetting8723A(pAdapter, ChannelToSw);
-}
+}	
 
 
 
@@ -443,7 +443,7 @@ void Hal_SetChannel(PADAPTER pAdapter)
 	Hal_mpt_SwitchRfSetting(pAdapter);
 
 	SelectChannel(pAdapter, channel);
-
+	
 	if (pHalData->CurrentChannel == 14 && !pHalData->dmpriv.bCCKinCH14) {
 		pHalData->dmpriv.bCCKinCH14 = _TRUE;
 		Hal_MPT_CCKTxPowerAdjust(pAdapter, pHalData->dmpriv.bCCKinCH14);
@@ -628,7 +628,7 @@ void Hal_SetTxPower(PADAPTER pAdapter)
 void Hal_SetTxAGCOffset(PADAPTER pAdapter, u32 ulTxAGCOffset)
 {
 	u32 TxAGCOffset_B, TxAGCOffset_C, TxAGCOffset_D,tmpAGC;
-
+	
 	return ;
 
 	TxAGCOffset_B = (ulTxAGCOffset&0x000000ff);
@@ -856,7 +856,7 @@ s32 Hal_SetThermalMeter(PADAPTER pAdapter, u8 target_ther)
 
 void Hal_TriggerRFThermalMeter(PADAPTER pAdapter)
 {
-
+  
 	write_rfreg(pAdapter, RF_PATH_A, RF_T_METER, 0x60);	// 0x24: RF Reg[6:5]
 
 //	RT_TRACE(_module_mp_,_drv_alert_, ("TriggerRFThermalMeter() finished.\n" ));
@@ -963,7 +963,7 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 		write_bbreg(pAdapter, rFPGA0_RFMOD, bOFDMEn, 0x0);
 
 		if (is92C)
-		 {
+       		 {
 			_write_rfreg(pAdapter, RF_PATH_A, 0x21, BIT19, 0x01);
 			rtw_usleep_os(100);
 			if (rfPath == RF_PATH_A)
@@ -972,18 +972,18 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 				write_rfreg(pAdapter, RF_PATH_A, 0x00, 0x10000); // PAD all on.
 			write_rfreg(pAdapter, rfPath, 0x00, 0x2001f); // PAD all on.
 			rtw_usleep_os(100);
-		}
+		} 
 		else
 		{
 			write_rfreg(pAdapter, rfPath, 0x21, 0xd4000);
 			rtw_usleep_os(100);
 			write_rfreg(pAdapter, rfPath, 0x00, 0x2001f); // PAD all on.
 			rtw_usleep_os(100);
-		}
+		}				
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
+		
 	}
 	else// Stop Single Tone.
 	{
@@ -1006,9 +1006,9 @@ void Hal_SetSingleToneTx(PADAPTER pAdapter, u8 bStart)
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
-
+		
 	}
-
+	
 }
 
 
@@ -1041,7 +1041,7 @@ void Hal_SetCarrierSuppressionTx(PADAPTER pAdapter, u8 bStart)
 		 //Set for dynamic set Power index
 		 write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		 write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
+		 
 	}
 	else// Stop Carrier Suppression.
 	{
@@ -1127,9 +1127,9 @@ void Hal_SetCCKContinuousTx(PADAPTER pAdapter, u8 bStart)
 		//BB Reset
 		write_bbreg(pAdapter, rPMAC_Reset, bBBResetB, 0x0);
 		write_bbreg(pAdapter, rPMAC_Reset, bBBResetB, 0x1);
-
+		
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
-		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
+		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);	
 	}
 
 	pAdapter->mppriv.MptCtx.bCckContTx = bStart;
@@ -1160,7 +1160,7 @@ void Hal_SetOFDMContinuousTx(PADAPTER pAdapter, u8 bStart)
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000500);
 		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000500);
-
+		
 	} else {
 		RT_TRACE(_module_mp_,_drv_info_, ("SetOFDMContinuousTx: test stop\n"));
 		write_bbreg(pAdapter, rOFDM1_LSTF, bOFDMContinueTx, bDisable);
@@ -1173,7 +1173,7 @@ void Hal_SetOFDMContinuousTx(PADAPTER pAdapter, u8 bStart)
 		write_bbreg(pAdapter, rPMAC_Reset, bBBResetB, 0x1);
 
 		write_bbreg(pAdapter, rFPGA0_XA_HSSIParameter1, bMaskDWord, 0x01000100);
-		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);
+		write_bbreg(pAdapter, rFPGA0_XB_HSSIParameter1, bMaskDWord, 0x01000100);	
 	}
 
 	pAdapter->mppriv.MptCtx.bCckContTx = _FALSE;
@@ -1211,3 +1211,4 @@ void Hal_SetContinuousTx(PADAPTER pAdapter, u8 bStart)
 }
 
 #endif // CONFIG_MP_INCLUDE
+

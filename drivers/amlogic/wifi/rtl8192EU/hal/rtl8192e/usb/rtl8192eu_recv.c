@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -46,7 +46,7 @@ int	rtl8192eu_init_recv_priv(_adapter *padapter)
 	int	i, res = _SUCCESS;
 	struct recv_buf *precvbuf;
 
-#ifdef CONFIG_RECV_THREAD_MODE
+#ifdef CONFIG_RECV_THREAD_MODE	
 	_rtw_init_sema(&precvpriv->recv_sema, 0);//will be removed
 	_rtw_init_sema(&precvpriv->terminate_recvthread_sema, 0);//will be removed
 #endif
@@ -77,9 +77,7 @@ int	rtl8192eu_init_recv_priv(_adapter *padapter)
 	//init recv_buf
 	_rtw_init_queue(&precvpriv->free_recv_buf_queue);
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
 	_rtw_init_queue(&precvpriv->recv_buf_pending_queue);
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
 
 	precvpriv->pallocated_recv_buf = rtw_zmalloc(NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 	if(precvpriv->pallocated_recv_buf==NULL){
@@ -90,7 +88,7 @@ int	rtl8192eu_init_recv_priv(_adapter *padapter)
 	_rtw_memset(precvpriv->pallocated_recv_buf, 0, NR_RECVBUFF *sizeof(struct recv_buf) + 4);
 
 	precvpriv->precv_buf = (u8 *)N_BYTE_ALIGMENT((SIZE_PTR)(precvpriv->pallocated_recv_buf), 4);
-
+	
 	precvbuf = (struct recv_buf*)precvpriv->precv_buf;
 
 	for(i=0; i < NR_RECVBUFF ; i++)
@@ -132,15 +130,23 @@ int	rtl8192eu_init_recv_priv(_adapter *padapter)
 
 		for(i=0; i<NR_PREALLOC_RECV_SKB; i++)
 		{
+		
+#ifdef CONFIG_PREALLOC_RX_SKB_BUFFER
+			pskb = rtw_alloc_skb_premem();
+#else
 			pskb = rtw_skb_alloc(MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ);
+#endif //CONFIG_PREALLOC_RX_SKB_BUFFER
+
 
 			if(pskb)
 			{
 				pskb->dev = padapter->pnetdev;
-
+				
+#ifndef CONFIG_PREALLOC_RX_SKB_BUFFER
 				tmpaddr = (SIZE_PTR)pskb->data;
 				alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
 				skb_reserve(pskb, (RECVBUFF_ALIGN_SZ - alignment));
+#endif //!
 
 				skb_queue_tail(&precvpriv->free_recv_skb_queue, pskb);
 			}
@@ -202,10 +208,29 @@ void rtl8192eu_free_recv_priv (_adapter *padapter)
 		DBG_8192C(KERN_WARNING "free_recv_skb_queue not empty, %d\n", skb_queue_len(&precvpriv->free_recv_skb_queue));
 	}
 
+#ifdef CONFIG_PREALLOC_RX_SKB_BUFFER
+	{
+		int i=0;
+		struct sk_buff *skb;
+
+		while ((skb = skb_dequeue(&precvpriv->free_recv_skb_queue)) != NULL)
+		{
+			if(i<NR_PREALLOC_RECV_SKB)
+				rtw_free_skb_premem(skb);
+			else				
+				_rtw_skb_free(skb);
+
+			i++;
+		}	
+	}	
+#else 
 	rtw_skb_queue_purge(&precvpriv->free_recv_skb_queue);
+#endif //CONFIG_PREALLOC_RX_SKB_BUFFER
 
 #endif
 
 #endif
 
 }
+
+

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -22,7 +22,7 @@
 
 
 //--------------------------------------------
-//3				Host Message Box
+//3				Host Message Box 
 //--------------------------------------------
 
 // User Define Message [31:8]
@@ -51,15 +51,15 @@
 
 // Description: Determine the types of H2C commands that are the same in driver and Fw.
 // Fisrt constructed by tynli. 2009.10.09.
-typedef enum _RTL8192D_H2C_CMD
+typedef enum _RTL8192D_H2C_CMD 
 {
-	H2C_AP_OFFLOAD = 0,		/*0*/
+	H2C_92D_AP_OFFLOAD = 0,		/*0*/
 	H2C_SETPWRMODE = 1,		/*1*/
 	H2C_JOINBSSRPT = 2,		/*2*/
 	H2C_RSVDPAGE = 3,
 	H2C_RSSI_REPORT = 5,
 	H2C_RA_MASK = 6,
-	H2C_P2P_PS_OFFLOAD = 8,
+	H2C_92D_P2P_PS_OFFLOAD = 8,
 	H2C_MAC_MODE_SEL = 9,
 	H2C_PWRM=15,
 	H2C_P2P_PS_CTW_CMD = 24,
@@ -76,7 +76,7 @@ struct cmd_msg_parm {
 };
 
 
-void	FillH2CCmd92D(_adapter* padapter, u8 ElementID, u32 CmdLen, u8* pCmdBuffer);
+int FillH2CCmd92D(_adapter* padapter, u8 ElementID, u32 CmdLen, u8* pCmdBuffer);
 
 // host message to firmware cmd
 void	rtl8192d_set_FwPwrMode_cmd(_adapter*padapter, u8 Mode);
@@ -93,3 +93,5 @@ int reset_tsf(PADAPTER Adapter, u8 reset_port );
 #endif	// CONFIG_TSF_RESET_OFFLOAD
 
 #endif
+
+

@@ -80,7 +80,7 @@ s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer)
 
 _func_enter_;
 
-	padapter = GET_PRIMARY_ADAPTER(padapter);
+	padapter = GET_PRIMARY_ADAPTER(padapter);		
 	pHalData = GET_HAL_DATA(padapter);
 
 	_enter_critical_mutex(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex), NULL);
@@ -137,7 +137,7 @@ _func_enter_;
 
 exit:
 
-	_exit_critical_mutex(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex), NULL);
+	_exit_critical_mutex(&(adapter_to_dvobj(padapter)->h2c_fwcmd_mutex), NULL);	
 
 _func_exit_;
 
@@ -171,7 +171,7 @@ u8 rtl8192c_set_FwSelectSuspend_cmd(_adapter *padapter ,u8 bfwpoll, u16 period)
 	DBG_8192C("==>%s bfwpoll(%x)\n",__FUNCTION__,bfwpoll);
 	param.gpio_period = period;//Polling GPIO_11 period time
 	param.ROFOn = (_TRUE == bfwpoll)?1:0;
-	FillH2CCmd(padapter, SELECTIVE_SUSPEND_ROF_CMD, sizeof(param), (u8*)(&param));
+	FillH2CCmd(padapter, SELECTIVE_SUSPEND_ROF_CMD, sizeof(param), (u8*)(&param));		
 	return res;
 }
 #endif //CONFIG_AUTOSUSPEND && SUPPORT_HW_RFOFF_DETECTED
@@ -220,16 +220,16 @@ void rtl8192c_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(pAdapter);
 
 	u8 macid = arg&0x1f;
-
+	
 #ifdef CONFIG_ODM_REFRESH_RAMASK
 	u8 raid = (bitmap>>28) & 0x0f;
-	bitmap &=0x0fffffff;
+	bitmap &=0x0fffffff;	
 	if(rssi_level != DM_RATR_STA_INIT)
-		bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv, macid, bitmap, rssi_level);
-
+		bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv, macid, bitmap, rssi_level);	
+	
 	bitmap |= ((raid<<28)&0xf0000000);
 #endif //CONFIG_ODM_REFRESH_RAMASK
-
+	
 
 	if(pHalData->fw_ractrl == _TRUE)
 	{
@@ -241,7 +241,7 @@ void rtl8192c_Add_RateATid(PADAPTER pAdapter, u32 bitmap, u8 arg, u8 rssi_level)
 
 		init_rate = get_highest_rate_idx(bitmap&0x0fffffff)&0x3f;
 
-
+		
 		shortGIrate = (arg&BIT(5)) ? _TRUE:_FALSE;
 
 		if (shortGIrate==_TRUE)
@@ -269,7 +269,7 @@ _func_enter_;
 		/* Leave LPS, set BcnAntMode to 0 */
 		H2CSetPwrMode.BcnAntMode = 0;
 	}
-	else
+	else 
 	{
 		H2CSetPwrMode.BcnAntMode = pwrpriv->bcn_ant_mode;
 	}
@@ -559,14 +559,14 @@ CheckFwRsvdPageContent(
 	HAL_DATA_TYPE*	pHalData = GET_HAL_DATA(Adapter);
 	u32	MaxBcnPageNum;
 
-	if(pHalData->FwRsvdPageStartOffset != 0)
-	{
-		/*MaxBcnPageNum = PageNum_128(pMgntInfo->MaxBeaconSize);
+ 	if(pHalData->FwRsvdPageStartOffset != 0)
+ 	{
+ 		/*MaxBcnPageNum = PageNum_128(pMgntInfo->MaxBeaconSize);
 		RT_ASSERT((MaxBcnPageNum <= pHalData->FwRsvdPageStartOffset),
 			("CheckFwRsvdPageContent(): The reserved page content has been"\
 			"destroyed by beacon!!! MaxBcnPageNum(%d) FwRsvdPageStartOffset(%d)\n!",
 			MaxBcnPageNum, pHalData->FwRsvdPageStartOffset));*/
-	}
+ 	}
 }
 
 //
@@ -670,7 +670,7 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, BOOLEAN bDLFinished)
 	//3 (5) Qos null data
 	RsvdPageLoc.LocQosNull = PageNum;
 	ConstructNullFunctionData(
-		padapter,
+		padapter, 
 		&ReservedPagePacket[BufIndex],
 		&QosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
@@ -685,7 +685,7 @@ static void SetFwRsvdPagePkt(PADAPTER padapter, BOOLEAN bDLFinished)
 	//3 (6) BT Qos null data
 	RsvdPageLoc.LocBTQosNull = PageNum;
 	ConstructNullFunctionData(
-		padapter,
+		padapter, 
 		&ReservedPagePacket[BufIndex],
 		&BTQosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
@@ -729,7 +729,7 @@ _func_enter_;
 	{
 		BOOLEAN bRecover = _FALSE;
 		u8 v8;
-
+	
 		// We should set AID, correct TSF, HW seq enable before set JoinBssReport to Fw in 88/92C.
 		// Suggested by filen. Added by tynli.
 		rtw_write16(padapter, REG_BCN_PSR_RPT, (0xC000|pmlmeinfo->aid));
@@ -894,7 +894,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 #if 0 // skip
 	RsvdPageLoc.LocQosNull = PageNum;
 	ConstructNullFunctionData(
-		padapter,
+		padapter, 
 		&ReservedPagePacket[BufIndex],
 		&QosNullLength,
 		get_my_bssid(&pmlmeinfo->network),
@@ -910,7 +910,7 @@ static void SetFwRsvdPagePkt_BTCoex(PADAPTER padapter)
 	//3 (6) BT Qos null data
 	RsvdPageLoc.LocBTQosNull = PageNum;
 	ConstructNullFunctionData(
-		padapter,
+		padapter, 
 		&ReservedPagePacket[BufIndex],
 		&BTQosNullLength,
 		fakemac,
@@ -1078,16 +1078,16 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 		goto exit;
 #ifdef CONFIG_USB_HCI
 	{
-		struct pkt_attrib	*pattrib = &xmit_frame->attrib;
+		struct pkt_attrib	*pattrib = &xmit_frame->attrib;		
 		if(rtw_usb_bulk_size_boundary(adapter,TXDESC_SIZE+pattrib->last_txcmdsz))
 		{
 			if (rtw_IOL_append_END_cmd(xmit_frame) != _SUCCESS)
 				goto exit;
-		}
+		}			
 	}
-#endif //CONFIG_USB_HCI
+#endif //CONFIG_USB_HCI	
 
-
+	
 	dump_mgntframe_and_wait(adapter, xmit_frame, max_wating_ms);
 
 	IoOffloadLoc.LocCmd = 0;
@@ -1134,7 +1134,7 @@ int rtl8192c_IOL_exec_cmds_sync(ADAPTER *adapter, struct xmit_frame *xmit_frame,
 			//, rtw_read32(adapter, 0x134)
 		);
 		#if 0 //debug
-		rtw_write16(adapter, 0x1c4, 0x0000);
+		rtw_write16(adapter, 0x1c4, 0x0000); 
 		rtw_msleep_os(10);
 		DBG_871X("after reset, 0x1c4=0x%08x\n", rtw_read32(adapter, 0x1c4));
 		#endif
@@ -1165,14 +1165,14 @@ exit:
 	ask FW to Reset sync register at Beacon early interrupt
 */
 u8 rtl8723c_reset_tsf(_adapter *padapter, u8 reset_port )
-{
+{	
 	u8	buf[2];
 	u8	res=_SUCCESS;
-
+	
 _func_enter_;
 	if (IFACE_PORT0==reset_port) {
 		buf[0] = 0x1; buf[1] = 0;
-
+	
 	} else{
 		buf[0] = 0x0; buf[1] = 0x1;
 	}
@@ -1182,3 +1182,4 @@ _func_exit_;
 	return res;
 }
 #endif	// CONFIG_TSF_RESET_OFFLOAD
+

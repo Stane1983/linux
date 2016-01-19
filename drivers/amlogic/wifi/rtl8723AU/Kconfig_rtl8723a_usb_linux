@@ -3,3 +3,4 @@ config RTL8723AU
 	depends on USB
 	---help---
 	  Help message of RTL8723AU
+

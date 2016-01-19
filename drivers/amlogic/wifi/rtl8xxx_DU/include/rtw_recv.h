@@ -96,10 +96,10 @@ struct smooth_rssi_data {
 };
 
 struct signal_stat {
-	u8	update_req;		//used to indicate
+	u8	update_req;		//used to indicate 
 	u8	avg_val;		//avg of valid elements
 	u32	total_num;		//num of valid elements
-	u32	total_val;		//sum of valid elements
+	u32	total_val;		//sum of valid elements	
 };
 
 struct rx_pkt_attrib
@@ -134,9 +134,9 @@ struct rx_pkt_attrib
 	u8 	ta[ETH_ALEN];
 	u8 	ra[ETH_ALEN];
 	u8 	bssid[ETH_ALEN];
-
+	
 	u8 ack_policy;
-
+	
 //#ifdef CONFIG_TCP_CSUM_OFFLOAD_RX
 	u8	tcpchk_valid; // 0: invalid, 1: valid
 	u8	ip_chkrpt; //0: incorrect, 1: correct
@@ -212,7 +212,7 @@ using enter_critical section to protect
 */
 struct recv_priv
 {
-	  _lock	lock;
+  	  _lock	lock;
 
 #ifdef CONFIG_RECV_THREAD_MODE
 	_sema	recv_sema;
@@ -284,9 +284,6 @@ struct recv_priv
 	struct ifqueue rx_indicate_queue;
 #endif	// CONFIG_RX_INDICATE_QUEUE
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-	_queue	recv_buf_pending_queue;
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
 #endif //defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
 
 	u8 *pallocated_recv_buf;
@@ -294,7 +291,7 @@ struct recv_priv
 	_queue	free_recv_buf_queue;
 	u32	free_recv_buf_queue_cnt;
 
-#ifdef CONFIG_SDIO_HCI
+#if defined(CONFIG_SDIO_HCI) || defined(CONFIG_USB_HCI)
 	_queue	recv_buf_pending_queue;
 #endif
 
@@ -332,7 +329,7 @@ struct recv_priv
 	u32 recvbuf_null_cnt;
 	u32 read_port_complete_EINPROGRESS_cnt;
 	u32 read_port_complete_other_urb_err_cnt;
-
+	
 
 };
 
@@ -577,7 +574,7 @@ __inline static u8 *recvframe_put(union recv_frame *precvframe, sint sz)
 
 	//used for append sz bytes from ptr to rx_tail, update rx_tail and return the updated rx_tail to the caller
 	//after putting, rx_tail must be still larger than rx_end.
-	unsigned char * prev_rx_tail;
+ 	unsigned char * prev_rx_tail;
 
 	if(precvframe==NULL)
 		return NULL;
@@ -728,3 +725,4 @@ extern void _rtw_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv);
 extern void  mgt_dispatcher(_adapter *padapter, union recv_frame *precv_frame);
 
 #endif
+

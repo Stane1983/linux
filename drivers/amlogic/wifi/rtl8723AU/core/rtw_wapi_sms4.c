@@ -147,8 +147,8 @@ void SMS4KeyExt(u8 *Key, u32 *rk, u32 CryptFlag)
 	 }
 	 if (CryptFlag == DECRYPT)
 	 {
-		  for (r = 0; r < 16; r++)
-			 mid = rk[r], rk[r] = rk[31 - r], rk[31 - r] = mid;
+	 	  for (r = 0; r < 16; r++)
+	 	  	 mid = rk[r], rk[r] = rk[31 - r], rk[31 - r] = mid;
 	 }
 }
 
@@ -243,7 +243,7 @@ void WapiSMS4CalculateMic(u8 *Key, u8 *IV, u8 *Input1, u8 Input1Length,
 	remainder = Input2Length & 0x0F;
 	blockNum = Input2Length >> 4;
 
-	for(i=0; i<blockNum; i++){
+  	for(i=0; i<blockNum; i++){
 		xor_block(BlockIn, (Input2+i*16), BlockOut);
 		SMS4Crypt((u8 *)BlockIn, BlockOut, rk);
 	}
@@ -531,10 +531,10 @@ int SecSMS4HeaderFillIV(_adapter *padapter, u8 *pxmitframe)
 			ret = -3;
 		}
 	}
-	else{
+    	else{
 		list_for_each_entry(pWapiSta, &pWapiInfo->wapiSTAUsedList, list) {
 			if(!memcmp(pWapiSta->PeerMacAddr,pRA,6)){
-				bFindMatchPeer = true;
+    				bFindMatchPeer = true;
 				break;
 			}
 		}
@@ -566,7 +566,7 @@ int SecSMS4HeaderFillIV(_adapter *padapter, u8 *pxmitframe)
 			WAPI_TRACE(WAPI_ERR,"%s: Can not find Peer Sta "MAC_FMT"!!\n",__FUNCTION__, MAC_ARG(pRA));
 			ret = -6;
 		}
-	}
+    	}
 
 	WAPI_DATA(WAPI_TX, "FillIV - After Fill IV", pskb->data, pskb->len);
 	WAPI_TRACE(WAPI_TX, "<=========%s\n", __FUNCTION__);
@@ -628,7 +628,7 @@ void SecSWSMS4Encryption(
 					pMicKey = pWapiSta->wapiUsk.micKey;
 					pDataKey = pWapiSta->wapiUsk.dataKey;
 				}
-			}else{
+  			}else{
 				WAPI_TRACE(WAPI_ERR,"%s: Can not find Peer Sta!!\n",__FUNCTION__);
 				return;
 			}

@@ -76,3 +76,4 @@ u8 hal_btcoex_IncreaseScanDeviceNum(PADAPTER);
 u8 hal_btcoex_IsBtLinkExist(PADAPTER);
 
 #endif // !__HAL_BTCOEX_H__
+

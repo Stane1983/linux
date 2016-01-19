@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -93,10 +93,10 @@ static struct pci_drv_priv pci_drvpriv = {
 	.rtw_pci_drv.probe = rtw_drv_init,
 	.rtw_pci_drv.remove = rtw_dev_remove,
 	.rtw_pci_drv.id_table = rtw_pci_id_tbl,
-#ifdef CONFIG_PM
+#ifdef CONFIG_PM	
 	.rtw_pci_drv.suspend = rtw_suspend,
 	.rtw_pci_drv.resume = rtw_resume,
-#else
+#else	
 	.rtw_pci_drv.suspend = NULL,
 	.rtw_pci_drv.resume = NULL,
 #endif
@@ -132,9 +132,9 @@ static u8 rtw_pci_platform_switch_device_pci_aspm(_adapter *padapter, u8 value)
 	return bresult;
 }
 
-//
-// When we set 0x01 to enable clk request. Set 0x0 to disable clk req.
-//
+// 
+// When we set 0x01 to enable clk request. Set 0x0 to disable clk req.  
+// 
 static u8 rtw_pci_switch_clk_req(_adapter *padapter, u8 value)
 {
 	struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
@@ -158,7 +158,7 @@ static u8 rtw_pci_switch_clk_req(_adapter *padapter, u8 value)
 }
 
 #if 0
-//Description:
+//Description: 
 //Disable RTL8192SE ASPM & Disable Pci Bridge ASPM
 void rtw_pci_disable_aspm(_adapter *padapter)
 {
@@ -171,8 +171,8 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 	u16	pcibridge_linkctrlreg, aspmlevel = 0;
 
 	// When there exists anyone's busnum, devnum, and funcnum that are set to 0xff,
-	// we do not execute any action and return.
-	// if it is not intel bus then don't enable ASPM.
+	// we do not execute any action and return. 
+	// if it is not intel bus then don't enable ASPM. 
 	if ((pcipriv->busnumber == 0xff
 		&& pcipriv->devnumber == 0xff
 		&& pcipriv->funcnumber == 0xff)
@@ -225,7 +225,7 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 	}
 	else
 	{
-		//4 //Disable Pci Bridge ASPM
+		//4 //Disable Pci Bridge ASPM 
 		pcicfg_addrport = (pcipriv->pcibridge_busnum << 16) |
 						(pcipriv->pcibridge_devnum << 11) |
 						(pcipriv->pcibridge_funcnum << 8) | (1 << 31);
@@ -238,8 +238,8 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 		NdisRawWritePortUchar(PCI_CONF_DATA, pcibridge_linkctrlreg);
 
 		DBG_871X("rtw_pci_disable_aspm():PciBridge busnumber[%x], DevNumbe[%x], funcnumber[%x], Write reg[%x] = %x\n",
-			pcipriv->pcibridge_busnum, pcipriv->pcibridge_devnum,
-			pcipriv->pcibridge_funcnum,
+			pcipriv->pcibridge_busnum, pcipriv->pcibridge_devnum, 
+			pcipriv->pcibridge_funcnum, 
 			(pcipriv->pcibridge_pciehdr_offset+0x10), pcibridge_linkctrlreg);
 
 		rtw_udelay_os(50);
@@ -247,7 +247,7 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 }
 
 //[ASPM]
-//Description:
+//Description: 
 //              Enable RTL8192SE ASPM & Enable Pci Bridge ASPM for power saving
 //              We should follow the sequence to enable RTL8192SE first then enable Pci Bridge ASPM
 //              or the system will show bluescreen.
@@ -263,8 +263,8 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 	u8	u_device_aspmsetting = 0;
 
 	// When there exists anyone's busnum, devnum, and funcnum that are set to 0xff,
-	// we do not execute any action and return.
-	// if it is not intel bus then don't enable ASPM.
+	// we do not execute any action and return. 
+	// if it is not intel bus then don't enable ASPM. 
 
 	if ((pcipriv->busnumber == 0xff
 		&& pcipriv->devnumber == 0xff
@@ -277,8 +277,8 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 		return;
 	}
 
-	//4 Enable Pci Bridge ASPM
-	pcicfg_addrport = (pcipriv->pcibridge_busnum << 16)
+	//4 Enable Pci Bridge ASPM 
+	pcicfg_addrport = (pcipriv->pcibridge_busnum << 16) 
 					| (pcipriv->pcibridge_devnum << 11)
 					| (pcipriv->pcibridge_funcnum << 8) | (1 << 31);
 	num4bytes = (pcipriv->pcibridge_pciehdr_offset + 0x10) / 4;
@@ -295,10 +295,10 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 	NdisRawWritePortUchar(PCI_CONF_DATA, u_pcibridge_aspmsetting);
 
 	DBG_871X("PlatformEnableASPM():PciBridge busnumber[%x], DevNumbe[%x], funcnumber[%x], Write reg[%x] = %x\n",
-		pcipriv->pcibridge_busnum,
-		pcipriv->pcibridge_devnum,
-		pcipriv->pcibridge_funcnum,
-		(pcipriv->pcibridge_pciehdr_offset+0x10),
+		pcipriv->pcibridge_busnum, 
+		pcipriv->pcibridge_devnum, 
+		pcipriv->pcibridge_funcnum, 
+		(pcipriv->pcibridge_pciehdr_offset+0x10), 
 		u_pcibridge_aspmsetting);
 
 	rtw_udelay_os(50);
@@ -319,7 +319,7 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 }
 
 //
-//Description:
+//Description: 
 //To get link control field by searching from PCIe capability lists.
 //
 static u8
@@ -352,15 +352,15 @@ rtw_get_link_control_field(_adapter *padapter, u8 busnum, u8 devnum,
 	// now grab data port with device|vendor 4 byte dword
 	NdisRawReadPortUchar(PCI_CONF_DATA, &capability_offset);
 
-	// Loop through the capabilities in search of the power management capability.
+	// Loop through the capabilities in search of the power management capability. 
 	// The list is NULL-terminated, so the last offset will always be zero.
 
 	while (capability_offset != 0) {
-		// First find the number of 4 Byte.
+		// First find the number of 4 Byte. 
 		num4bytes = capability_offset / 4;
 
 		// Read the header of the capability at  this offset. If the retrieved capability is not
-		// the power management capability that we are looking for, follow the link to the
+		// the power management capability that we are looking for, follow the link to the 
 		// next capability and continue looping.
 
 		//4 get capability_hdr
@@ -398,7 +398,7 @@ rtw_get_link_control_field(_adapter *padapter, u8 busnum, u8 devnum,
 	}
 	else
 	{
-		// We didn't find a PCIe capability.
+		// We didn't find a PCIe capability. 
 		DBG_871X("GetLinkControlField(): Cannot Find PCIe Capability\n");
 	}
 
@@ -406,8 +406,8 @@ rtw_get_link_control_field(_adapter *padapter, u8 busnum, u8 devnum,
 }
 
 //
-//Description:
-//To get PCI bus infomation and return busnum, devnum, and funcnum about
+//Description: 
+//To get PCI bus infomation and return busnum, devnum, and funcnum about 
 //the bus(bridge) which the device binds.
 //
 static u8
@@ -450,14 +450,14 @@ rtw_get_pci_bus_info(_adapter *padapter,
 				// <Roger_Notes> We have to skip redundant Bus scan to prevent unexpected system hang
 				// if single function is present in this device.
 				// 2009.02.26.
-				//
+				//                              
 				if (functionnum_idx == 0) {
 					//4 get header type (DWORD #3)
 					pcicfg_addrport = (busnum_idx << 16) | (devicenum_idx << 11) | (functionnum_idx << 8) | (1 << 31);
 					NdisRawWritePortUlong(PCI_CONF_ADDRESS, pcicfg_addrport + (3 << 2));
 					NdisRawReadPortUlong(PCI_CONF_DATA, &headertype);
 					headertype = ((headertype >> 16) & 0x0080) >> 7;	// address 0x0e[7].
-					if (headertype == 0)	//Single function
+					if (headertype == 0)	//Single function                                                                                  
 						b_singlefunc = _TRUE;
 				}
 				else
@@ -589,7 +589,7 @@ rtw_get_pci_brideg_info(_adapter *padapter,
 					NdisRawWritePortUlong(PCI_CONF_ADDRESS, pcicfg_addrport + (3 << 2));
 					NdisRawReadPortUlong(PCI_CONF_DATA, &headertype);
 					headertype = ((headertype >> 16) & 0x0080) >> 7;	// address 0x0e[7].
-					if (headertype == 0)	//Single function
+					if (headertype == 0)	//Single function                                                                                  
 						b_singlefunc = _TRUE;
 				}
 				else
@@ -652,7 +652,7 @@ rtw_get_pci_brideg_info(_adapter *padapter,
 }				// end of GetPciBridegInfo
 
 //
-//Description:
+//Description: 
 //To find specific bridge information.
 //
 static void rtw_find_bridge_info(_adapter *padapter)
@@ -763,7 +763,7 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 	}
 
 	{
-		/*for promising device will in L0 state after an I/O.*/
+		/*for promising device will in L0 state after an I/O.*/ 
 		u8 tmp_u1b;
 		pci_read_config_byte(pdev, 0x80, &tmp_u1b);
 	}
@@ -780,14 +780,14 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 	}
 	else
 	{
-		/*Disable Pci Bridge ASPM*/
+		/*Disable Pci Bridge ASPM*/ 
 		//NdisRawWritePortUlong(PCI_CONF_ADDRESS, pcicfg_addrport + (num4bytes << 2));
 		//NdisRawWritePortUchar(PCI_CONF_DATA, pcibridge_linkctrlreg);
 		pci_write_config_byte(bridge_pdev, pcipriv->pcibridge_pciehdr_offset + 0x10, pcibridge_linkctrlreg);
 
 		DBG_871X("rtw_pci_disable_aspm():PciBridge busnumber[%x], DevNumbe[%x], funcnumber[%x], Write reg[%x] = %x\n",
-			pcipriv->pcibridge_busnum, pcipriv->pcibridge_devnum,
-			pcipriv->pcibridge_funcnum,
+			pcipriv->pcibridge_busnum, pcipriv->pcibridge_devnum, 
+			pcipriv->pcibridge_funcnum, 
 			(pcipriv->pcibridge_pciehdr_offset+0x10), pcibridge_linkctrlreg);
 
 		rtw_udelay_os(50);
@@ -795,8 +795,8 @@ void rtw_pci_disable_aspm(_adapter *padapter)
 
 }
 
-/*Enable RTL8192SE ASPM & Enable Pci Bridge ASPM for
-power saving We should follow the sequence to enable
+/*Enable RTL8192SE ASPM & Enable Pci Bridge ASPM for 
+power saving We should follow the sequence to enable 
 RTL8192SE first then enable Pci Bridge ASPM
 or the system will show bluescreen.*/
 void rtw_pci_enable_aspm(_adapter *padapter)
@@ -806,7 +806,7 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 	struct pci_dev	*pdev = pdvobjpriv->ppcidev;
 	struct pci_dev	*bridge_pdev = pdev->bus->self;
 	struct pci_priv	*pcipriv = &(pdvobjpriv->pcipriv);
-	u16	aspmlevel = 0;
+	u16	aspmlevel = 0;		
 	u8	u_pcibridge_aspmsetting = 0;
 	u8	u_device_aspmsetting = 0;
 	u32	u_device_aspmsupportsetting = 0;
@@ -817,7 +817,7 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 		return;
 
 	//When there exists anyone's BusNum, DevNum, and FuncNum that are set to 0xff,
-	// we do not execute any action and return. Added by tynli.
+	// we do not execute any action and return. Added by tynli. 
 	if( (pcipriv->busnumber == 0xff && pcipriv->devnumber == 0xff && pcipriv->funcnumber == 0xff) ||
 		(pcipriv->pcibridge_busnum == 0xff && pcipriv->pcibridge_devnum == 0xff && pcipriv->pcibridge_funcnum == 0xff) )
 	{
@@ -868,7 +868,7 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 	}
 
 
-	/*Enable Pci Bridge ASPM*/
+	/*Enable Pci Bridge ASPM*/  
 	//PciCfgAddrPort = (pcipriv->pcibridge_busnum << 16)|(pcipriv->pcibridge_devnum<< 11) |(pcipriv->pcibridge_funcnum <<  8)|(1 << 31);
 	//Num4Bytes = (pcipriv->pcibridge_pciehdr_offset+0x10)/4;
 	// set up address port at 0xCF8 offset field= 0 (dev|vend)
@@ -886,13 +886,13 @@ void rtw_pci_enable_aspm(_adapter *padapter)
 	pci_write_config_byte(bridge_pdev, (pcipriv->pcibridge_pciehdr_offset+0x10), u_pcibridge_aspmsetting);
 
 	DBG_871X("PlatformEnableASPM():PciBridge busnumber[%x], DevNumbe[%x], funcnumber[%x], Write reg[%x] = %x\n",
-		pcipriv->pcibridge_busnum, pcipriv->pcibridge_devnum, pcipriv->pcibridge_funcnum,
-		(pcipriv->pcibridge_pciehdr_offset+0x10),
+		pcipriv->pcibridge_busnum, pcipriv->pcibridge_devnum, pcipriv->pcibridge_funcnum, 
+		(pcipriv->pcibridge_pciehdr_offset+0x10), 
 		u_pcibridge_aspmsetting);
 
 	rtw_udelay_os(50);
 
-	/*Get ASPM level (with/without Clock Req)*/
+	/*Get ASPM level (with/without Clock Req)*/ 
 	aspmlevel |= pdvobjpriv->const_devicepci_aspm_setting;
 	u_device_aspmsetting = pcipriv->linkctrl_reg;
 	u_device_aspmsetting |= aspmlevel; // device 43
@@ -940,8 +940,8 @@ static void rtw_pci_get_linkcontrol_field(struct dvobj_priv *pdvobjpriv)
 	struct pci_dev	*pdev = pdvobjpriv->ppcidev;
 	struct pci_dev	*bridge_pdev = pdev->bus->self;
 	u8	capabilityoffset = pcipriv->pcibridge_pciehdr_offset;
-	u8	linkctrl_reg;
-
+	u8	linkctrl_reg;	
+			
 	/*Read  Link Control Register*/
 	pci_read_config_byte(bridge_pdev, capabilityoffset + PCI_EXP_LNKCTL, &linkctrl_reg);
 
@@ -984,7 +984,7 @@ static void rtw_pci_update_default_setting(_adapter *padapter)
 	pwrpriv->reg_rfps_level = 0;
 	pwrpriv->b_support_aspm = 0;
 
-	// Dynamic Mechanism,
+	// Dynamic Mechanism, 
 	//rtw_hal_set_def_var(pAdapter, HAL_DEF_INIT_GAIN, &(pDevice->InitGainState));
 
 	// Update PCI ASPM setting
@@ -1054,7 +1054,7 @@ static void rtw_pci_update_default_setting(_adapter *padapter)
 				pwrpriv->b_support_aspm = b_support_aspm;
 
 				/*if(pAdapter->MgntInfo.CustomerID == RT_CID_TOSHIBA &&
-					pcipriv->pcibridge_vendor == PCI_BRIDGE_VENDOR_AMD &&
+					pcipriv->pcibridge_vendor == PCI_BRIDGE_VENDOR_AMD && 
 					!pcipriv->amd_l1_patch)
 					b_support_backdoor = _FALSE;*/
 
@@ -1063,7 +1063,7 @@ static void rtw_pci_update_default_setting(_adapter *padapter)
 			break;
 
 		case 2:	// Set by Chipset.
-			// ASPM value set by chipset.
+			// ASPM value set by chipset. 
 			if (pcipriv->pcibridge_vendor == PCI_BRIDGE_VENDOR_INTEL) {
 				u8	b_support_aspm = _TRUE;
 				pwrpriv->b_support_aspm = b_support_aspm;
@@ -1118,7 +1118,7 @@ int pci_alloc_irq(struct dvobj_priv *dvobj)
 {
 	int err;
 	struct pci_dev *pdev = dvobj->ppcidev;
-
+	
 #if defined(IRQF_SHARED)
 	err = request_irq(pdev->irq, &rtw_pci_interrupt, IRQF_SHARED, DRV_NAME, dvobj);
 #else
@@ -1246,14 +1246,14 @@ _func_enter_;
 #endif
 
 		rtw_pci_get_linkcontrol_field(dvobj);
-
+		
 		if (pcipriv->pcibridge_vendor == PCI_BRIDGE_VENDOR_AMD) {
 			pcipriv->amd_l1_patch = rtw_pci_get_amd_l1_patch(dvobj);
 		}
 	}
 #else
 	//
-	// Find bridge related info.
+	// Find bridge related info. 
 	//
 	rtw_get_pci_bus_info(padapter,
 				  pdev->vendor,
@@ -1296,7 +1296,7 @@ _func_enter_;
 		pcipriv->linkctrl_reg);
 
 	DBG_871X("pci_bridge busnumber:devnumber:funcnumber:vendor:"
-		"pcie_cap:link_ctl_reg: %d:%d:%d:%x:%x:%x:%x\n",
+		"pcie_cap:link_ctl_reg: %d:%d:%d:%x:%x:%x:%x\n", 
 		pcipriv->pcibridge_busnum,
 		pcipriv->pcibridge_devnum,
 		pcipriv->pcibridge_funcnum,
@@ -1355,7 +1355,7 @@ _func_enter_;
 		_rtw_mutex_free(&dvobj->h2c_fwcmd_mutex);
 		_rtw_mutex_free(&dvobj->setch_mutex);
 		_rtw_mutex_free(&dvobj->setbw_mutex);
-
+		
 		rtw_mfree((u8*)dvobj, sizeof(*dvobj));
 	}
 
@@ -1385,7 +1385,7 @@ static void decide_chip_type_by_pci_device_id(_adapter *padapter, struct pci_dev
 
 
 	//
-	// Decide hardware type here.
+	// Decide hardware type here. 
 	//
 	if( deviceid == HAL_HW_PCI_8185_DEVICE_ID ||
 	    deviceid == HAL_HW_PCI_8188_DEVICE_ID ||
@@ -1442,7 +1442,7 @@ static void decide_chip_type_by_pci_device_id(_adapter *padapter, struct pci_dev
 	else if (deviceid == HAL_HW_PCI_8192CET_DEVICE_ID ||
 		deviceid == HAL_HW_PCI_8192CE_DEVICE_ID ||
 		deviceid == HAL_HW_PCI_8191CE_DEVICE_ID ||
-		deviceid == HAL_HW_PCI_8188CE_DEVICE_ID)
+		deviceid == HAL_HW_PCI_8188CE_DEVICE_ID) 
 	{
 		DBG_871X("Adapter(8192C PCI-E) is found - vendorid/deviceid=%x/%x\n", venderid, deviceid);
 		padapter->HardwareType = HARDWARE_TYPE_RTL8192CE;
@@ -1457,7 +1457,7 @@ static void decide_chip_type_by_pci_device_id(_adapter *padapter, struct pci_dev
 		padapter->chip_type = RTL8188E;
 		DBG_871X("Adapter(8188EE) is found - VendorID/DeviceID/RID=%X/%X/%X\n", venderid, deviceid, revisionid);
 	}
-
+	
 	else
 	{
 		DBG_871X("Err: Unknown device - vendorid/deviceid=%x/%x\n", venderid, deviceid);
@@ -1507,7 +1507,7 @@ static void pci_intf_stop(_adapter *padapter)
 		tasklet_disable(&(padapter->recvpriv.recv_tasklet));
 		tasklet_disable(&(padapter->recvpriv.irq_prepare_beacon_tasklet));
 		tasklet_disable(&(padapter->xmitpriv.xmit_tasklet));
-
+		
 #ifdef CONFIG_CONCURRENT_MODE
 		/*	This function only be called at driver removing. disable buddy_adapter too
 			don't disable interrupt of buddy_adapter because it is same as primary.
@@ -1607,7 +1607,7 @@ static void disable_ht_for_spec_devid(const struct pci_device_id *pdid)
 
 #ifdef CONFIG_PM
 static int rtw_suspend(struct pci_dev *pdev, pm_message_t state)
-{
+{	
 	_func_enter_;
 
 
@@ -1621,7 +1621,7 @@ static int rtw_resume(struct pci_dev *pdev)
 
 
 	_func_exit_;
-
+	
 	return 0;
 }
 #endif
@@ -1631,13 +1631,13 @@ _adapter *rtw_pci_if1_init(struct dvobj_priv * dvobj, struct pci_dev *pdev, cons
 	_adapter *padapter = NULL;
 	struct net_device *pnetdev = NULL;
 	int status = _FAIL;
-
+	
 	if ((padapter = (_adapter *)rtw_zvmalloc(sizeof(*padapter))) == NULL) {
 		goto exit;
 	}
 	padapter->dvobj = dvobj;
 	dvobj->if1 = padapter;
-
+	
 	padapter->bDriverStopped=_TRUE;
 
 	dvobj->padapters[dvobj->iface_nums++] = padapter;
@@ -1659,7 +1659,7 @@ _adapter *rtw_pci_if1_init(struct dvobj_priv * dvobj, struct pci_dev *pdev, cons
 	padapter->interface_type = RTW_PCIE;
 	decide_chip_type_by_pci_device_id(padapter, pdev);
 	#endif
-
+	
 	if((pnetdev = rtw_init_netdev(padapter)) == NULL) {
 		goto free_adapter;
 	}
@@ -1670,7 +1670,7 @@ _adapter *rtw_pci_if1_init(struct dvobj_priv * dvobj, struct pci_dev *pdev, cons
 	if (dvobj->bdma64)
 		pnetdev->features |= NETIF_F_HIGHDMA;
 	pnetdev->irq = pdev->irq;
-
+	
 	padapter = rtw_netdev_priv(pnetdev);
 
 #ifdef CONFIG_IOCTL_CFG80211
@@ -1694,15 +1694,15 @@ _adapter *rtw_pci_if1_init(struct dvobj_priv * dvobj, struct pci_dev *pdev, cons
 
 	//.3
 	rtw_hal_read_chip_version(padapter);
-
+	
 	//.4
 	rtw_hal_chip_configure(padapter);
 
 
 	//step 4. read efuse/eeprom data and get mac_addr
-	rtw_hal_read_chip_info(padapter);
+	rtw_hal_read_chip_info(padapter);	
 
-	//step 5.
+	//step 5. 
 	if(rtw_init_drv_sw(padapter) ==_FAIL) {
 		RT_TRACE(_module_hci_intfs_c_,_drv_err_,("Initialize driver software resource Failed!\n"));
 		goto free_hal_data;
@@ -1797,11 +1797,11 @@ static void rtw_pci_if1_deinit(_adapter *if1)
 #endif //CONFIG_IOCTL_CFG80211
 
 	rtw_hal_inirp_deinit(if1);
-	rtw_free_drv_sw(if1);
+	rtw_free_drv_sw(if1);	
 
 	if(pnetdev)
 		rtw_free_netdev(pnetdev);
-
+	
 #ifdef CONFIG_PLATFORM_RTD2880B
 	DBG_871X("wlan link down\n");
 	rtd2885_wlan_netlink_sendMsg("linkdown", "8712");
@@ -1821,7 +1821,7 @@ static int rtw_drv_init(struct pci_dev *pdev, const struct pci_device_id *pdid)
 	int status;
 	_adapter *if1 = NULL, *if2 = NULL;
 	struct dvobj_priv *dvobj;
-
+	
 	RT_TRACE(_module_hci_intfs_c_, _drv_err_, ("+rtw_drv_init\n"));
 	//DBG_871X("+rtw_drv_init\n");
 
@@ -1909,7 +1909,7 @@ _func_exit_;
 
 	pdvobjpriv->processing_dev_remove = _TRUE;
 	rtw_unregister_netdevs(pdvobjpriv);
-
+	
 	if (unlikely(!padapter)) {
 		return;
 	}
@@ -1983,13 +1983,13 @@ static void __exit rtw_drv_halt(void)
 {
 	RT_TRACE(_module_hci_intfs_c_,_drv_err_,("+rtw_drv_halt\n"));
 	DBG_871X("+rtw_drv_halt\n");
-
+	
 	pci_drvpriv.drv_registered = _FALSE;
-
+	
 	pci_unregister_driver(&pci_drvpriv.rtw_pci_drv);
 
-	rtw_suspend_lock_uninit();
-
+	rtw_suspend_lock_uninit();	
+	
 	DBG_871X("-rtw_drv_halt\n");
 
 	rtw_mstat_dump();
@@ -1998,3 +1998,4 @@ static void __exit rtw_drv_halt(void)
 
 module_init(rtw_drv_entry);
 module_exit(rtw_drv_halt);
+

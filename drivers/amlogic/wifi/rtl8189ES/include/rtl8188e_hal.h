@@ -21,13 +21,9 @@
 #define __RTL8188E_HAL_H__
 
 //#include "hal_com.h"
-#if 1
 #include "hal_data.h"
-#else
-#include "../hal/OUTSRC/odm_precomp.h"
-#endif
 
-//include HAL Related header after HAL Related compiling flags
+//include HAL Related header after HAL Related compiling flags 
 #include "rtl8188e_spec.h"
 #include "Hal8188EPhyReg.h"
 #include "Hal8188EPhyCfg.h"
@@ -55,15 +51,15 @@
 
 	#define RTL8188E_FW_IMG					"rtl8188e/FW_NIC.bin"
 	#define RTL8188E_FW_WW_IMG				"rtl8188e/FW_WoWLAN.bin"
-	#define RTL8188E_PHY_REG					"rtl8188e/PHY_REG.txt"
+	#define RTL8188E_PHY_REG					"rtl8188e/PHY_REG.txt" 
 	#define RTL8188E_PHY_RADIO_A				"rtl8188e/RadioA.txt"
 	#define RTL8188E_PHY_RADIO_B				"rtl8188e/RadioB.txt"
-	#define RTL8188E_TXPWR_TRACK				"rtl8188e/TxPowerTrack.txt"
+	#define RTL8188E_TXPWR_TRACK				"rtl8188e/TxPowerTrack.txt"			
 	#define RTL8188E_AGC_TAB					"rtl8188e/AGC_TAB.txt"
 	#define RTL8188E_PHY_MACREG 				"rtl8188e/MAC_REG.txt"
 	#define RTL8188E_PHY_REG_PG				"rtl8188e/PHY_REG_PG.txt"
-	#define RTL8188E_PHY_REG_MP 				"rtl8188e/PHY_REG_MP.txt"
-	#define RTL8188E_TXPWR_LMT				"rtl8188e/TXPWR_LMT.txt"
+	#define RTL8188E_PHY_REG_MP 				"rtl8188e/PHY_REG_MP.txt" 
+	#define RTL8188E_TXPWR_LMT				"rtl8188e/TXPWR_LMT.txt" 
 
 	//---------------------------------------------------------------------
 	//		RTL8188E Power Configuration CMDs for USB/SDIO/PCIE interfaces
@@ -80,11 +76,13 @@
 
 
 #if 1 // download firmware related data structure
+#define MAX_FW_8188E_SIZE			0x8000 //32768,32k / 16384,16k
+
 #define FW_8188E_SIZE				0x4000 //16384,16k
+#define FW_8188E_SIZE_2			0x8000 //32768,32k 
+
 #define FW_8188E_START_ADDRESS	0x1000
 #define FW_8188E_END_ADDRESS		0x1FFF //0x5FFF
-
-
 
 
 #define IS_FW_HEADER_EXIST_88E(_pFwHdr)	((le16_to_cpu(_pFwHdr->Signature)&0xFFF0) == 0x88E0)
@@ -94,7 +92,7 @@ typedef struct _RT_FIRMWARE_8188E {
 #ifdef CONFIG_EMBEDDED_FWIMG
 	u8*			szFwBuffer;
 #else
-	u8			szFwBuffer[FW_8188E_SIZE];
+	u8			szFwBuffer[MAX_FW_8188E_SIZE];
 #endif
 	u32			ulFwLength;
 } RT_FIRMWARE_8188E, *PRT_FIRMWARE_8188E;
@@ -140,17 +138,15 @@ typedef struct _RT_8188E_FIRMWARE_HDR
 #define BCN_DMA_ATIME_INT_TIME_8188E		0x02
 
 
-#define MAX_RX_DMA_BUFFER_SIZE_88E	      0x2400 //9k for 88E nornal chip , //MaxRxBuff=10k-max(TxReportSize(64*8), WOLPattern(16*24))
-//#define MAX_RX_DMA_BUFFER_SIZE_88E(__Adapter)	((!IS_VENDOR_8188E_I_CUT_SERIES(__Adapter))?0x2400:0x3C00)
-
-
-#define MAX_TX_REPORT_BUFFER_SIZE			0x0400 // 1k
+//#define MAX_RX_DMA_BUFFER_SIZE_88E	      0x2400 //9k for 88E nornal chip , //MaxRxBuff=10k-max(TxReportSize(64*8), WOLPattern(16*24))
+#define MAX_RX_DMA_BUFFER_SIZE_88E(__Adapter)	((!IS_VENDOR_8188E_I_CUT_SERIES(__Adapter))?0x2600:0x3E00)
+#define MAX_TX_REPORT_BUFFER_SIZE		0x0200 // 1k
 
 
 // Note: We will divide number of page equally for each queue other than public queue!
 // 22k = 22528 bytes = 176 pages (@page =  128 bytes)
 // must reserved about 7 pages for LPS =>  176-7 = 169 (0xA9)
-// 2*BCN / 1*ps-poll / 1*null-data /1*prob_rsp /1*QOS null-data /1*BT QOS null-data
+// 2*BCN / 1*ps-poll / 1*null-data /1*prob_rsp /1*QOS null-data /1*BT QOS null-data 
 
 #define BCNQ_PAGE_NUM_88E		0x08
 
@@ -161,11 +157,11 @@ typedef struct _RT_8188E_FIRMWARE_HDR
 #define WOWLAN_PAGE_NUM_88E	0x00
 #endif
 
-#define TX_TOTAL_PAGE_NUMBER_88E	(0xB0 - BCNQ_PAGE_NUM_88E - WOWLAN_PAGE_NUM_88E)
-#define TX_PAGE_BOUNDARY_88E		(TX_TOTAL_PAGE_NUMBER_88E + 1)
+#define TX_TOTAL_PAGE_NUMBER_88E(_Adapter)	( (IS_VENDOR_8188E_I_CUT_SERIES(_Adapter)?0x100:0xB0) - BCNQ_PAGE_NUM_88E - WOWLAN_PAGE_NUM_88E)
+#define TX_PAGE_BOUNDARY_88E(_Adapter)		(TX_TOTAL_PAGE_NUMBER_88E(_Adapter) + 1)
 
-#define WMM_NORMAL_TX_TOTAL_PAGE_NUMBER_88E	TX_TOTAL_PAGE_NUMBER_88E
-#define WMM_NORMAL_TX_PAGE_BOUNDARY_88E		(WMM_NORMAL_TX_TOTAL_PAGE_NUMBER_88E + 1)
+#define WMM_NORMAL_TX_TOTAL_PAGE_NUMBER_88E(_Adapter)	TX_TOTAL_PAGE_NUMBER_88E(_Adapter)
+#define WMM_NORMAL_TX_PAGE_BOUNDARY_88E(_Adapter)		(WMM_NORMAL_TX_TOTAL_PAGE_NUMBER_88E(_Adapter) + 1)
 
 // For Normal Chip Setting
 // (HPQ + LPQ + NPQ + PUBQ) shall be TX_TOTAL_PAGE_NUMBER_8723B
@@ -191,6 +187,7 @@ typedef struct _RT_8188E_FIRMWARE_HDR
 //	Channel Plan
 //-------------------------------------------------------------------------
 
+
 #define EFUSE_REAL_CONTENT_LEN		512
 #define EFUSE_MAP_LEN				128
 #define EFUSE_MAX_SECTION			16
@@ -202,13 +199,10 @@ typedef struct _RT_8188E_FIRMWARE_HDR
 // leave 1byte and program full section
 // 9bytes + 1byt + 5bytes and pre 1byte.
 // For worst case:
-// | 1byte|----8bytes----|1byte|--5bytes--|
+// | 1byte|----8bytes----|1byte|--5bytes--| 
 // |         |            Reserved(14bytes)	      |
 //
 #define EFUSE_OOB_PROTECT_BYTES 		15	// PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte.
-
-#define		HWSET_MAX_SIZE_88E		512
-#define		EFUSE_FILE_COLUMN_NUM		16
 
 #define		EFUSE_REAL_CONTENT_LEN_88E	256
 #define		EFUSE_MAP_LEN_88E		512
@@ -259,7 +253,7 @@ u8 GetEEPROMSize8188E(PADAPTER padapter);
 void Hal_InitPGData88E(PADAPTER padapter);
 void Hal_EfuseParseIDCode88E(PADAPTER padapter, u8 *hwinfo);
 void Hal_ReadTxPowerInfo88E(PADAPTER padapter,u8* hwinfo,BOOLEAN	AutoLoadFail);
-
+	
 void Hal_EfuseParseEEPROMVer88E(PADAPTER padapter, u8 *hwinfo, BOOLEAN AutoLoadFail);
 void rtl8188e_EfuseParseChnlPlan(PADAPTER padapter, u8 *hwinfo, BOOLEAN AutoLoadFail);
 void Hal_EfuseParseCustomerID88E(PADAPTER padapter, u8 *hwinfo, BOOLEAN AutoLoadFail);
@@ -270,7 +264,7 @@ void Hal_EfuseParseBoardType88E(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFai
 void Hal_ReadPowerSavingMode88E(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFail);
 
 BOOLEAN HalDetectPwrDownMode88E(PADAPTER Adapter);
-
+	
 #ifdef CONFIG_WOWLAN
 void Hal_DetectWoWMode(PADAPTER pAdapter);
 #endif //CONFIG_WOWLAN
@@ -282,6 +276,8 @@ void Hal_InitChannelPlan(PADAPTER padapter);
 #ifdef CONFIG_RF_GAIN_OFFSET
 void Hal_ReadRFGainOffset(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFail);
 #endif //CONFIG_RF_GAIN_OFFSET
+
+void rtl8188e_init_default_value(_adapter *adapter);
 
 void rtl8188e_set_hal_ops(struct hal_ops *pHalFunc);
 
@@ -299,5 +295,13 @@ void _InitTransferPageSize(PADAPTER padapter);
 
 void SetHwReg8188E(PADAPTER padapter, u8 variable, u8 *val);
 void GetHwReg8188E(PADAPTER padapter, u8 variable, u8 *val);
-
+void ResumeTxBeacon(PADAPTER padapter);
+void StopTxBeacon(PADAPTER padapter);
+u8
+GetHalDefVar8188E(
+	IN	PADAPTER				Adapter,
+	IN	HAL_DEF_VARIABLE		eVariable,
+	IN	PVOID					pValue
+	);
 #endif //__RTL8188E_HAL_H__
+

@@ -105,7 +105,7 @@ rtl8192c_PHY_QueryBBReg(
 	IN	u32		BitMask
 	)
 {
-	u32	ReturnValue = 0, OriginalValue, BitShift;
+  	u32	ReturnValue = 0, OriginalValue, BitShift;
 	u16	BBWaitCounter = 0;
 
 #if (DISABLE_BB_RF == 1)
@@ -956,7 +956,7 @@ phy_ConfigBBWithHeaderFile(
 			for(i=0;i<PHY_REGArrayLen;i=i+2)
 			{
 				tmp_value=Rtl819XPHY_REGArray_Table[i+1];
-
+				
 				if (Rtl819XPHY_REGArray_Table[i] == 0xfe)
 					rtw_IOL_append_DELAY_MS_cmd(xmit_frame, 50);
 				else if (Rtl819XPHY_REGArray_Table[i] == 0xfd)
@@ -970,10 +970,10 @@ phy_ConfigBBWithHeaderFile(
 				else if (Rtl819XPHY_REGArray_Table[i] == 0xf9)
 					rtw_IOL_append_DELAY_US_cmd(xmit_frame, 1);
 
-				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XPHY_REGArray_Table[i], tmp_value);
+				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XPHY_REGArray_Table[i], tmp_value);	
 				//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XPHY_REGArray_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XPHY_REGArray_Table[i], Rtl819XPHY_REGArray_Table[i+1]));
 			}
-
+		
 			ret = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
 		}
 		#else
@@ -1021,10 +1021,10 @@ phy_ConfigBBWithHeaderFile(
 
 			for(i=0;i<AGCTAB_ArrayLen;i=i+2)
 			{
-				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]);
+				rtw_IOL_append_WD_cmd(xmit_frame, Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]);							
 				//RT_TRACE(COMP_INIT, DBG_TRACE, ("The Rtl819XAGCTAB_Array_Table[0] is %lx Rtl819XPHY_REGArray[1] is %lx \n",Rtl819XAGCTAB_Array_Table[i], Rtl819XAGCTAB_Array_Table[i+1]));
 			}
-
+		
 			ret = rtw_IOL_exec_cmds_sync(Adapter, xmit_frame, 1000,0);
 		}
 		#else
@@ -1236,9 +1236,9 @@ phy_ConfigBBWithPgHeaderFile(
 				rtw_udelay_os(5);
 			else if (Rtl819XPHY_REGArray_Table_PG[i] == 0xf9)
 				rtw_udelay_os(1);
-			//PHY_SetBBReg(Adapter, Rtl819XPHY_REGArray_Table_PG[i], Rtl819XPHY_REGArray_Table_PG[i+1], Rtl819XPHY_REGArray_Table_PG[i+2]);
+			//PHY_SetBBReg(Adapter, Rtl819XPHY_REGArray_Table_PG[i], Rtl819XPHY_REGArray_Table_PG[i+1], Rtl819XPHY_REGArray_Table_PG[i+2]);		
 			#endif
-
+			
 			storePwrIndexDiffRateOffset(Adapter, Rtl819XPHY_REGArray_Table_PG[i],
 				Rtl819XPHY_REGArray_Table_PG[i+1],
 				Rtl819XPHY_REGArray_Table_PG[i+2]);
@@ -1591,12 +1591,12 @@ phy_BB8723a_Config_ParaFile(
 	// 3. BB AGC table Initialization
 	//
 #ifdef CONFIG_EMBEDDED_FWIMG
-	#ifdef CONFIG_PHY_SETTING_WITH_ODM
+	#ifdef CONFIG_PHY_SETTING_WITH_ODM	
 	if(HAL_STATUS_FAILURE ==ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv,  CONFIG_BB_AGC_TAB))
 		rtStatus = _FAIL;
 	#else
 	rtStatus = phy_ConfigBBWithHeaderFile(Adapter, BaseBand_Config_AGC_TAB);
-	#endif//#ifdef CONFIG_PHY_SETTING_WITH_ODM
+	#endif//#ifdef CONFIG_PHY_SETTING_WITH_ODM	
 #else
 	//RT_TRACE(COMP_INIT, DBG_LOUD, ("phy_BB8192S_Config_ParaFile AGC_TAB.txt\n"));
 	rtStatus = phy_ConfigBBWithParaFile(Adapter, pszAGCTableFile);
@@ -1706,11 +1706,11 @@ PHY_BBConfig8723A(
 	if(IS_HARDWARE_TYPE_8723A(Adapter) && pHalData->EEPROMVersion >= 0x01)
 	{
 		CrystalCap = pHalData->CrystalCap & 0x3F;
-		PHY_SetBBReg(Adapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));
+		PHY_SetBBReg(Adapter, REG_MAC_PHY_CTRL, 0xFFF000, (CrystalCap | (CrystalCap << 6)));	
 	}
-
+	
 	if(IS_HARDWARE_TYPE_8723AE(Adapter))
-		PHY_SetBBReg(Adapter, REG_LDOA15_CTRL, bMaskDWord, 0x01572505);
+		PHY_SetBBReg(Adapter, REG_LDOA15_CTRL, bMaskDWord, 0x01572505);			
 	return rtStatus;
 }
 
@@ -2776,7 +2776,7 @@ PHY_SetBWMode8192C(
 		//pHalData->SetBWModeInProgress= FALSE;
 		pHalData->CurrentChannelBW = tmpBW;
 	}
-
+	
 }
 
 
@@ -2812,7 +2812,7 @@ static void _PHY_SwChnl8192C(PADAPTER Adapter, u8 channel)
 	{
 				//DBG_8192C("phy_SwitchRfSetting8723A REG_AFE_PLL_CTRL 0xF2FFFF83\n");
 				PHY_SetBBReg(Adapter, REG_AFE_PLL_CTRL, bMaskDWord, 0xF2FFFF83);
-	}
+	}		
 	//s3. post common command - CmdID_End, None
 
 }
@@ -3403,3 +3403,4 @@ DumpBBDbgPort_92CU(
 
 }
 #endif
+

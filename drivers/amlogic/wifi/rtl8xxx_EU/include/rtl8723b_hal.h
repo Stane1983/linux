@@ -45,7 +45,7 @@
 	#define RTL8723B_PHY_REG					"rtl8723b/PHY_REG.txt"
 	#define RTL8723B_PHY_RADIO_A				"rtl8723b/RadioA.txt"
 	#define RTL8723B_PHY_RADIO_B				"rtl8723b/RadioB.txt"
-	#define RTL8723B_TXPWR_TRACK				"rtl8723b/TxPowerTrack.txt"
+	#define RTL8723B_TXPWR_TRACK				"rtl8723b/TxPowerTrack.txt" 
 	#define RTL8723B_AGC_TAB					"rtl8723b/AGC_TAB.txt"
 	#define RTL8723B_PHY_MACREG 				"rtl8723b/MAC_REG.txt"
 	#define RTL8723B_PHY_REG_PG				"rtl8723b/PHY_REG_PG.txt"
@@ -281,7 +281,7 @@ void Hal_EfuseParseAntennaDiversity_8723B(PADAPTER padapter, u8 *hwinfo, BOOLEAN
 void Hal_EfuseParseXtal_8723B(PADAPTER pAdapter, u8 *hwinfo, u8 AutoLoadFail);
 void Hal_EfuseParseThermalMeter_8723B(PADAPTER padapter, u8 *hwinfo, u8 AutoLoadFail);
 VOID Hal_EfuseParsePackageType_8723B(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFail);
-VOID Hal_EfuseParseVoltage_8723B(PADAPTER pAdapter,u8* hwinfo,BOOLEAN 	AutoLoadFail);
+VOID Hal_EfuseParseVoltage_8723B(PADAPTER pAdapter,u8* hwinfo,BOOLEAN 	AutoLoadFail); 
 
 #ifdef CONFIG_C2H_PACKET_EN
 void C2HPacketHandler_8723B(PADAPTER padapter, u8 *pbuffer, u16 length);
@@ -335,3 +335,4 @@ VOID	UpdateInterruptMask8723BE(PADAPTER Adapter, u32 AddMSR, u32 AddMSR1, u32 Re
 #endif
 
 #endif
+

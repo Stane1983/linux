@@ -113,7 +113,7 @@ u32 WapiComparePN(u8 *PN1, u8 *PN2)
 	for (i=16; i>0; i--)
 	{
 		if(PN1[i-1] == PN2[i-1])
-			continue;
+		    	continue;
 		else if(PN1[i-1] > PN2[i-1])
 			return 1;
 		else
@@ -246,9 +246,9 @@ WapiResetAllCamEntry(_adapter *padapter)
 	{
 		_rtw_memset(pWapiInfo->wapiCamEntry[i].PeerMacAddr, 0, ETH_ALEN);
 		pWapiInfo->wapiCamEntry[i].IsUsed = 0;
-		pWapiInfo->wapiCamEntry[i].keyidx = 2; //invalid
-		pWapiInfo->wapiCamEntry[i].entry_idx = 4+i*2;
-	}
+	 	pWapiInfo->wapiCamEntry[i].keyidx = 2; //invalid
+	 	pWapiInfo->wapiCamEntry[i].entry_idx = 4+i*2;
+ 	}
 
 	WAPI_TRACE(WAPI_API, "<========== %s\n", __FUNCTION__);
 
@@ -289,7 +289,7 @@ u8 WapiWriteOneCamEntry(
 	write_cam(padapter, EntryId, usConfig, pMacAddr, pKey);
 
 	WAPI_TRACE(WAPI_API, "===========> %s\n", __FUNCTION__);
-	return 1;
+    	return 1;
 }
 
 void rtw_wapi_init(_adapter *padapter)
@@ -328,9 +328,9 @@ void rtw_wapi_init(_adapter *padapter)
 	 for (i=0;i<WAPI_CAM_ENTRY_NUM;i++)
 	 {
 		pWapiInfo->wapiCamEntry[i].IsUsed = 0;
-		pWapiInfo->wapiCamEntry[i].keyidx = 2; //invalid
-		pWapiInfo->wapiCamEntry[i].entry_idx = 4+i*2;
-	}
+	 	pWapiInfo->wapiCamEntry[i].keyidx = 2; //invalid
+	 	pWapiInfo->wapiCamEntry[i].entry_idx = 4+i*2;
+ 	}
 
 	WAPI_TRACE(WAPI_INIT, "<========== %s\n", __FUNCTION__);
 }
@@ -376,7 +376,7 @@ u8 rtw_wapi_is_wai_packet(_adapter* padapter,u8 *pkt_data)
 	PRT_WAPI_STA_INFO pWapiSta = NULL;
 	u8 WaiPkt = 0, *pTaddr, bFind = false;
 	u8 Offset_TypeWAI = 0 ;	// (mac header len + llc length)
-
+	
 	WAPI_TRACE(WAPI_TX|WAPI_RX, "===========> %s\n", __FUNCTION__);
 
 	if ((!padapter->WapiSupport) || (!pWapiInfo->bWapiEnable))
@@ -391,9 +391,9 @@ u8 rtw_wapi_is_wai_packet(_adapter* padapter,u8 *pkt_data)
 	if ((pkt_data[1]&0x40) !=0)
 	{
 		DBG_871X("data is privacy \n");
-		return 0;
+	    	return 0;
 	}
-
+	
 	pTaddr = GetAddr2Ptr(pkt_data);
 	if(list_empty(&pWapiInfo->wapiSTAUsedList)){
 		bFind = false;
@@ -984,7 +984,7 @@ void wapi_test_set_key(struct _adapter *padapter, u8* buf)
 	bTxEnable = data[1];
 	bAuthenticator = data[2];
 	bUpdate = data[3];
-	memcpy(PeerAddr,data+4,6);
+ 	memcpy(PeerAddr,data+4,6);
 
 	if(data[0] == 0x3){
 		if(!list_empty(&(pWapiInfo->wapiBKIDIdleList))){

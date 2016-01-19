@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -42,7 +42,7 @@ ODM_Read1Byte(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	return	PlatformEFIORead1Byte(Adapter, RegAddr);
-#endif
+#endif	
 
 }
 
@@ -62,7 +62,7 @@ ODM_Read2Byte(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	return	PlatformEFIORead2Byte(Adapter, RegAddr);
-#endif
+#endif	
 
 }
 
@@ -82,7 +82,7 @@ ODM_Read4Byte(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	return	PlatformEFIORead4Byte(Adapter, RegAddr);
-#endif
+#endif	
 
 }
 
@@ -104,7 +104,7 @@ ODM_Write1Byte(
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformEFIOWrite1Byte(Adapter, RegAddr, Data);
 #endif
-
+	
 }
 
 
@@ -124,7 +124,7 @@ ODM_Write2Byte(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformEFIOWrite2Byte(Adapter, RegAddr, Data);
-#endif
+#endif	
 
 }
 
@@ -145,13 +145,13 @@ ODM_Write4Byte(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformEFIOWrite4Byte(Adapter, RegAddr, Data);
-#endif
+#endif	
 
 }
 
 
 VOID
-ODM_SetMACReg(
+ODM_SetMACReg(	
 	IN 	PDM_ODM_T	pDM_Odm,
 	IN	u4Byte		RegAddr,
 	IN	u4Byte		BitMask,
@@ -163,12 +163,12 @@ ODM_SetMACReg(
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_MP))
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PHY_SetBBReg(Adapter, RegAddr, BitMask, Data);
-#endif
+#endif	
 }
 
 
-u4Byte
-ODM_GetMACReg(
+u4Byte 
+ODM_GetMACReg(	
 	IN 	PDM_ODM_T	pDM_Odm,
 	IN	u4Byte		RegAddr,
 	IN	u4Byte		BitMask
@@ -179,12 +179,12 @@ ODM_GetMACReg(
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_MP))
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	return PHY_QueryBBReg(Adapter, RegAddr, BitMask);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_SetBBReg(
+ODM_SetBBReg(	
 	IN 	PDM_ODM_T	pDM_Odm,
 	IN	u4Byte		RegAddr,
 	IN	u4Byte		BitMask,
@@ -196,12 +196,12 @@ ODM_SetBBReg(
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_MP))
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PHY_SetBBReg(Adapter, RegAddr, BitMask, Data);
-#endif
+#endif	
 }
 
 
-u4Byte
-ODM_GetBBReg(
+u4Byte 
+ODM_GetBBReg(	
 	IN 	PDM_ODM_T	pDM_Odm,
 	IN	u4Byte		RegAddr,
 	IN	u4Byte		BitMask
@@ -212,12 +212,12 @@ ODM_GetBBReg(
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_MP))
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	return PHY_QueryBBReg(Adapter, RegAddr, BitMask);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_SetRFReg(
+ODM_SetRFReg(	
 	IN 	PDM_ODM_T			pDM_Odm,
 	IN	ODM_RF_RADIO_PATH_E	eRFPath,
 	IN	u4Byte				RegAddr,
@@ -230,12 +230,12 @@ ODM_SetRFReg(
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_MP))
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PHY_SetRFReg(Adapter, eRFPath, RegAddr, BitMask, Data);
-#endif
+#endif	
 }
 
 
-u4Byte
-ODM_GetRFReg(
+u4Byte 
+ODM_GetRFReg(	
 	IN 	PDM_ODM_T			pDM_Odm,
 	IN	ODM_RF_RADIO_PATH_E	eRFPath,
 	IN	u4Byte				RegAddr,
@@ -247,7 +247,7 @@ ODM_GetRFReg(
 #elif(DM_ODM_SUPPORT_TYPE & (ODM_CE|ODM_MP))
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	return PHY_QueryRFReg(Adapter, eRFPath, RegAddr, BitMask);
-#endif
+#endif	
 }
 
 
@@ -257,7 +257,7 @@ ODM_GetRFReg(
 // ODM Memory relative API.
 //
 VOID
-ODM_AllocateMemory(
+ODM_AllocateMemory(	
 	IN 	PDM_ODM_T	pDM_Odm,
 	OUT	PVOID		*pPtr,
 	IN	u4Byte		length
@@ -270,12 +270,12 @@ ODM_AllocateMemory(
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformAllocateMemory(Adapter, pPtr, length);
-#endif
+#endif	
 }
 
 // length could be ignored, used to detect memory leakage.
 VOID
-ODM_FreeMemory(
+ODM_FreeMemory(	
 	IN 	PDM_ODM_T	pDM_Odm,
 	OUT	PVOID		pPtr,
 	IN	u4Byte		length
@@ -283,12 +283,12 @@ ODM_FreeMemory(
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 	kfree(pPtr);
-#elif (DM_ODM_SUPPORT_TYPE & ODM_CE )
+#elif (DM_ODM_SUPPORT_TYPE & ODM_CE )	
 	rtw_vmfree(pPtr, length);
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	//PADAPTER    Adapter = pDM_Odm->Adapter;
 	PlatformFreeMemory(pPtr, length);
-#endif
+#endif	
 }
 s4Byte ODM_CompareMemory(
 	IN 	PDM_ODM_T	pDM_Odm,
@@ -299,11 +299,11 @@ s4Byte ODM_CompareMemory(
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 	return memcmp(pBuf1,pBuf2,length);
-#elif (DM_ODM_SUPPORT_TYPE & ODM_CE )
+#elif (DM_ODM_SUPPORT_TYPE & ODM_CE )	
 	return _rtw_memcmp(pBuf1,pBuf2,length);
-#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
+#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)	
 	return PlatformCompareMemory(pBuf1,pBuf2,length);
-#endif
+#endif	
 }
 
 
@@ -312,7 +312,7 @@ s4Byte ODM_CompareMemory(
 // ODM MISC relative API.
 //
 VOID
-ODM_AcquireSpinLock(
+ODM_AcquireSpinLock(	
 	IN 	PDM_ODM_T			pDM_Odm,
 	IN	RT_SPINLOCK_TYPE	type
 	)
@@ -320,14 +320,14 @@ ODM_AcquireSpinLock(
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE )
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformAcquireSpinLock(Adapter, type);
-#endif
+#endif	
 }
 VOID
-ODM_ReleaseSpinLock(
+ODM_ReleaseSpinLock(	
 	IN 	PDM_ODM_T			pDM_Odm,
 	IN	RT_SPINLOCK_TYPE	type
 	)
@@ -335,18 +335,18 @@ ODM_ReleaseSpinLock(
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 
 #elif (DM_ODM_SUPPORT_TYPE & ODM_CE )
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformReleaseSpinLock(Adapter, type);
-#endif
+#endif	
 }
 
 //
 // Work item relative API. FOr MP driver only~!
 //
 VOID
-ODM_InitializeWorkItem(
+ODM_InitializeWorkItem(	
 	IN 	PDM_ODM_T					pDM_Odm,
 	IN	PRT_WORK_ITEM				pRtWorkItem,
 	IN	RT_WORKITEM_CALL_BACK		RtWorkItemCallback,
@@ -355,88 +355,88 @@ ODM_InitializeWorkItem(
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformInitializeWorkItem(Adapter, pRtWorkItem, RtWorkItemCallback, pContext, szID);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_StartWorkItem(
+ODM_StartWorkItem(	
 	IN	PRT_WORK_ITEM	pRtWorkItem
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformStartWorkItem(pRtWorkItem);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_StopWorkItem(
+ODM_StopWorkItem(	
 	IN	PRT_WORK_ITEM	pRtWorkItem
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformStopWorkItem(pRtWorkItem);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_FreeWorkItem(
+ODM_FreeWorkItem(	
 	IN	PRT_WORK_ITEM	pRtWorkItem
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformFreeWorkItem(pRtWorkItem);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_ScheduleWorkItem(
+ODM_ScheduleWorkItem(	
 	IN	PRT_WORK_ITEM	pRtWorkItem
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformScheduleWorkItem(pRtWorkItem);
-#endif
+#endif	
 }
 
 
 VOID
-ODM_IsWorkItemScheduled(
+ODM_IsWorkItemScheduled(	
 	IN	PRT_WORK_ITEM	pRtWorkItem
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformIsWorkItemScheduled(pRtWorkItem);
-#endif
+#endif	
 }
 
 
@@ -445,17 +445,17 @@ ODM_IsWorkItemScheduled(
 // ODM Timer relative API.
 //
 VOID
-ODM_StallExecution(
+ODM_StallExecution(	
 	IN	u4Byte	usDelay
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	rtw_udelay_os(usDelay);
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformStallExecution(usDelay);
-#endif
+#endif	
 }
 
 VOID
@@ -467,7 +467,7 @@ ODM_delay_ms(IN u4Byte	ms)
 	rtw_mdelay_os(ms);
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	delay_ms(ms);
-#endif
+#endif			
 }
 
 VOID
@@ -479,54 +479,54 @@ ODM_delay_us(IN u4Byte	us)
 	rtw_udelay_os(us);
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PlatformStallExecution(us);
-#endif
+#endif			
 }
 
 VOID
 ODM_sleep_ms(IN u4Byte	ms)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	rtw_msleep_os(ms);
-#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
-#endif
+#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)	
+#endif		
 }
 
 VOID
 ODM_sleep_us(IN u4Byte	us)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	rtw_usleep_os(us);
-#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
-#endif
+#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)	
+#endif		
 }
 
 VOID
-ODM_SetTimer(
+ODM_SetTimer(	
 	IN 	PDM_ODM_T		pDM_Odm,
-	IN	PRT_TIMER 		pTimer,
+	IN	PRT_TIMER 		pTimer, 
 	IN	u4Byte 			msDelay
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-	mod_timer(pTimer, jiffies + (msDelay+9)/10);
+	mod_timer(pTimer, jiffies + (msDelay+9)/10);	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	_set_timer(pTimer,msDelay ); //ms
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER		Adapter = pDM_Odm->Adapter;
 	PlatformSetTimer(Adapter, pTimer, msDelay);
-#endif
+#endif	
 
 }
 
 VOID
 ODM_InitializeTimer(
 	IN 	PDM_ODM_T			pDM_Odm,
-	IN	PRT_TIMER 			pTimer,
-	IN	RT_TIMER_CALL_BACK	CallBackFunc,
+	IN	PRT_TIMER 			pTimer, 
+	IN	RT_TIMER_CALL_BACK	CallBackFunc, 
 	IN	PVOID				pContext,
 	IN	const char*			szID
 	)
@@ -534,14 +534,14 @@ ODM_InitializeTimer(
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
 	pTimer->function = CallBackFunc;
 	pTimer->data = (unsigned long)pDM_Odm;
-	init_timer(pTimer);
+	init_timer(pTimer);	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	_init_timer(pTimer,Adapter->pnetdev,CallBackFunc,pDM_Odm);
 #elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
 	PADAPTER Adapter = pDM_Odm->Adapter;
 	PlatformInitializeTimer(Adapter, pTimer, CallBackFunc,pContext,szID);
-#endif
+#endif	
 }
 
 
@@ -576,14 +576,14 @@ ODM_ReleaseTimer(
 
 	PADAPTER Adapter = pDM_Odm->Adapter;
 
-    // <20120301, Kordan> If the initilization fails, InitializeAdapterXxx will return regardless of InitHalDm.
+    // <20120301, Kordan> If the initilization fails, InitializeAdapterXxx will return regardless of InitHalDm. 
     // Hence, uninitialized timers cause BSOD when the driver releases resources since the init fail.
-    if (pTimer == 0)
+    if (pTimer == 0) 
     {
         ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_SERIOUS, ("=====>ODM_ReleaseTimer(), The timer is NULL! Please check it!\n"));
         return;
     }
-
+        
 	PlatformReleaseTimer(Adapter, pTimer);
 #endif
 }
@@ -637,7 +637,7 @@ ODM_FillH2CCmd(
 }
 #else
 u4Byte
-ODM_FillH2CCmd(
+ODM_FillH2CCmd(	
 	IN	pu1Byte		pH2CBuffer,
 	IN	u4Byte		H2CBufferLen,
 	IN	u4Byte		CmdNum,
@@ -648,10 +648,10 @@ ODM_FillH2CCmd(
 	)
 {
 #if(DM_ODM_SUPPORT_TYPE & (ODM_AP|ODM_ADSL))
-
+	
 #elif(DM_ODM_SUPPORT_TYPE & ODM_CE)
 
-#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)
+#elif(DM_ODM_SUPPORT_TYPE & ODM_MP)	
 	//FillH2CCmd(pH2CBuffer, H2CBufferLen, CmdNum, pElementID, pCmdLen, pCmbBuffer, CmdStartSeq);
 	return	FALSE;
 #endif
@@ -659,3 +659,8 @@ ODM_FillH2CCmd(
 	return	TRUE;
 }
 #endif
+
+
+
+
+

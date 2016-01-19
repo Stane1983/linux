@@ -69,7 +69,7 @@ void sd_f0_write8(PSDIO_DATA psdio, u32 addr, u8 v, s32 *err)
 {
 	struct sdio_func *func;
 	bool claim_needed;
-
+	
 _func_enter_;
 
 	func = psdio->func;
@@ -632,3 +632,4 @@ s32 sd_write(PSDIO_DATA psdio, u32 addr, u32 cnt, void *pdata)
 
 	return err;
 }
+

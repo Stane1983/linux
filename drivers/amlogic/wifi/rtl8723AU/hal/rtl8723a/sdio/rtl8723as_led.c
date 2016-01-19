@@ -126,3 +126,4 @@ rtl8723as_DeInitSwLeds(
 	DeInitLed871x( &(ledpriv->SwLed1) );
 #endif
 }
+

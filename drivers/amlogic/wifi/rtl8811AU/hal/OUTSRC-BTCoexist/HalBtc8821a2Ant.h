@@ -179,3 +179,4 @@ VOID
 EXhalbtc8821a2ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
+

@@ -290,7 +290,7 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 			  off_t offset, int count,
 			  int *eof, void *data);
 
-	int proc_set_write_reg(struct file *file, const char *buffer,
+ 	int proc_set_write_reg(struct file *file, const char *buffer,
 		unsigned long count, void *data);
 
 	int proc_get_read_reg(char *page, char **start,
@@ -408,7 +408,7 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 	int proc_get_ht_enable(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);
-
+			  
 	int proc_set_ht_enable(struct file *file, const char *buffer,
 		unsigned long count, void *data);
 
@@ -418,18 +418,18 @@ extern void rtl871x_cedbg(const char *fmt, ...);
 
 	int proc_set_cbw40_enable(struct file *file, const char *buffer,
 		unsigned long count, void *data);
-
+	
 	int proc_get_ampdu_enable(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);
-
+			  
 	int proc_set_ampdu_enable(struct file *file, const char *buffer,
 		unsigned long count, void *data);
-
+	
 	int proc_get_rx_stbc(char *page, char **start,
 			  off_t offset, int count,
 			  int *eof, void *data);
-
+		
 	int proc_set_rx_stbc(struct file *file, const char *buffer,
 		unsigned long count, void *data);
 #endif //CONFIG_80211N_HT
@@ -463,3 +463,4 @@ int proc_set_sreset(struct file *file, const char *buffer, unsigned long count, 
 #endif //CONFIG_PROC_DEBUG
 
 #endif	//__RTW_DEBUG_H__
+

@@ -9,3 +9,4 @@
 extern u4Byte Rtl8192CUMAC_2T_Array[Rtl8192CUMAC_2T_ArrayLength];
 
 #endif //__INC_HAL8192CE_FW_IMG_H
+

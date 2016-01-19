@@ -41,9 +41,9 @@ VOID
 PHY_RF6052SetBandwidth8812(
 	IN	PADAPTER				Adapter,
 	IN	CHANNEL_WIDTH		Bandwidth)	//20M or 40M
-{
+{	
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
+	
 	switch(Bandwidth)
 	{
 		case CHANNEL_WIDTH_20:
@@ -51,22 +51,22 @@ PHY_RF6052SetBandwidth8812(
 			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW_Jaguar, BIT11|BIT10, 3);
 			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW_Jaguar, BIT11|BIT10, 3);
 		break;
-
+			
 		case CHANNEL_WIDTH_40:
 			//DBG_871X("PHY_RF6052SetBandwidth8812(), set 40MHz\n");
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW_Jaguar, BIT11|BIT10, 1);
-			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW_Jaguar, BIT11|BIT10, 1);
+			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW_Jaguar, BIT11|BIT10, 1);	
+			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW_Jaguar, BIT11|BIT10, 1);	
 		break;
-
+		
 		case CHANNEL_WIDTH_80:
 			//DBG_871X("PHY_RF6052SetBandwidth8812(), set 80MHz\n");
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW_Jaguar, BIT11|BIT10, 0);
-			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW_Jaguar, BIT11|BIT10, 0);
+			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW_Jaguar, BIT11|BIT10, 0);	
+			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW_Jaguar, BIT11|BIT10, 0);	
 		break;
-
+			
 		default:
 			DBG_871X("PHY_RF6052SetBandwidth8812(): unknown Bandwidth: %#X\n",Bandwidth );
-			break;
+			break;			
 	}
 }
 
@@ -78,12 +78,12 @@ phy_RF6052_Config_ParaFile_8812(
 	u8					eRFPath;
 	int					rtStatus = _SUCCESS;
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
-	static char			sz8812RadioAFile[] = RTL8812_PHY_RADIO_A;
+	static char			sz8812RadioAFile[] = RTL8812_PHY_RADIO_A;	
 	static char			sz8812RadioBFile[] = RTL8812_PHY_RADIO_B;
 	static char 			sz8812TxPwrTrack[] = RTL8812_TXPWR_TRACK;
 	static char			sz8821RadioAFile[] = RTL8821_PHY_RADIO_A;
 	static char			sz8821RadioBFile[] = RTL8821_PHY_RADIO_B;
-	static char 			sz8821TxPwrTrack[] = RTL8821_TXPWR_TRACK;
+	static char 			sz8821TxPwrTrack[] = RTL8821_TXPWR_TRACK;	
 	char					*pszRadioAFile = NULL, *pszRadioBFile = NULL, *pszTxPwrTrack = NULL;
 
 
@@ -144,7 +144,7 @@ phy_RF6052_Config_ParaFile_8812(
 	}
 
 	//3 -----------------------------------------------------------------
-	//3 Configuration of Tx Power Tracking
+	//3 Configuration of Tx Power Tracking 
 	//3 -----------------------------------------------------------------
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
@@ -187,3 +187,4 @@ PHY_RF6052_Config_8812(
 
 
 /* End of HalRf6052.c */
+

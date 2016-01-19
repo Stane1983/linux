@@ -148,8 +148,13 @@ typedef struct _COEX_STA_8812A_2ANT{
 // The following is interface which will notify coex module.
 //===========================================
 VOID
-EXhalbtc8812a2ant_InitHwConfig(
+EXhalbtc8812a2ant_PowerOnSetting(
 	IN	PBTC_COEXIST		pBtCoexist
+	);
+VOID
+EXhalbtc8812a2ant_InitHwConfig(
+	IN	PBTC_COEXIST		pBtCoexist,
+	IN	BOOLEAN				bWifiOnly
 	);
 VOID
 EXhalbtc8812a2ant_InitCoexDm(
@@ -210,3 +215,4 @@ EXhalbtc8812a2ant_DbgControl(
 	IN	u1Byte				opLen,
 	IN	pu1Byte 			pData
 	);
+

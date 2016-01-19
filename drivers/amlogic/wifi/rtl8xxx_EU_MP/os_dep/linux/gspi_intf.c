@@ -110,7 +110,7 @@ static u8 gspi_alloc_irq(struct dvobj_priv *dvobj)
 
 	err = request_irq(oob_irq, spi_interrupt_thread,
 			IRQF_TRIGGER_FALLING,//IRQF_TRIGGER_HIGH;//|IRQF_ONESHOT,
-			DRV_NAME, dvobj);
+		       	DRV_NAME, dvobj);
 	//err = request_threaded_irq(oob_irq, NULL, spi_interrupt_thread,
 	//		IRQF_TRIGGER_FALLING,
 	//		DRV_NAME, dvobj);
@@ -865,7 +865,7 @@ static int rtw_gspi_resume(struct spi_device *spi)
 	DBG_871X("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 
 	if(pwrpriv->bInternalAutoSuspend ){
-		ret = rtw_resume_process(padapter);
+ 		ret = rtw_resume_process(padapter);
 	} else {
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 		rtw_resume_in_workqueue(pwrpriv);

@@ -1,21 +1,21 @@
-/******************************************************************************
-*
-* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
+/****************************************************************************** 
+* 
+* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved. 
+* 
+* This program is free software; you can redistribute it and/or modify it 
+* under the terms of version 2 of the GNU General Public License as 
+* published by the Free Software Foundation. 
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT 
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+* more details. 
+* 
+* You should have received a copy of the GNU General Public License along with 
+* this program; if not, write to the Free Software Foundation, Inc., 
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA 
+* 
+* 
 ******************************************************************************/
 
 #include "../odm_precomp.h"
@@ -56,7 +56,7 @@ CheckCondition(
 *                           RadioA_1T.TXT
 ******************************************************************************/
 
-u4Byte Array_RadioA_1T_8723A[] = {
+u4Byte Array_RadioA_1T_8723A[] = { 
 		0x000, 0x00030159,
 		0x001, 0x00031284,
 		0x002, 0x00098000,
@@ -218,8 +218,8 @@ u4Byte Array_RadioA_1T_8723A[] = {
 
 void
 ODM_ReadAndConfig_RadioA_1T_8723A(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	#define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
 
@@ -229,7 +229,7 @@ ODM_ReadAndConfig_RadioA_1T_8723A(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     interfaceValue   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_RadioA_1T_8723A)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_RadioA_1T_8723A;
 
@@ -238,25 +238,25 @@ ODM_ReadAndConfig_RadioA_1T_8723A(
 	hex += interfaceValue << 8;
 	hex += platform << 16;
 	hex += 0xFF000000;
-
+	
 	for (i = 0; i < ArrayLen; i += 2 )
 	{
 	    u4Byte v1 = Array[i];
 	    u4Byte v2 = Array[i+1];
-
+	
 	    // This (offset, data) pair meets the condition.
 	    if ( v1 < 0xCDCDCDCD )
 	    {
 		    odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
 		    continue;
-		}
+	 	}
 		else
 		{ // This line is the start line of branch.
 		    if ( !CheckCondition(Array[i], hex) )
 		    { // Discard the following (offset, data) pairs.
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
@@ -266,24 +266,25 @@ ODM_ReadAndConfig_RadioA_1T_8723A(
 		    else // Configure matched pairs and skip to end of if-else.
 		    {
 		        READ_NEXT_PAIR(v1, v2, i);
-		        while (v2 != 0xDEAD &&
-		               v2 != 0xCDEF &&
+		        while (v2 != 0xDEAD && 
+		               v2 != 0xCDEF && 
 		               v2 != 0xCDCD && i < ArrayLen -2)
 		        {
-				odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
-				READ_NEXT_PAIR(v1, v2, i);
+		    		odm_ConfigRF_RadioA_8723A(pDM_Odm, v1, v2);
+		            	READ_NEXT_PAIR(v1, v2, i);
 		        }
 
 		        while (v2 != 0xDEAD && i < ArrayLen -2)
 		        {
 		            READ_NEXT_PAIR(v1, v2, i);
 		        }
-
+		        
 		    }
-		}
+		}	
 	}
 
 }
 
 
 #endif // end of HWIMG_SUPPORT
+

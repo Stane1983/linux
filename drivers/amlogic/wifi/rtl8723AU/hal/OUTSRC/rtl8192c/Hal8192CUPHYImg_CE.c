@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -2639,3 +2639,4 @@ u4Byte Rtl8192CUAGCTAB_1T_HPArray[Rtl8192CUAGCTAB_1T_HPArrayLength] = {
 0xc78,0x621e001e,
 0xc78,0x621f001e,
 };
+

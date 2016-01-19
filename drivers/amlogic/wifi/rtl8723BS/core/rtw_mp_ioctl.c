@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -21,7 +21,7 @@
 
 #include <drv_types.h>
 #include <rtw_mp_ioctl.h>
-#include "../hal/OUTSRC/odm_precomp.h"
+#include "../hal/OUTSRC/phydm_precomp.h"
 
 //****************  oid_rtl_seg_81_85   section start ****************
 NDIS_STATUS oid_rt_wireless_mode_hdl(struct oid_par_priv *poid_par_priv)
@@ -171,7 +171,7 @@ _func_enter_;
 		  path, offset, value));
 
 	_irqlevel_changed_(&oldirql, LOWER);
-	write_rfreg(Adapter, path, offset, value);
+ 	write_rfreg(Adapter, path, offset, value);
 	_irqlevel_changed_(&oldirql, RAISE);
 
 _func_exit_;
@@ -1120,7 +1120,7 @@ _func_enter_;
 	TxCmd_Info=(TX_CMD_Desc*)poid_par_priv->information_buf;
 
 	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:Addr=%.8X\n", TxCmd_Info->offset));
-	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:1.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[0]));
+  	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:1.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[0]));
 	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:2.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[1]));
 	RT_TRACE(_module_mp_, _drv_info_, (("WRITE_TXCMD:3.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[2]));
 	RT_TRACE(_module_mp_, _drv_info_, ("WRITE_TXCMD:4.)%.8X\n", (ULONG)TxCmd_Info->TxCMD.value[3]));
@@ -1990,9 +1990,9 @@ NDIS_STATUS oid_rt_pro_dele_sta_info_hdl(struct oid_par_priv *poid_par_priv)
 
 	psta = rtw_get_stainfo(&Adapter->stapriv, macaddr);
 	if (psta != NULL) {
-		_enter_critical(&(Adapter->stapriv.sta_hash_lock), &irqL);
+		//_enter_critical(&(Adapter->stapriv.sta_hash_lock), &irqL);
 		rtw_free_stainfo(Adapter, psta);
-		_exit_critical(&(Adapter->stapriv.sta_hash_lock), &irqL);
+		//_exit_critical(&(Adapter->stapriv.sta_hash_lock), &irqL);
 	}
 
 	return status;
@@ -2237,8 +2237,6 @@ NDIS_STATUS oid_rt_pro_rx_packet_type_hdl(struct oid_par_priv *poid_par_priv)
 		RT_TRACE(_module_rtl871x_ioctl_c_,_drv_err_, ("Query Information, OID_RT_PRO_RX_PACKET_TYPE:%d \n",\
 												Adapter->mppriv.rx_with_status));
 
-		//*(u32 *)&Adapter->eeprompriv.mac_addr[0]=rtw_read32(Adapter, 0x10250050);
-		//*(u16 *)&Adapter->eeprompriv.mac_addr[4]=rtw_read16(Adapter, 0x10250054);
 		RT_TRACE(_module_rtl871x_ioctl_c_,_drv_err_,("MAC addr=0x%x:0x%x:0x%x:0x%x:0x%x:0x%x  \n",
 			Adapter->eeprompriv.mac_addr[0],Adapter->eeprompriv.mac_addr[1],Adapter->eeprompriv.mac_addr[2],\
 			Adapter->eeprompriv.mac_addr[3],Adapter->eeprompriv.mac_addr[4],Adapter->eeprompriv.mac_addr[5]));
@@ -2897,7 +2895,7 @@ _func_enter_;
 	//CALL  the power_down function
 #ifdef PLATFORM_LINUX
 #if defined(CONFIG_RTL8712) //Linux MP insmod unknown symbol
-	dev_power_down(padapter,bpwrup);
+	dev_power_down(padapter,bpwrup); 
 #endif
 #endif
 	_irqlevel_changed_(&oldirql, RAISE);
@@ -2945,3 +2943,4 @@ _func_exit_;
 	return 0;
 #endif
 }
+

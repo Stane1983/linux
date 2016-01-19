@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -69,15 +69,15 @@ enum _EFUSE_DEF_TYPE {
 /*--------------------------Define Parameters-------------------------------*/
 #define		EFUSE_MAX_WORD_UNIT			4
 
-/*------------------------------Define structure----------------------------*/
+/*------------------------------Define structure----------------------------*/ 
 typedef struct PG_PKT_STRUCT_A{
 	u8 offset;
 	u8 word_en;
-	u8 data[8];
+	u8 data[8];	
 	u8 word_cnts;
 }PGPKT_STRUCT,*PPGPKT_STRUCT;
 
-/*------------------------------Define structure----------------------------*/
+/*------------------------------Define structure----------------------------*/ 
 typedef struct _EFUSE_HAL{
 	u8	fakeEfuseBank;
 	u32	fakeEfuseUsedBytes;
@@ -145,3 +145,4 @@ void Rtw_Hal_ReadMACAddrFromFile(PADAPTER padapter);
 u32 Rtw_Hal_readPGDataFromConfigFile(PADAPTER	padapter);
 
 #endif
+

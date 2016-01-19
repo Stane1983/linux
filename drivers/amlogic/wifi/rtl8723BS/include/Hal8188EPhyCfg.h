@@ -38,16 +38,14 @@
 /*--------------------------Define Parameters-------------------------------*/
 
 
-/*------------------------------Define structure----------------------------*/
-
-#define MAX_PG_GROUP 13
+/*------------------------------Define structure----------------------------*/ 
 
 #define	MAX_TX_COUNT_8188E			1
 
 /* BB/RF related */
 
 
-/*------------------------------Define structure----------------------------*/
+/*------------------------------Define structure----------------------------*/ 
 
 
 /*------------------------Export global variable----------------------------*/
@@ -90,13 +88,10 @@ int	PHY_RFConfig8188E(IN	PADAPTER	Adapter	);
 /* RF config */
 int	rtl8188e_PHY_ConfigRFWithParaFile(IN PADAPTER Adapter, IN u8 * pFileName, u8 eRFPath);
 
-/* Read initi reg value for tx power setting. */
-void	rtl8192c_PHY_GetHWRegOriginalValue(	IN	PADAPTER		Adapter	);
-
 //
 // RF Power setting
 //
-//extern	BOOLEAN	PHY_SetRFPowerState(IN	PADAPTER			Adapter,
+//extern	BOOLEAN	PHY_SetRFPowerState(IN	PADAPTER			Adapter, 
 //									IN	RT_RF_POWER_STATE	eRFPowerState);
 
 //
@@ -113,7 +108,7 @@ VOID
 PHY_SetTxPowerIndex_8188E(
 	IN	PADAPTER			Adapter,
 	IN	u32					PowerIndex,
-	IN	u8					RFPath,
+	IN	u8					RFPath,	
 	IN	u8					Rate
 	);
 
@@ -121,8 +116,8 @@ u8
 PHY_GetTxPowerIndex_8188E(
 	IN	PADAPTER		pAdapter,
 	IN	u8				RFPath,
-	IN	u8				Rate,
-	IN	CHANNEL_WIDTH	BandWidth,
+	IN	u8				Rate,	
+	IN	CHANNEL_WIDTH	BandWidth,	
 	IN	u8				Channel
 	);
 
@@ -188,7 +183,7 @@ PHY_EnableHostClkReq(
 BOOLEAN
 SetAntennaConfig92C(
 	IN	PADAPTER	Adapter,
-	IN	u8		DefaultAnt
+	IN	u8		DefaultAnt	
 	);
 
 VOID
@@ -212,7 +207,7 @@ storePwrIndexDiffRateOffset(
 
 //==================================================================
 // Note: If SIC_ENABLE under PCIE, because of the slow operation
-//	you should
+//	you should 
 //	2) "#define RTL8723_FPGA_VERIFICATION	1"				in Precomp.h.WlanE.Windows
 //	3) "#define RTL8190_Download_Firmware_From_Header	0"	in Precomp.h.WlanE.Windows if needed.
 //
@@ -276,3 +271,4 @@ VOID SIC_Init(IN PADAPTER Adapter);
 
 
 #endif	// __INC_HAL8192CPHYCFG_H
+

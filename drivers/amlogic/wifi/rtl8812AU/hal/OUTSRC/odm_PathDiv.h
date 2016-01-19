@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -58,7 +58,7 @@ odm_PathDiversity(
 	IN	PVOID	pDM_VOID
 	);
 
-#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN))
+#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN)) 
 
 VOID
 odm_PathDiversityInit_92C(
@@ -71,7 +71,7 @@ odm_2TPathDiversityInit_92C(
 	);
 
 VOID
-odm_1TPathDiversityInit_92C(
+odm_1TPathDiversityInit_92C(	
 	IN	PADAPTER	Adapter
 	);
 
@@ -123,23 +123,23 @@ odm_PathDivChkAntSwitch(
 	//u1Byte			Step
 );
 
-VOID
+VOID	
 odm_SetRespPath_92C(
 	IN	PADAPTER	Adapter, 	IN	u1Byte	DefaultRespPath
 	);
 
-VOID
+VOID	
 odm_OFDMTXPathDiversity_92C(
 	IN	PADAPTER	Adapter
 	);
 
-VOID
+VOID	
 odm_CCKTXPathDiversity_92C(
 	IN	PADAPTER	Adapter
 	);
 
-VOID
-odm_ResetPathDiversity_92C(
+VOID	
+odm_ResetPathDiversity_92C(	
 	IN	PADAPTER	Adapter
 	);
 
@@ -185,6 +185,11 @@ odm_SwAntDivConstructScanChnl(
 	IN	u1Byte		ScanChnl
 	);
 
- #endif       //#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN))
+ #endif       //#if(DM_ODM_SUPPORT_TYPE & (ODM_WIN)) 
 
 #endif // __ODMPATHDIV_H__
+
+
+
+
+ 

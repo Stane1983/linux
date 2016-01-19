@@ -252,8 +252,8 @@ struct registry_priv
 enum _IFACE_ID {
 	IFACE_ID0, //maping to PRIMARY_ADAPTER
 	IFACE_ID1, //maping to SECONDARY_ADAPTER
-	IFACE_ID2,
-	IFACE_ID3,
+	IFACE_ID2, 
+	IFACE_ID3, 
 	IFACE_ID_MAX,
 };
 
@@ -483,11 +483,11 @@ struct _ADAPTER{
 	struct	pwrctrl_priv	pwrctrlpriv;
 	struct 	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)	
 	//Check BT status for BT Hung.
 	struct workqueue_struct *priv_checkbt_wq;
 	struct delayed_work checkbt_work;
-#endif
+#endif	
 #ifdef CONFIG_MP_INCLUDED
        struct	mp_priv	mppriv;
 #endif
@@ -675,3 +675,4 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 
 
 #endif //__DRV_TYPES_H__
+

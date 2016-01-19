@@ -262,6 +262,10 @@ uint rtw_notch_filter = RTW_NOTCH_FILTER;
 module_param(rtw_notch_filter, uint, 0644);
 MODULE_PARM_DESC(rtw_notch_filter, "0:Disable, 1:Enable, 2:Enable only for P2P");
 
+uint rtw_hiq_filter = CONFIG_RTW_HIQ_FILTER;
+module_param(rtw_hiq_filter, uint, 0644);
+MODULE_PARM_DESC(rtw_hiq_filter, "0:allow all, 1:allow special, 2:deny all");
+
 static uint loadparam( _adapter *padapter,  _nic_hdl	pnetdev);
 int _netdev_open(struct net_device *pnetdev);
 int netdev_open (struct net_device *pnetdev);
@@ -303,8 +307,8 @@ _func_enter_;
 	registry_par->radio_enable = (u8)rtw_radio_enable;
 	registry_par->long_retry_lmt = (u8)rtw_long_retry_lmt;
 	registry_par->short_retry_lmt = (u8)rtw_short_retry_lmt;
-	registry_par->busy_thresh = (u16)rtw_busy_thresh;
-	//registry_par->qos_enable = (u8)rtw_qos_enable;
+  	registry_par->busy_thresh = (u16)rtw_busy_thresh;
+  	//registry_par->qos_enable = (u8)rtw_qos_enable;
 	registry_par->ack_policy = (u8)rtw_ack_policy;
 	registry_par->mp_mode = (u8)rtw_mp_mode;
 	registry_par->software_encrypt = (u8)rtw_software_encrypt;
@@ -388,6 +392,7 @@ _func_enter_;
 	registry_par->ext_iface_num = (u8)rtw_ext_iface_num;
 #endif //CONFIG_MULTI_VIR_IFACES
 
+	registry_par->hiq_filter = (u8)rtw_hiq_filter;
 _func_exit_;
 
 	return status;
@@ -461,7 +466,14 @@ unsigned int rtw_classify8021d(struct sk_buff *skb)
 	return dscp >> 5;
 }
 
-static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb)
+static u16 rtw_select_queue(struct net_device *dev, struct sk_buff *skb
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0)
+ 					, void *accel_priv
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0)
+ 				, select_queue_fallback_t fallback
+#endif
+#endif
+)
 {
 	_adapter	*padapter = rtw_netdev_priv(dev);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
@@ -506,9 +518,13 @@ u16 rtw_recv_select_queue(struct sk_buff *skb)
 
 #endif
 
-static int rtw_ndev_notifier_call(struct notifier_block * nb, unsigned long state, void *ndev)
+static int rtw_ndev_notifier_call(struct notifier_block * nb, unsigned long state, void *ptr)
 {
-	struct net_device *dev = ndev;
+#if (LINUX_VERSION_CODE>=KERNEL_VERSION(3,11,0))
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+#else	
+	struct net_device *dev = ptr;
+#endif
 
 #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
 	if (dev->netdev_ops->ndo_do_ioctl != rtw_ioctl)
@@ -681,7 +697,7 @@ struct net_device *rtw_init_netdev(_adapter *old_padapter)
 #endif
 
 	//step 2.
-	loadparam(padapter, pnetdev);
+   	loadparam(padapter, pnetdev);
 
 	return pnetdev;
 
@@ -878,6 +894,8 @@ struct dvobj_priv *devobj_init(void)
 
 	pdvobj->processing_dev_remove = _FALSE;
 
+	_rtw_spinlock_init(&pdvobj->cam_ctl.lock);
+
 	return pdvobj;
 }
 
@@ -891,8 +909,10 @@ void devobj_deinit(struct dvobj_priv *pdvobj)
 	_rtw_mutex_free(&pdvobj->setch_mutex);
 	_rtw_mutex_free(&pdvobj->setbw_mutex);
 
+	_rtw_spinlock_free(&pdvobj->cam_ctl.lock);
+
 	rtw_mfree((u8*)pdvobj, sizeof(*pdvobj));
-}
+}	
 
 u8 rtw_reset_drv_sw(_adapter *padapter)
 {
@@ -1019,7 +1039,7 @@ _func_enter_;
 	}
 	// add for CONFIG_IEEE80211W, none 11w also can use
 	_rtw_spinlock_init(&padapter->security_key_mutex);
-
+	
 	// We don't need to memset padapter->XXX to zero, because adapter is allocated by rtw_zvmalloc().
 	//_rtw_memset((unsigned char *)&padapter->securitypriv, 0, sizeof (struct security_priv));
 
@@ -1153,7 +1173,7 @@ u8 rtw_free_drv_sw(_adapter *padapter)
 	#endif
 	// add for CONFIG_IEEE80211W, none 11w also can use
 	_rtw_spinlock_free(&padapter->security_key_mutex);
-
+	
 #ifdef CONFIG_BR_EXT
 	_rtw_spinlock_free(&padapter->br_ext_lock);
 #endif	// CONFIG_BR_EXT
@@ -1240,7 +1260,7 @@ int _netdev_vir_if_open(struct net_device *pnetdev)
 		int i;
 
 		padapter->bDriverStopped = _FALSE;
-		padapter->bSurpriseRemoved = _FALSE;
+	 	padapter->bSurpriseRemoved = _FALSE;
 		padapter->bCardDisableWOHSM = _FALSE;
 
 		_rtw_memcpy(padapter->HalData, primary_padapter->HalData, padapter->hal_data_sz);
@@ -1600,7 +1620,7 @@ int _netdev_if2_open(struct net_device *pnetdev)
 		int i;
 
 		padapter->bDriverStopped = _FALSE;
-		padapter->bSurpriseRemoved = _FALSE;
+	 	padapter->bSurpriseRemoved = _FALSE;
 		padapter->bCardDisableWOHSM = _FALSE;
 
 		_rtw_memcpy(padapter->HalData, primary_padapter->HalData, padapter->hal_data_sz);
@@ -2158,7 +2178,7 @@ int  ips_netdrv_open(_adapter *padapter)
 	}
 
 	rtw_set_pwr_state_check_timer(&padapter->pwrctrlpriv);
-	_set_timer(&padapter->mlmepriv.dynamic_chk_timer,5000);
+  	_set_timer(&padapter->mlmepriv.dynamic_chk_timer,5000);
 
 	 return _SUCCESS;
 
@@ -2181,7 +2201,7 @@ int rtw_ips_pwr_up(_adapter *padapter)
 
 	rtw_led_control(padapter, LED_CTL_NO_LINK);
 
-	DBG_871X("<===  rtw_ips_pwr_up.............. in %dms\n", rtw_get_passing_time_ms(start_time));
+ 	DBG_871X("<===  rtw_ips_pwr_up.............. in %dms\n", rtw_get_passing_time_ms(start_time));
 	return result;
 
 }
@@ -2315,3 +2335,4 @@ void rtw_ndev_destructor(struct net_device *ndev)
 #endif
 	free_netdev(ndev);
 }
+

@@ -21,7 +21,7 @@
 #define __RTL8723A_CMD_H__
 
 
-#define H2C_BT_FW_PATCH_LEN 		3
+#define H2C_8723A_BT_FW_PATCH_LEN 		3
 #define H2C_BT_PWR_FORCE_LEN		3
 
 enum cmd_msg_element_id
@@ -49,12 +49,12 @@ enum cmd_msg_element_id
 	BT_PTA_MANAGER_UPDATE_ENABLE_EID = 38,
 	DAC_SWING_VALUE_EID = 41,
 	TRADITIONAL_TDMA_EN_EID = 51,
-	H2C_BT_FW_PATCH = 54,
+	H2C_8723A_BT_FW_PATCH = 54,
 	B_TYPE_TDMA_EID = 58,
 	SCAN_EN_EID = 59,
 	LOWPWR_LPS_EID = 71,
-	H2C_RESET_TSF = 75,
-	MAX_CMDMSG_EID
+	H2C_8723A_RESET_TSF = 75,
+	MAX_CMDMSG_EID	 
 };
 
 struct cmd_msg_parm {
@@ -212,3 +212,4 @@ u8 rtl8723c_reset_tsf(_adapter *padapter, u8 reset_port);
 #endif	// CONFIG_TSF_RESET_OFFLOAD
 
 s32 FillH2CCmd(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
+

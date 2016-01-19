@@ -20,7 +20,7 @@
 #ifndef __RTL8812A_CMD_H__
 #define __RTL8812A_CMD_H__
 
-typedef enum _RTL8812_H2C_CMD
+typedef enum _RTL8812_H2C_CMD 
 {
 	H2C_8812_RSVDPAGE = 0,
 	H2C_8812_MSRRPT = 1,
@@ -28,12 +28,12 @@ typedef enum _RTL8812_H2C_CMD
 	H2C_8812_KEEP_ALIVE_CTRL = 3,
 	H2C_8812_DISCONNECT_DECISION = 4,
 
-	H2C_8812_INIT_OFFLOAD = 6,
+	H2C_8812_INIT_OFFLOAD = 6,		
 	H2C_8812_AP_OFFLOAD = 8,
 	H2C_8812_BCN_RSVDPAGE = 9,
 	H2C_8812_PROBERSP_RSVDPAGE = 10,
-
-	H2C_8812_SETPWRMODE = 0x20,
+	
+	H2C_8812_SETPWRMODE = 0x20,		
 	H2C_8812_PS_TUNING_PARA = 0x21,
 	H2C_8812_PS_TUNING_PARA2 = 0x22,
 	H2C_8812_PS_LPS_PARA = 0x23,
@@ -41,6 +41,7 @@ typedef enum _RTL8812_H2C_CMD
 	H2C_8812_RA_MASK = 0x40,
 	H2C_8812_TxBF = 0x41,
 	H2C_8812_RSSI_REPORT = 0x42,
+	H2C_8812_IQ_CALIBRATION = 0x45,
 
 	H2C_8812_BT_FW_PATCH = 0x6a,
 
@@ -105,7 +106,7 @@ struct H2C_SS_RFOFF_PARAM{
 
 //_SETPWRMODE_PARM
 #define SET_8812_H2CCMD_PWRMODE_PARM_MODE(__pH2CCmd, __Value)				SET_BITS_TO_LE_1BYTE_8BIT(__pH2CCmd, 0, 8, __Value)
-#define SET_8812_H2CCMD_PWRMODE_PARM_RLBM(__pH2CCmd, __Value)					SET_BITS_TO_LE_1BYTE((__pH2CCmd)+1, 0, 4, __Value)
+#define SET_8812_H2CCMD_PWRMODE_PARM_RLBM(__pH2CCmd, __Value)				SET_BITS_TO_LE_1BYTE((__pH2CCmd)+1, 0, 4, __Value)
 #define SET_8812_H2CCMD_PWRMODE_PARM_SMART_PS(__pH2CCmd, __Value)			SET_BITS_TO_LE_1BYTE((__pH2CCmd)+1, 4, 4, __Value)
 #define SET_8812_H2CCMD_PWRMODE_PARM_BCN_PASS_TIME(__pH2CCmd, __Value)		SET_BITS_TO_LE_1BYTE_8BIT((__pH2CCmd)+2, 0, 8, __Value)
 #define SET_8812_H2CCMD_PWRMODE_PARM_ALL_QUEUE_UAPSD(__pH2CCmd, __Value)	SET_BITS_TO_LE_1BYTE_8BIT((__pH2CCmd)+3, 0, 8, __Value)
@@ -134,7 +135,12 @@ u8 rtl8812_set_rssi_cmd(PADAPTER padapter, u8 *param);
 void rtl8812_set_raid_cmd(PADAPTER padapter, u32 bitmap, u8* arg);
 void rtl8812_Add_RateATid(PADAPTER padapter, u32 bitmap, u8* arg, u8 rssi_level);
 void rtl8812_set_wowlan_cmd(_adapter* padapter, u8 enable);
+s32 FillH2CCmd_8812(PADAPTER padapter, u8 ElementID, u32 CmdLen, u8 *pCmdBuffer);
+u8 GetTxBufferRsvdPageNum8812(_adapter *padapter, bool wowlan);
 
+#ifdef CONFIG_BT_COEXIST
+void rtl8812a_download_BTCoex_AP_mode_rsvd_page(PADAPTER padapter);
+#endif // CONFIG_BT_COEXIST
 #ifdef CONFIG_P2P_PS
 void rtl8812_set_p2p_ps_offload_cmd(PADAPTER padapter, u8 p2p_ps_state);
 #endif //CONFIG_P2P
@@ -208,10 +214,11 @@ void	rtl8812_iqk_done(_adapter* padapter);
 s32
 _C2HContentParsing8812(
 	IN	PADAPTER	Adapter,
-	IN	u8			c2hCmdId,
+	IN	u8			c2hCmdId, 
 	IN	u8			c2hCmdLen,
 	IN	u8 			*tmpBuf
 );
 void	C2HPacketHandler_8812(PADAPTER Adapter, u8 *Buffer, u8 Length);
 
 #endif//__RTL8812A_CMD_H__
+

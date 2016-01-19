@@ -63,7 +63,7 @@ inline struct proc_dir_entry *rtw_proc_create_dir(const char *name, struct proc_
 	return entry;
 }
 
-inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent,
+inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent, 
 	const struct file_operations *fops, void * data)
 {
 	struct proc_dir_entry *entry;
@@ -106,7 +106,7 @@ static ssize_t proc_set_log_level(struct file *file, const char __user *buffer, 
 	if (count < 1)
 		return -EINVAL;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
 
 		int num = sscanf(tmp, "%d ", &log_level);
 
@@ -118,13 +118,13 @@ static ssize_t proc_set_log_level(struct file *file, const char __user *buffer, 
 	} else {
 		return -EFAULT;
 	}
-
+	
 	return count;
 }
 
 #ifdef DBG_MEM_ALLOC
 static int proc_get_mstat(struct seq_file *m, void *v)
-{
+{	
 	rtw_mstat_dump(m);
 	return 0;
 }
@@ -158,7 +158,7 @@ static ssize_t rtw_drv_proc_write(struct file *file, const char __user *buffer, 
 	ssize_t index = (ssize_t)PDE_DATA(file_inode(file));
 	const struct rtw_proc_hdl *hdl = drv_proc_hdls+index;
 	ssize_t (*write)(struct file *, const char __user *, size_t, loff_t *, void *) = hdl->write;
-
+	
 	if (write)
 		return write(file, buffer, count, pos, NULL);
 
@@ -290,7 +290,7 @@ int proc_get_rx_info(struct seq_file *m, void *v)
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct dvobj_priv *psdpriv = padapter->dvobj;
 	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
-
+	
 	//Counts of packets whose seq_num is less than preorder_ctrl->indicate_seq, Ex delay, retransmission, redundant packets and so on
 	DBG_871X_SEL_NL(m,"Counts of Packets Whose Seq_Num Less Than Reorder Control Seq_Num: %llu\n",(unsigned long long)pdbgpriv->dbg_rx_ampdu_drop_count);
 	//How many times the Rx Reorder Timer is triggered.
@@ -315,14 +315,14 @@ const struct rtw_proc_hdl adapter_proc_hdls [] = {
 	{"qos_option", proc_get_qos_option, NULL},
 	{"ht_option", proc_get_ht_option, NULL},
 	{"rf_info", proc_get_rf_info, NULL},
-	{"survey_info", proc_get_survey_info, NULL},
+	{"survey_info", proc_get_survey_info, NULL},	
 	{"ap_info", proc_get_ap_info, NULL},
 	{"adapter_state", proc_get_adapter_state, NULL},
 	{"trx_info", proc_get_trx_info, NULL},
 	{"rate_ctl", proc_get_rate_ctl, proc_set_rate_ctl},
 	{"hw_info", proc_get_hw_status, NULL},
 	{"rx_info", proc_get_rx_info, proc_reset_rx_info},
-
+	
 #ifdef CONFIG_LAYER2_ROAMING
 	{"roam_flags", proc_get_roam_flags, proc_set_roam_flags},
 	{"roam_param", proc_get_roam_param, proc_set_roam_param},
@@ -533,7 +533,7 @@ ssize_t proc_set_odm_adaptivity(struct file *file, const char __user *buffer, si
 
 		rtw_odm_adaptivity_parm_set(padapter, (s8)TH_L2H_ini, TH_EDCCA_HL_diff, (s8)IGI_Base, (bool)ForceEDCCA, AdapEn_RSSI, IGI_LowerBound);
 	}
-
+	
 	return count;
 }
 #endif /* CONFIG_ODM_ADAPTIVITY */
@@ -566,7 +566,7 @@ static ssize_t rtw_dm_proc_write(struct file *file, const char __user *buffer, s
 	ssize_t index = (ssize_t)PDE_DATA(file_inode(file));
 	const struct rtw_proc_hdl *hdl = dm_proc_hdls+index;
 	ssize_t (*write)(struct file *, const char __user *, size_t, loff_t *, void *) = hdl->write;
-
+	
 	if (write)
 		return write(file, buffer, count, pos, ((struct seq_file *)file->private_data)->private);
 
@@ -732,3 +732,4 @@ void rtw_adapter_proc_replace(struct net_device *dev)
 }
 
 #endif /* CONFIG_PROC_DEBUG */
+

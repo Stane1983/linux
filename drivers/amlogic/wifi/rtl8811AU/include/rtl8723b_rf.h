@@ -30,3 +30,4 @@ PHY_RF6052SetBandwidth8723B(
 	IN	CHANNEL_WIDTH		Bandwidth);
 
 #endif
+

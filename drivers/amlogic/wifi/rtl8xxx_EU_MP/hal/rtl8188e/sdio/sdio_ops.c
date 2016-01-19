@@ -243,7 +243,7 @@ _func_enter_;
 	psdio = &psdiodev->intf_data;
 
 	ftaddr = _cvrt2ftaddr(addr, NULL, NULL);
-	sd_cmd52_read(psdio, ftaddr, 2, (u8*)&val);
+	sd_cmd52_read(psdio, ftaddr, 2, (u8*)&val);	
 	val = le16_to_cpu(val);
 
 _func_exit_;
@@ -370,7 +370,7 @@ _func_enter_;
 		val = sd_read32(psdio, ftaddr, NULL);
 	} else {
 		u8 *ptmpbuf;
-
+				
 		ptmpbuf = (u8*)rtw_malloc(8);
 		if (NULL == ptmpbuf) {
 			DBG_871X(KERN_ERR "%s: Allocate memory FAIL!(size=8) addr=0x%x\n", __func__, addr);
@@ -611,7 +611,7 @@ _func_enter_;
 		err = sd_cmd52_write(psdio, ftaddr, 4, (u8*)&val);
 	}
 #else
-	if (shift == 0) {
+	if (shift == 0) {	
 		sd_write32(psdio, ftaddr, val, &err);
 	} else {
 		u8 *ptmpbuf;
@@ -628,10 +628,10 @@ _func_enter_;
 		val = cpu_to_le32(val);
 		_rtw_memcpy(ptmpbuf+shift, &val, 4);
 		err = sd_write(psdio, ftaddr, 8, ptmpbuf);
-
+		
 		rtw_mfree(ptmpbuf, 8);
 	}
-#endif
+#endif	
 
 _func_exit_;
 
@@ -750,12 +750,12 @@ static u32 sdio_read_port(
 	cnt = _RND4(cnt);
 	if (cnt > psdio->block_transfer_len)
 		cnt = _RND(cnt, psdio->block_transfer_len);
-
+	
 //	cnt = sdio_align_size(cnt);
 
 	err = _sd_read(psdio, addr, cnt, mem);
 	//err = sd_read(psdio, addr, cnt, mem);
-
+	
 
 
 	if (err) return _FAIL;
@@ -803,7 +803,7 @@ static u32 sdio_write_port(
 
 	rtw_sctx_done_err(&xmitbuf->sctx,
 		err ? RTW_SCTX_DONE_WRITE_PORT_ERR : RTW_SCTX_DONE_SUCCESS);
-
+	
 	if (err)
 	{
 		DBG_871X("%s, error=%d\n", __func__, err);
@@ -874,7 +874,7 @@ s32 _sdio_local_read(
 		_rtw_memcpy(pbuf, ptmpbuf, cnt);
 
 	if(ptmpbuf)
-		rtw_mfree(ptmpbuf, n);
+		rtw_mfree(ptmpbuf, n);	
 
 	return err;
 }
@@ -920,7 +920,7 @@ s32 sdio_local_read(
 		_rtw_memcpy(pbuf, ptmpbuf, cnt);
 
 	if(ptmpbuf)
-		rtw_mfree(ptmpbuf, n);
+		rtw_mfree(ptmpbuf, n);	
 
 	return err;
 }
@@ -967,7 +967,7 @@ s32 _sdio_local_write(
 	_rtw_memcpy(ptmpbuf, pbuf, cnt);
 
 	err = _sd_write(psdio, addr, cnt, ptmpbuf);
-
+	
 	if (ptmpbuf)
 		rtw_mfree(ptmpbuf, cnt);
 
@@ -1433,7 +1433,7 @@ void UpdateInterruptMask8188ESdio(PADAPTER padapter, u32 AddMSR, u32 RemoveMSR)
 void ClearInterrupt8189ESdio(PADAPTER padapter)
 {
     HAL_DATA_TYPE   *pHalData = GET_HAL_DATA(padapter);
-    u32 v32;
+    u32 v32; 
 
     pHalData->sdio_hisr &= pHalData->sdio_himr;
 
@@ -1442,7 +1442,7 @@ void ClearInterrupt8189ESdio(PADAPTER padapter)
     if (v32) {
         v32 = cpu_to_le32(v32);
         sdio_local_write(padapter, SDIO_REG_HISR, 4, (u8*)&v32);
-    }
+    }    
 }
 #endif
 
@@ -1552,7 +1552,7 @@ static struct recv_buf* sd_recv_rxfifo(PADAPTER padapter, u32 size)
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("%s: read port FAIL!\n", __FUNCTION__));
 		return NULL;
 	}
-
+	
 
 	//3 4. init recvbuf
 	precvbuf->len = readsize;
@@ -1628,7 +1628,7 @@ static void sd_rxhandler(PADAPTER padapter, struct recv_buf *precvbuf)
 
 	//3 1. enqueue recvbuf
 	rtw_enqueue_recvbuf(precvbuf, ppending_queue);
-
+	
 	//3 2. schedule tasklet
 #ifdef PLATFORM_LINUX
 	tasklet_schedule(&precvpriv->recv_tasklet);
@@ -1705,7 +1705,7 @@ void sd_int_dpc(PADAPTER padapter)
 	{
 		u8 *status;
 		u32 addr;
-
+	
 		status = _rtw_malloc(4);
 		if (status)
 		{
@@ -1717,7 +1717,7 @@ void sd_int_dpc(PADAPTER padapter)
 			_rtw_mfree(status, 4);
 		} else {
 			DBG_8192C("%s: SDIO_HISR_TXERR, but can't allocate memory to read status!\n", __func__);
-		}
+		}		
 	}
 
 #ifdef CONFIG_INTERRUPT_BASED_TXBCN
@@ -1727,22 +1727,22 @@ void sd_int_dpc(PADAPTER padapter)
 	#endif
 	#ifdef  CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
 	if (pHalData->sdio_hisr & (SDIO_HISR_TXBCNOK|SDIO_HISR_TXBCNERR))
-	#endif
-	{
+	#endif	
+	{		
 		struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 
 		#if 0 //for debug
 		if (pHalData->sdio_hisr & SDIO_HISR_BCNERLY_INT)
 			DBG_8192C("%s: SDIO_HISR_BCNERLY_INT\n", __func__);
-
-		if (pHalData->sdio_hisr & SDIO_HISR_TXBCNOK)
+		
+		if (pHalData->sdio_hisr & SDIO_HISR_TXBCNOK)	
 			DBG_8192C("%s: SDIO_HISR_TXBCNOK\n", __func__);
-
-		if (pHalData->sdio_hisr & SDIO_HISR_TXBCNERR)
+	
+		if (pHalData->sdio_hisr & SDIO_HISR_TXBCNERR)	
 			DBG_8192C("%s: SDIO_HISR_TXBCNERR\n", __func__);
 		#endif
 
-
+		
 		if(check_fwstate(pmlmepriv, WIFI_AP_STATE))
 		{
 			//send_beacon(padapter);
@@ -1817,7 +1817,7 @@ void sd_int_dpc(PADAPTER padapter)
 			}
 			else
 				break;
-#ifdef CONFIG_SDIO_DISABLE_RXFIFO_POLLING_LOOP
+#ifdef CONFIG_SDIO_DISABLE_RXFIFO_POLLING_LOOP			
 		} while (0);
 #else
 		} while (1);
@@ -1825,7 +1825,7 @@ void sd_int_dpc(PADAPTER padapter)
 #endif
 
 	}
-
+	
 }
 
 void sd_int_hdl(PADAPTER padapter)
@@ -1854,15 +1854,15 @@ void sd_int_hdl(PADAPTER padapter)
 		}
 
 		sd_int_dpc(padapter);
-
-	}
-	else
+		
+	} 
+	else 
 	{
 		RT_TRACE(_module_hci_ops_c_, _drv_err_,
 				("%s: HISR(0x%08x) and HIMR(0x%08x) not match!\n",
 				__FUNCTION__, pHalData->sdio_hisr, pHalData->sdio_himr));
 	}
-
+	
 }
 
 //
@@ -1911,12 +1911,12 @@ u8 RecvOnePkt(PADAPTER padapter, u32 size)
 	u8 res = _FALSE;
 
 	DBG_8192C("+%s: size: %d+\n", __func__, size);
-
+	
 	if (padapter == NULL) {
 		DBG_8192C(KERN_ERR "%s: padapter is NULL!\n", __func__);
 		return _FALSE;
 	}
-
+	
 	psddev = padapter->dvobj;
 	psdio_data = &psddev->intf_data;
 	func = psdio_data->func;

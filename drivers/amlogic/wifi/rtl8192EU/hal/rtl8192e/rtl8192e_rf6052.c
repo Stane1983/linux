@@ -41,9 +41,9 @@ VOID
 PHY_RF6052SetBandwidth8192E(
 	IN	PADAPTER				Adapter,
 	IN	CHANNEL_WIDTH		Bandwidth)	//20M or 40M
-{
+{	
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(Adapter);
-
+	
 	switch(Bandwidth)
 	{
 		case CHANNEL_WIDTH_20:
@@ -52,17 +52,17 @@ PHY_RF6052SetBandwidth8192E(
 			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
 			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
 		break;
-
+			
 		case CHANNEL_WIDTH_40:
 			//RT_DISP(FIOCTL, IOCTL_STATE, ("PHY_RF6052SetBandwidth8192E(), set 40MHz, pHalData->RfRegChnlVal[0] = 0x%x \n", pHalData->RfRegChnlVal[0]));
 			pHalData->RfRegChnlVal[0] = ((pHalData->RfRegChnlVal[0] & 0xfffff3ff) | BIT10 );
-			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
-			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);
+			PHY_SetRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);	
+			PHY_SetRFReg(Adapter, RF_PATH_B, RF_CHNLBW, bRFRegOffsetMask, pHalData->RfRegChnlVal[0]);	
 		break;
-
+			
 		default:
 			//RT_TRACE(COMP_DBG, DBG_LOUD, ("PHY_RF6052SetBandwidth8192E(): unknown Bandwidth: %#X\n",Bandwidth ));
-			break;
+			break;			
 	}
 }
 
@@ -75,17 +75,17 @@ phy_RF6052_Config_ParaFile_8192E(
 	int					rtStatus = _SUCCESS;
 	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(Adapter);
 	BB_REGISTER_DEFINITION_T	*pPhyReg;
-	static char			sz8192ERadioAFile[] = RTL8192E_PHY_RADIO_A;
+	static char			sz8192ERadioAFile[] = RTL8192E_PHY_RADIO_A;	
 	static char			sz8192ERadioBFile[] = RTL8192E_PHY_RADIO_B;
 	static char 			sz8192ETxPwrTrack[] = RTL8192E_TXPWR_TRACK;
-
+	
 	char					*pszRadioAFile = NULL, *pszRadioBFile = NULL, *pszTxPwrTrack = NULL;
 
 	u32 u4RegValue,MaskforPhySet = 0;;
 	pszRadioAFile = sz8192ERadioAFile;
 	pszRadioBFile = sz8192ERadioBFile;
 	pszTxPwrTrack = sz8192ETxPwrTrack;
-
+	
 
 
 	//3//-----------------------------------------------------------------
@@ -111,10 +111,10 @@ phy_RF6052_Config_ParaFile_8192E(
 		}
 
 
-		/*----Set RF_ENV enable----*/
+		/*----Set RF_ENV enable----*/		
 		PHY_SetBBReg(Adapter, pPhyReg->rfintfe|MaskforPhySet, bRFSI_RFENV<<16, 0x1);
 		rtw_udelay_os(1);//PlatformStallExecution(1);
-
+		
 		/*----Set RF_ENV output high----*/
 		PHY_SetBBReg(Adapter, pPhyReg->rfintfo|MaskforPhySet, bRFSI_RFENV, 0x1);
 		rtw_udelay_os(1);//PlatformStallExecution(1);
@@ -125,7 +125,7 @@ phy_RF6052_Config_ParaFile_8192E(
 
 		PHY_SetBBReg(Adapter, pPhyReg->rfHSSIPara2|MaskforPhySet, b3WireDataLength, 0x0);	// Set 0 to 12  bits for 8255
 		rtw_udelay_os(1);//PlatformStallExecution(1);
-
+		
 		/*----Initialize RF fom connfiguration file----*/
 		switch(eRFPath)
 		{
@@ -176,7 +176,7 @@ phy_RF6052_Config_ParaFile_8192E(
 	}
 
 	//3 -----------------------------------------------------------------
-	//3 Configuration of Tx Power Tracking
+	//3 Configuration of Tx Power Tracking 
 	//3 -----------------------------------------------------------------
 
 #ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
@@ -213,3 +213,4 @@ PHY_RF6052_Config_8192E(
 
 
 /* End of HalRf6052.c */
+

@@ -179,3 +179,5 @@ u8 HalPwrSeqCmdParsing(
 
 	return _TRUE;
 }
+
+

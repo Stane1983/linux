@@ -1,21 +1,21 @@
-/******************************************************************************
-*
-* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
+/****************************************************************************** 
+* 
+* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved. 
+* 
+* This program is free software; you can redistribute it and/or modify it 
+* under the terms of version 2 of the GNU General Public License as 
+* published by the Free Software Foundation. 
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT 
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+* more details. 
+* 
+* You should have received a copy of the GNU General Public License along with 
+* this program; if not, write to the Free Software Foundation, Inc., 
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA 
+* 
+* 
 ******************************************************************************/
 
 #include "../odm_precomp.h"
@@ -32,7 +32,7 @@ CheckPositive(
      u1Byte    _GPA         = (pDM_Odm->BoardType & BIT3) >> 3;
      u1Byte    _ALNA        = (pDM_Odm->BoardType & BIT7) >> 7;
      u1Byte    _APA         = (pDM_Odm->BoardType & BIT6) >> 6;
-
+     
      u1Byte     cBoard      = (u1Byte)((Condition1 &  bMaskByte0)               >>  0);
      u1Byte     cInterface  = (u1Byte)((Condition1 & (BIT11|BIT10|BIT9|BIT8))   >>  8);
      u1Byte     cPackage    = (u1Byte)((Condition1 & (BIT15|BIT14|BIT13|BIT12)) >> 12);
@@ -46,29 +46,29 @@ CheckPositive(
      u1Byte     cTypeGPA    = (u1Byte)((Condition2 & bMaskByte1) >>  8);
      u1Byte     cTypeALNA   = (u1Byte)((Condition2 & bMaskByte2) >> 16);
      u1Byte     cTypeAPA    = (u1Byte)((Condition2 & bMaskByte3) >> 24);
-
-     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+     
+     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                  ("===> [8812A] CheckPositive(0x%X 0x%X)\n", Condition1, Condition2));
-     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                  ("	(Platform, Interface) = (0x%X, 0x%X)", pDM_Odm->SupportPlatform, pDM_Odm->SupportInterface));
-     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                  ("	(Board, Package) = (0x%X, 0x%X\n", pDM_Odm->BoardType, pDM_Odm->PackageType));
-
-     if ((cPlatform  != pDM_Odm->SupportPlatform  && cPlatform  != 0) ||
-         (cInterface != pDM_Odm->SupportInterface && cInterface != 0) ||
+     
+     if ((cPlatform  != pDM_Odm->SupportPlatform  && cPlatform  != 0) || 
+         (cInterface != pDM_Odm->SupportInterface && cInterface != 0) || 
          (cCut       != pDM_Odm->CutVersion       && cCut       != 0))
          return FALSE;
-
+     
      if (cPackage != pDM_Odm->PackageType && cPackage != 0)
          return FALSE;
-
+     
      if (((_GLNA != 0) && (_GLNA == cGLNA) && (cTypeGLNA == pDM_Odm->TypeGLNA)) ||
          ((_GPA  != 0) && (_GPA  == cGPA ) && (cTypeGPA  == pDM_Odm->TypeGPA )) ||
          ((_ALNA != 0) && (_ALNA == cALNA) && (cTypeALNA == pDM_Odm->TypeALNA)) ||
          ((_APA  != 0) && (_APA  == cAPA ) && (cTypeAPA  == pDM_Odm->TypeAPA )))
          return TRUE;
-     else
-	return FALSE;
+     else 
+     	return FALSE;
 }
 
 static BOOLEAN
@@ -85,7 +85,7 @@ CheckNegative(
 *                           AGC_TAB.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_AGC_TAB[] = {
+u4Byte Array_MP_8812A_AGC_TAB[] = { 
 	0x80000001,0x00000000,0x40000000,0x00000000,
 		0x81C, 0xFC000001,
 		0x81C, 0xFB020001,
@@ -422,8 +422,8 @@ u4Byte Array_MP_8812A_AGC_TAB[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_AGC_TAB(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     #define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
     #define COND_ELSE  2
@@ -431,14 +431,14 @@ ODM_ReadAndConfig_MP_8812A_AGC_TAB(
     u4Byte     i         = 0;
     u4Byte     ArrayLen    = sizeof(Array_MP_8812A_AGC_TAB)/sizeof(u4Byte);
     pu4Byte    Array       = Array_MP_8812A_AGC_TAB;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8812A_AGC_TAB\n"));
 
     for (i = 0; i < ArrayLen; i += 2 )
     {
         u4Byte v1 = Array[i];
         u4Byte v2 = Array[i+1];
-
+    
         // This (offset, data) pair doesn't care the condition.
         if ( v1 < 0x40000000 )
         {
@@ -453,7 +453,7 @@ ODM_ReadAndConfig_MP_8812A_AGC_TAB(
             if (cCond == COND_ELSE) { // ELSE, ENDIF
                 bMatched = TRUE;
                 READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
+            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) { 
                 bMatched = FALSE;
                 READ_NEXT_PAIR(v1, v2, i);
                 READ_NEXT_PAIR(v1, v2, i);
@@ -487,7 +487,7 @@ ODM_ReadAndConfig_MP_8812A_AGC_TAB(
                     cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
                 }
             }
-        }
+        } 
     }
 }
 
@@ -502,7 +502,7 @@ ODM_GetVersion_MP_8812A_AGC_TAB(
 *                           PHY_REG.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_PHY_REG[] = {
+u4Byte Array_MP_8812A_PHY_REG[] = { 
 		0x800, 0x8020D010,
 		0x804, 0x080112E0,
 		0x808, 0x0E028233,
@@ -737,8 +737,8 @@ u4Byte Array_MP_8812A_PHY_REG[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_PHY_REG(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     #define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
     #define COND_ELSE  2
@@ -746,14 +746,14 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG(
     u4Byte     i         = 0;
     u4Byte     ArrayLen    = sizeof(Array_MP_8812A_PHY_REG)/sizeof(u4Byte);
     pu4Byte    Array       = Array_MP_8812A_PHY_REG;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8812A_PHY_REG\n"));
 
     for (i = 0; i < ArrayLen; i += 2 )
     {
         u4Byte v1 = Array[i];
         u4Byte v2 = Array[i+1];
-
+    
         // This (offset, data) pair doesn't care the condition.
         if ( v1 < 0x40000000 )
         {
@@ -768,7 +768,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG(
             if (cCond == COND_ELSE) { // ELSE, ENDIF
                 bMatched = TRUE;
                 READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
+            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) { 
                 bMatched = FALSE;
                 READ_NEXT_PAIR(v1, v2, i);
                 READ_NEXT_PAIR(v1, v2, i);
@@ -802,7 +802,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG(
                     cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
                 }
             }
-        }
+        } 
     }
 }
 
@@ -817,7 +817,7 @@ ODM_GetVersion_MP_8812A_PHY_REG(
 *                           AGC_TAB_DIFF.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_AGC_TAB_DIFF_LB[] = {
+u4Byte Array_MP_8812A_AGC_TAB_DIFF_LB[] = { 
 	0x80000004,0x00000000,0x40000000,0x00000000,
 		0x81C, 0x47CE0001,
 		0x81C, 0x46D00001,
@@ -849,7 +849,7 @@ u4Byte Array_MP_8812A_AGC_TAB_DIFF_LB[] = {
 	0xB0000000,0x00000000,
 };
 
-u4Byte Array_MP_8812A_AGC_TAB_DIFF_HB[] = {
+u4Byte Array_MP_8812A_AGC_TAB_DIFF_HB[] = { 
 	0x80000004,0x00000000,0x40000000,0x00000000,
 		0x81C, 0x45CE0001,
 		0x81C, 0x44D00001,
@@ -883,23 +883,23 @@ u4Byte Array_MP_8812A_AGC_TAB_DIFF_HB[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_AGC_TAB_DIFF(
-	IN   PDM_ODM_T  pDM_Odm,
-	IN   u4Byte  	Array[],
-	IN   u4Byte  	ArrayLen
-	)
+ 	IN   PDM_ODM_T  pDM_Odm,
+ 	IN   u4Byte  	Array[],
+ 	IN   u4Byte  	ArrayLen 
+ 	)
 {
     #define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
     #define COND_ELSE  2
     #define COND_ENDIF 3
     u4Byte     i         = 0;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8812A_AGC_TAB_DIFF\n"));
 
     for (i = 0; i < ArrayLen; i += 2 )
     {
         u4Byte v1 = Array[i];
         u4Byte v2 = Array[i+1];
-
+    
         // This (offset, data) pair doesn't care the condition.
         if ( v1 < 0x40000000 )
         {
@@ -914,7 +914,7 @@ ODM_ReadAndConfig_MP_8812A_AGC_TAB_DIFF(
             if (cCond == COND_ELSE) { // ELSE, ENDIF
                 bMatched = TRUE;
                 READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
+            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) { 
                 bMatched = FALSE;
                 READ_NEXT_PAIR(v1, v2, i);
                 READ_NEXT_PAIR(v1, v2, i);
@@ -948,7 +948,7 @@ ODM_ReadAndConfig_MP_8812A_AGC_TAB_DIFF(
                     cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
                 }
             }
-        }
+        } 
     }
 }
 
@@ -963,7 +963,7 @@ ODM_GetVersion_MP_8812A_AGC_TAB_DIFF(
 *                           PHY_REG_PG.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_PHY_REG_PG[] = {
+u4Byte Array_MP_8812A_PHY_REG_PG[] = { 
 	0, 0, 0, 0x00000c20, 0xffffffff, 0x34363840,
 	0, 0, 0, 0x00000c24, 0xffffffff, 0x42424444,
 	0, 0, 0, 0x00000c28, 0xffffffff, 0x30323638,
@@ -1014,8 +1014,8 @@ u4Byte Array_MP_8812A_PHY_REG_PG[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_PHY_REG_PG(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	u4Byte     hex = 0;
 	u4Byte     i           = 0;
@@ -1023,7 +1023,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_PG(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     _interface   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_MP_8812A_PHY_REG_PG)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_MP_8812A_PHY_REG_PG;
 
@@ -1053,7 +1053,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_PG(
 *                           PHY_REG_PG_ASUS.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_PHY_REG_PG_ASUS[] = {
+u4Byte Array_MP_8812A_PHY_REG_PG_ASUS[] = { 
 	0, 0, 0, 0x00000c20, 0xffffffff, 0x34343434,
 	0, 0, 0, 0x00000c24, 0xffffffff, 0x32323232,
 	0, 0, 0, 0x00000c28, 0xffffffff, 0x28303232,
@@ -1104,8 +1104,8 @@ u4Byte Array_MP_8812A_PHY_REG_PG_ASUS[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_PHY_REG_PG_ASUS(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	u4Byte     hex = 0;
 	u4Byte     i           = 0;
@@ -1113,7 +1113,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_PG_ASUS(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     _interface   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_MP_8812A_PHY_REG_PG)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_MP_8812A_PHY_REG_PG;
 
@@ -1143,7 +1143,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_PG_ASUS(
 *                           PHY_REG_PG_NEC.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_PHY_REG_PG_NEC[] = {
+u4Byte Array_MP_8812A_PHY_REG_PG_NEC[] = { 
 	0, 0, 0, 0x00000c20, 0xffffffff, 0x32323232,
 	0, 0, 0, 0x00000c24, 0xffffffff, 0x32343434,
 	0, 0, 0, 0x00000c28, 0xffffffff, 0x24262830,
@@ -1194,8 +1194,8 @@ u4Byte Array_MP_8812A_PHY_REG_PG_NEC[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_PHY_REG_PG_NEC(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
 	u4Byte     hex = 0;
 	u4Byte     i           = 0;
@@ -1203,7 +1203,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_PG_NEC(
 	pu4Byte    ptr_array   = NULL;
 	u1Byte     platform    = pDM_Odm->SupportPlatform;
 	u1Byte     _interface   = pDM_Odm->SupportInterface;
-	u1Byte     board       = pDM_Odm->BoardType;
+	u1Byte     board       = pDM_Odm->BoardType;  
 	u4Byte     ArrayLen    = sizeof(Array_MP_8812A_PHY_REG_PG)/sizeof(u4Byte);
 	pu4Byte    Array       = Array_MP_8812A_PHY_REG_PG;
 
@@ -1233,7 +1233,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_PG_NEC(
 *                           PHY_REG_MP.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_PHY_REG_MP[] = {
+u4Byte Array_MP_8812A_PHY_REG_MP[] = { 
 		0x800, 0x8020D410,
 		0x830, 0x2EAA8EB6,
 		0xC90, 0x01E00000,
@@ -1242,8 +1242,8 @@ u4Byte Array_MP_8812A_PHY_REG_MP[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_PHY_REG_MP(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     #define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
     #define COND_ELSE  2
@@ -1251,14 +1251,14 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_MP(
     u4Byte     i         = 0;
     u4Byte     ArrayLen    = sizeof(Array_MP_8812A_PHY_REG_MP)/sizeof(u4Byte);
     pu4Byte    Array       = Array_MP_8812A_PHY_REG_MP;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8812A_PHY_REG_MP\n"));
 
     for (i = 0; i < ArrayLen; i += 2 )
     {
         u4Byte v1 = Array[i];
         u4Byte v2 = Array[i+1];
-
+    
         // This (offset, data) pair doesn't care the condition.
         if ( v1 < 0x40000000 )
         {
@@ -1273,7 +1273,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_MP(
             if (cCond == COND_ELSE) { // ELSE, ENDIF
                 bMatched = TRUE;
                 READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
+            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) { 
                 bMatched = FALSE;
                 READ_NEXT_PAIR(v1, v2, i);
                 READ_NEXT_PAIR(v1, v2, i);
@@ -1307,7 +1307,7 @@ ODM_ReadAndConfig_MP_8812A_PHY_REG_MP(
                     cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
                 }
             }
-        }
+        } 
     }
 }
 
@@ -1319,3 +1319,4 @@ ODM_GetVersion_MP_8812A_PHY_REG_MP(
 }
 
 #endif // end of HWIMG_SUPPORT
+

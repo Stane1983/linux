@@ -32,7 +32,7 @@ void rtl8812_sreset_xmit_status_check(_adapter *padapter)
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 	unsigned int diff_time;
 	u32 txdma_status;
-
+	
 	if( (txdma_status=rtw_read32(padapter, REG_TXDMA_STATUS)) !=0x00){
 		DBG_871X("%s REG_TXDMA_STATUS:0x%08x\n", __FUNCTION__, txdma_status);
 		rtw_hal_sreset_reset(padapter);
@@ -54,7 +54,7 @@ void rtl8812_sreset_xmit_status_check(_adapter *padapter)
 			else{
 				diff_time = rtw_get_passing_time_ms(psrtpriv->last_tx_complete_time);
 				if (diff_time > 4000) {
-					u32 ability;
+					u32 ability = 0;
 
 					//padapter->Wifi_Error_Status = WIFI_TX_HANG;
 					rtw_hal_get_hwreg(padapter, HW_VAR_DM_FLAG, (u8*)&ability);
@@ -86,7 +86,7 @@ void rtl8812_sreset_linked_status_check(_adapter *padapter)
 	rx_dma_status = rtw_read32(padapter,REG_RXDMA_STATUS);
 	if(rx_dma_status!= 0x00){
 		DBG_8192C("%s REG_RXDMA_STATUS:0x%08x\n",__FUNCTION__,rx_dma_status);
-	}
+	}	
 #if 0
 	u32 regc50,regc58,reg824,reg800;
 	regc50 = rtw_read32(padapter,0xc50);
@@ -111,3 +111,4 @@ void rtl8812_sreset_linked_status_check(_adapter *padapter)
 	}
 }
 #endif
+

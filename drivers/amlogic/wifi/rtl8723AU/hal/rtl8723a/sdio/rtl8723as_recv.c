@@ -103,16 +103,16 @@ void update_recvframe_phyinfo(
 {
 	PADAPTER 			padapter= precvframe->u.hdr.adapter;
 	struct rx_pkt_attrib	*pattrib = &precvframe->u.hdr.attrib;
-	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(padapter);
+	HAL_DATA_TYPE		*pHalData = GET_HAL_DATA(padapter);	
 	PODM_PHY_INFO_T 	pPHYInfo = (PODM_PHY_INFO_T)(&pattrib->phy_info);
-
+	
 	u8			*wlanhdr;
 	ODM_PACKET_INFO_T	pkt_info;
 	u8 *sa;
 	//_irqL		irqL;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
-
+	
 	pkt_info.bPacketMatchBSSID =_FALSE;
 	pkt_info.bPacketToSelf = _FALSE;
 	pkt_info.bPacketBeacon = _FALSE;
@@ -129,12 +129,12 @@ void update_recvframe_phyinfo(
 	pkt_info.bPacketBeacon = pkt_info.bPacketMatchBSSID && (GetFrameSubType(wlanhdr) == WIFI_BEACON);
 
 	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
+		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){				
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
 			#if 0
-			{
+			{					
 				DBG_8192C("==> rx beacon from AP[%02x:%02x:%02x:%02x:%02x:%02x]\n",
-					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);
+					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);					
 			}
 			#endif
 		}
@@ -142,19 +142,19 @@ void update_recvframe_phyinfo(
 	}
 	else{
 		sa = get_sa(wlanhdr);
-	}
-
+	}			
+		
 	pkt_info.StationID = 0xFF;
-
+	
 	pstapriv = &padapter->stapriv;
 	psta = rtw_get_stainfo(pstapriv, sa);
 	if (psta)
 	{
-		pkt_info.StationID = psta->mac_id;
+      		pkt_info.StationID = psta->mac_id;
 		//DBG_8192C("%s ==> StationID(%d)\n",__FUNCTION__,pkt_info.StationID);
 	}
 	pkt_info.Rate = pattrib->mcs_rate;
-
+		
 
 	//rtl8192c_query_rx_phy_status(precvframe, pphy_status);
 	//_enter_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
@@ -165,7 +165,7 @@ void update_recvframe_phyinfo(
 		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))
 	{
 		if (psta)
-		{
+		{ 
 			precvframe->u.hdr.psta = psta;
 			rtl8192c_process_phy_info(padapter, precvframe);
               }
@@ -179,14 +179,14 @@ void update_recvframe_phyinfo(
 				precvframe->u.hdr.psta = psta;
 			}
 		}
-		rtl8192c_process_phy_info(padapter, precvframe);
+		rtl8192c_process_phy_info(padapter, precvframe);             
 	}
 }
 
 static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_buf	*precvbuf, struct phy_stat *pphy_status)
-{
+{	
 	s32 ret=_SUCCESS;
-#ifdef CONFIG_CONCURRENT_MODE
+#ifdef CONFIG_CONCURRENT_MODE	
 	u8 *primary_myid, *secondary_myid, *paddr1;
 	union recv_frame	*precvframe_if2 = NULL;
 	_adapter *primary_padapter = precvframe->u.hdr.adapter;
@@ -206,25 +206,25 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_buf	*precvbu
 		secondary_myid = myid(&secondary_padapter->eeprompriv);
 
 		if(_rtw_memcmp(paddr1, secondary_myid, ETH_ALEN))
-		{
+		{			
 			//change to secondary interface
 			precvframe->u.hdr.adapter = secondary_padapter;
-		}
+		}	
 
 		//ret = recv_entry(precvframe);
 
 	}
-	else // Handle BC/MC Packets
+	else // Handle BC/MC Packets	
 	{
 		//clone/copy to if2
 		_pkt	 *pkt_copy = NULL;
 		struct rx_pkt_attrib *pattrib = NULL;
-
+		
 		precvframe_if2 = rtw_alloc_recvframe(pfree_recv_queue);
 
 		if(!precvframe_if2)
 			return _FAIL;
-
+		
 		precvframe_if2->u.hdr.adapter = secondary_padapter;
 		_rtw_memcpy(&precvframe_if2->u.hdr.attrib, &precvframe->u.hdr.attrib, sizeof(struct rx_pkt_attrib));
 		pattrib = &precvframe_if2->u.hdr.attrib;
@@ -237,7 +237,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_buf	*precvbu
 		if (pkt_copy == NULL)
 		{
 			if((pattrib->mfrag == 1)&&(pattrib->frag_num == 0))
-			{
+			{				
 				DBG_8192C("pre_recv_entry(): rtw_skb_copy fail , drop frag frame \n");
 				rtw_free_recvframe(precvframe, &precvpriv->free_recv_queue);
 				return ret;
@@ -251,7 +251,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_buf	*precvbu
 				return ret;
 			}
 		}
-
+		
 		pkt_copy->dev = secondary_padapter->pnetdev;
 
 		precvframe_if2->u.hdr.pkt = pkt_copy;
@@ -266,7 +266,7 @@ static s32 pre_recv_entry(union recv_frame *precvframe, struct recv_buf	*precvbu
 		if ( pHalData->ReceiveConfig & RCR_APPFCS)
 			recvframe_pull_tail(precvframe_if2, IEEE80211_FCS_LEN);
 
-		if (pattrib->physt)
+		if (pattrib->physt) 
 			update_recvframe_phyinfo(precvframe_if2, pphy_status);
 
 		if(rtw_recv_entry(precvframe_if2) != _SUCCESS)
@@ -475,7 +475,7 @@ void rtl8723as_recv(PADAPTER padapter, struct recv_buf *precvbuf)
 		ptr = precvbuf->pdata;
 		precvframe = NULL;
 		pkt_copy = NULL;
-
+		
 	}
 
 	rtw_enqueue_recvbuf(precvbuf, &precvpriv->free_recv_buf_queue);
@@ -502,7 +502,7 @@ static void rtl8723as_recv_tasklet(void *priv)
 	padapter = (PADAPTER)priv;
 	pHalData = GET_HAL_DATA(padapter);
 	precvpriv = &padapter->recvpriv;
-
+	
 	do {
 		precvbuf = rtw_dequeue_recvbuf(&precvpriv->recv_buf_pending_queue);
 		if (NULL == precvbuf) break;
@@ -613,12 +613,12 @@ static void rtl8723as_recv_tasklet(void *priv)
 				else
 				{
 					if((pattrib->mfrag == 1)&&(pattrib->frag_num == 0))
-					{
+					{				
 						DBG_8192C("rtl8723as_recv_tasklet: alloc_skb fail , drop frag frame \n");
 						rtw_free_recvframe(precvframe, &precvpriv->free_recv_queue);
 						break;
 					}
-
+					
 					precvframe->u.hdr.pkt = rtw_skb_clone(precvbuf->pskb);
 					if(precvframe->u.hdr.pkt)
 					{
@@ -626,7 +626,7 @@ static void rtl8723as_recv_tasklet(void *priv)
 
 						pkt_clone->data = ptr + rx_report_sz;
 						skb_reset_tail_pointer(pkt_clone);
-						precvframe->u.hdr.rx_head = precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail
+						precvframe->u.hdr.rx_head = precvframe->u.hdr.rx_data = precvframe->u.hdr.rx_tail 
 							= pkt_clone->data;
 						precvframe->u.hdr.rx_end =  pkt_clone->data + skb_len;
 					}
@@ -994,3 +994,4 @@ void rtl8723as_free_recv_priv(PADAPTER padapter)
 		precvpriv->pallocated_recv_buf = NULL;
 	}
 }
+

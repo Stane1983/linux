@@ -71,9 +71,9 @@ int rtw_wifi_gpio_init(void)
 		gpio_request(GPIO_WIFI_POWER, "wifi_power");
 
 #ifdef CONFIG_SDIO_HCI
-#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)) && (MP_DRIVER == 1)
+#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)) && (MP_DRIVER == 1) 
 	if(rtw_mp_mode==1){
-		DBG_871X("%s GPIO_BT_RESET pin special for mp_test\n", __func__);
+		DBG_871X("%s GPIO_BT_RESET pin special for mp_test\n", __func__);	
 		if (GPIO_BT_RESET > 0)
 			gpio_request(GPIO_BT_RESET , "bt_rst");
 	}
@@ -94,7 +94,7 @@ int rtw_wifi_gpio_deinit(void)
 		gpio_free(GPIO_WIFI_POWER);
 
 #ifdef CONFIG_SDIO_HCI
-#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)) && (MP_DRIVER == 1)
+#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)) && (MP_DRIVER == 1) 
 	if(rtw_mp_mode==1){
 		DBG_871X("%s GPIO_BT_RESET pin special for mp_test\n", __func__);
 		if (GPIO_BT_RESET > 0)
@@ -134,12 +134,12 @@ void rtw_wifi_gpio_wlan_ctrl(int onoff)
 		case WLAN_POWER_ON:
 		break;
 #ifdef CONFIG_SDIO_HCI
-#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)) && (MP_DRIVER == 1)
+#if (defined(CONFIG_RTL8723A) || defined(CONFIG_RTL8723B)) && (MP_DRIVER == 1) 
 		case WLAN_BT_PWDN_OFF:
 		if(rtw_mp_mode==1)
 		{
 			DBG_871X("%s: call customer specific GPIO to set wifi power down pin to 0\n",
-					__FUNCTION__);
+				       	__FUNCTION__);
 			if (GPIO_BT_RESET > 0)
 				gpio_direction_output(GPIO_BT_RESET , 0);
 		}
@@ -277,7 +277,42 @@ void rtw_wifi_gpio_wlan_ctrl(int onoff)
 }
 #endif //ANDROID_2X
 
-#else // !CONFIG_PLATFORM_SPRD
+#elif defined(CONFIG_PLATFORM_ARM_RK3066) 
+#include <mach/iomux.h>
+
+#define GPIO_WIFI_IRQ		RK30_PIN2_PC2
+extern unsigned int oob_irq;
+int rtw_wifi_gpio_init(void)
+{
+#ifdef CONFIG_GSPI_HCI
+	if (GPIO_WIFI_IRQ > 0) {
+		rk30_mux_api_set(GPIO2C2_LCDC1DATA18_SMCBLSN1_HSADCDATA5_NAME, GPIO2C_GPIO2C2);//jacky_test
+		gpio_request(GPIO_WIFI_IRQ, "oob_irq");
+		gpio_direction_input(GPIO_WIFI_IRQ);
+
+		oob_irq = gpio_to_irq(GPIO_WIFI_IRQ);
+
+		DBG_8192C("%s oob_irq:%d\n", __func__, oob_irq);
+	}
+#endif
+	return 0;
+}
+
+
+int rtw_wifi_gpio_deinit(void)
+{
+#ifdef CONFIG_GSPI_HCI
+	if (GPIO_WIFI_IRQ > 0)
+		gpio_free(GPIO_WIFI_IRQ);
+#endif
+	return 0;
+}
+
+void rtw_wifi_gpio_wlan_ctrl(int onoff)
+{
+}
+
+#else
 
 int rtw_wifi_gpio_init(void)
 {

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -145,25 +145,25 @@ struct mp_tx
 #define u4Byte u32
 #define s4Byte s32
 #define u1Byte		u8
-#define pu1Byte 		u8*
+#define pu1Byte 		u8* 
 
 #define u2Byte		u16
-#define pu2Byte 		u16*
+#define pu2Byte 		u16*		
 
 #define u4Byte		u32
-#define pu4Byte 		u32*
+#define pu4Byte 		u32*	
 
 #define u8Byte		u64
 #define pu8Byte 		u64*
 
 #define s1Byte		s8
-#define ps1Byte 		s8*
+#define ps1Byte 		s8* 
 
 #define s2Byte		s16
-#define ps2Byte 		s16*
+#define ps2Byte 		s16*	
 
 #define s4Byte		s32
-#define ps4Byte 		s32*
+#define ps4Byte 		s32*	
 
 #define s8Byte		s64
 #define ps8Byte 		s64*
@@ -192,7 +192,7 @@ typedef struct _MPT_CONTEXT
 	BOOLEAN		MptH2cRspEvent;
 	BOOLEAN		MptBtC2hEvent;
 	BOOLEAN		bMPh2c_timeout;
-
+	
 	/* 8190 PCI does not support NDIS_WORK_ITEM. */
 	// Work Item for Mass Production Test.
 	//NDIS_WORK_ITEM	MptWorkItem;
@@ -236,13 +236,13 @@ typedef struct _MPT_CONTEXT
 	ULONG			MptRCR;
 	// TRUE if we only receive packets with specific pattern.
 	BOOLEAN			bMptFilterPattern;
-	// Rx OK count, statistics used in Mass Production Test.
-	ULONG			MptRxOkCnt;
-	// Rx CRC32 error count, statistics used in Mass Production Test.
-	ULONG			MptRxCrcErrCnt;
+ 	// Rx OK count, statistics used in Mass Production Test.
+ 	ULONG			MptRxOkCnt;
+ 	// Rx CRC32 error count, statistics used in Mass Production Test.
+ 	ULONG			MptRxCrcErrCnt;
 
 	BOOLEAN			bCckContTx;	// TRUE if we are in CCK Continuous Tx test.
-	BOOLEAN			bOfdmContTx;	// TRUE if we are in OFDM Continuous Tx test.
+ 	BOOLEAN			bOfdmContTx;	// TRUE if we are in OFDM Continuous Tx test.
 	BOOLEAN			bStartContTx; 	// TRUE if we have start Continuous Tx test.
 	// TRUE if we are in Single Carrier Tx test.
 	BOOLEAN			bSingleCarrier;
@@ -268,17 +268,17 @@ typedef struct _MPT_CONTEXT
 	u8		backup0xc30;
 	u8 		backup0x52_RF_A;
 	u8 		backup0x52_RF_B;
-
-	u4Byte			backup0x58_RF_A;
+	
+	u4Byte			backup0x58_RF_A;	
 	u4Byte			backup0x58_RF_B;
-
+	
 	u1Byte			h2cReqNum;
 	u1Byte			c2hBuf[32];
 
     u1Byte          btInBuf[100];
 	ULONG			mptOutLen;
     u1Byte          mptOutBuf[100];
-
+    
 }MPT_CONTEXT, *PMPT_CONTEXT;
 #endif
 //#endif
@@ -316,7 +316,7 @@ typedef struct _MPT_CONTEXT
 /* end of E-Fuse */
 
 //#define RTPRIV_IOCTL_MP 					( SIOCIWFIRSTPRIV + 0x17)
-enum {
+enum {	  
 	WRITE_REG = 1,
 	READ_REG,
 	WRITE_RF,
@@ -398,7 +398,7 @@ struct mp_priv
 	u16 antenna_tx;
 	u16 antenna_rx;
 //	u8 curr_rfpath;
-
+	
 	u8 check_mp_pkt;
 
 	u8 bSetTxPower;
@@ -406,7 +406,7 @@ struct mp_priv
 	u8 mp_dm;
 	u8 mac_filter[ETH_ALEN];
 	u8 bmac_filter;
-
+	
 	struct wlan_network mp_network;
 	NDIS_802_11_MAC_ADDRESS network_macaddr;
 
@@ -442,7 +442,7 @@ struct mp_priv
 	BOOLEAN bSetRxBssid;
 	BOOLEAN bTxBufCkFail;
 	BOOLEAN bPreBrunEfuse;
-
+	
 	MPT_CONTEXT MptCtx;
 
 	u8		*TXradomBuffer;
@@ -603,7 +603,7 @@ typedef enum _POWER_MODE_ {
 
 // The following enumeration is used to define the value of Reg0xD00[30:28] or JaguarReg0x914[18:16].
 typedef enum _OFDM_TX_MODE {
-	OFDM_ALL_OFF		= 0,
+	OFDM_ALL_OFF		= 0,	
 	OFDM_ContinuousTx	= 1,
 	OFDM_SingleCarrier	= 2,
 	OFDM_SingleTone 	= 4,
@@ -793,3 +793,4 @@ extern u8 MptToMgntRate(u32	MptRateIdx);
 extern s32 Rtw_EfuseChkPreBurn8188ESerial(PADAPTER pAdapter);
 
 #endif //_RTW_MP_H_
+

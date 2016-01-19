@@ -34,7 +34,7 @@ void rtl8723a_sreset_xmit_status_check(_adapter *padapter)
 	unsigned int diff_time;
 	u32 txdma_status;
 
-
+	
 	if( (txdma_status=rtw_read32(padapter, REG_TXDMA_STATUS)) !=0x00){
 		DBG_871X("%s REG_TXDMA_STATUS:0x%08x\n", __FUNCTION__, txdma_status);
 		rtw_hal_sreset_reset(padapter);
@@ -108,3 +108,4 @@ void rtl8723a_sreset_linked_status_check(_adapter *padapter)
 	}
 }
 #endif
+

@@ -20,7 +20,7 @@
 #ifndef __RTL8192E_CMD_H__
 #define __RTL8192E_CMD_H__
 
-typedef enum _RTL8192E_H2C_CMD
+typedef enum _RTL8192E_H2C_CMD 
 {
 	H2C_8192E_RSVDPAGE	= 0x00,
 	H2C_8192E_MSRRPT	= 0x01,
@@ -33,8 +33,8 @@ typedef enum _RTL8192E_H2C_CMD
 	H2C_8192E_PROBERSP_RSVDPAGE = 0x0a,
 
 	H2C_8192E_AP_WOW_GPIO_CTRL = 0x13,
-
-	H2C_8192E_SETPWRMODE = 0x20,
+	
+	H2C_8192E_SETPWRMODE = 0x20,		
 	H2C_8192E_PS_TUNING_PARA = 0x21,
 	H2C_8192E_PS_TUNING_PARA2 = 0x22,
 	H2C_8192E_PS_LPS_PARA = 0x23,
@@ -64,9 +64,9 @@ typedef enum _RTL8192E_C2H_EVT
 	C2H_8192E_BT_INFO = 9,
 	C2H_8192E_FW_SWCHNL = 0x10,
 	C2H_8192E_BT_MP = 11,
-	C2H_8192E_RA_RPT=12,
-
-	MAX_8192E_C2HEVENT
+	C2H_8192E_RA_RPT=12,	
+	
+	MAX_8192E_C2HEVENT	
 }RTL8192E_C2H_EVT;
 
 
@@ -201,7 +201,7 @@ void SetFwRelatedForWoWLAN8192E(_adapter* padapter, u8 bHostIsGoingtoSleep);
 
 void C2HContentParsing8192E(
 	IN	PADAPTER		Adapter,
-	IN	u1Byte			c2hCmdId,
+	IN	u1Byte			c2hCmdId, 
 	IN	u1Byte			c2hCmdLen,
 	IN	pu1Byte 			tmpBuf
 );

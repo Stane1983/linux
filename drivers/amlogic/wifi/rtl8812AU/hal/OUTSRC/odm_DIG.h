@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,7 +17,7 @@
  *
  *
  ******************************************************************************/
-
+ 
 #ifndef	__ODMDIG_H__
 #define    __ODMDIG_H__
 
@@ -28,7 +28,7 @@ typedef struct _Dynamic_Initial_Gain_Threshold_
 
 	u1Byte		Dig_Enable_Flag;
 	u1Byte		Dig_Ext_Port_Stage;
-
+	
 	int		   	RssiLowThresh;
 	int		    	RssiHighThresh;
 
@@ -106,7 +106,7 @@ typedef enum tag_Dynamic_Init_Gain_Operation_Type_Definition
 	DIG_TYPE_RX_GAIN_MIN	= 3,
 	DIG_TYPE_RX_GAIN_MAX	= 4,
 	DIG_TYPE_ENABLE 		= 5,
-	DIG_TYPE_DISABLE 		= 6,
+	DIG_TYPE_DISABLE 		= 6,	
 	DIG_OP_TYPE_MAX
 }DM_DIG_OP_E;
 
@@ -134,7 +134,7 @@ typedef enum tag_DIG_EXT_PORT_ALGO_Definition
 
 typedef enum tag_DIG_Connect_Definition
 {
-	DIG_STA_DISCONNECT = 0,
+	DIG_STA_DISCONNECT = 0,	
 	DIG_STA_CONNECT = 1,
 	DIG_STA_BEFORE_CONNECT = 2,
 	DIG_MultiSTA_DISCONNECT = 3,
@@ -188,12 +188,12 @@ typedef enum tag_DIG_Connect_Definition
 #define		DM_DIG_BACKOFF_DEFAULT		10
 
 VOID ODM_Write_DIG(
-	IN		PVOID					pDM_VOID,
+	IN		PVOID					pDM_VOID, 	
 	IN	u1Byte	CurrentIGI
 );
 
 VOID ODM_Write_CCK_CCA_Thres(
-	IN		PVOID					pDM_VOID,
+	IN		PVOID					pDM_VOID, 
 	IN	u1Byte	CurCCK_CCAThres
 	);
 
@@ -204,7 +204,7 @@ ODM_ChangeDynamicInitGainThresh(
 	IN	u4Byte DM_Value
 	);
 
-VOID
+VOID 
 odm_FalseAlarmCounterStatistics(
 	IN		PVOID					pDM_VOID
 	);
@@ -214,24 +214,24 @@ odm_DIGInit(
 	IN		PVOID					pDM_VOID
 	);
 
-VOID
+VOID	
 odm_DIG(
 	IN		PVOID					pDM_VOID
 	);
 
-BOOLEAN
+BOOLEAN 
 odm_DigAbort(
 	IN		PVOID					pDM_VOID
 	);
 
-VOID
+VOID 
 odm_PauseDIG(
 	IN		PVOID					pDM_VOID,
 	IN		ODM_Pause_DIG_TYPE		PauseType,
 	IN		u1Byte					IGIValue
 );
 
-VOID
+VOID 
 odm_CCKPacketDetectionThresh(
 	IN		PVOID					pDM_VOID
 	);
@@ -289,3 +289,4 @@ odm_MPT_DIGWorkItemCallback(
 
 
 #endif
+

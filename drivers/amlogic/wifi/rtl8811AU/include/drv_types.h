@@ -57,7 +57,7 @@ enum _NIC_VERSION {
 
 };
 
-#define CONFIG_SUSPEND_REFINE
+#define CONFIG_SUSPEND_REFINE	
 
 typedef struct _ADAPTER _adapter, ADAPTER,*PADAPTER;
 
@@ -431,7 +431,7 @@ struct cam_entry_cache {
 
 struct dvobj_priv
 {
-	/*-------- below is common data --------*/
+	/*-------- below is common data --------*/	
 	_adapter *if1; //PRIMARY_ADAPTER
 	_adapter *if2; //SECONDARY_ADAPTER
 
@@ -543,7 +543,7 @@ struct dvobj_priv
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
 #endif//PLATFORM_FREEBSD
-
+	
 #endif//CONFIG_USB_HCI
 
 /*-------- below is for PCIE INTERFACE --------*/
@@ -746,11 +746,11 @@ struct _ADAPTER{
 	void (*dvobj_deinit)(struct dvobj_priv *dvobj);
 #endif
 
-	u32 (*intf_init)(struct dvobj_priv *dvobj);
+ 	u32 (*intf_init)(struct dvobj_priv *dvobj);
 	void (*intf_deinit)(struct dvobj_priv *dvobj);
 	int (*intf_alloc_irq)(struct dvobj_priv *dvobj);
 	void (*intf_free_irq)(struct dvobj_priv *dvobj);
-
+	
 
 	void (*intf_start)(_adapter * adapter);
 	void (*intf_stop)(_adapter * adapter);
@@ -797,7 +797,7 @@ struct _ADAPTER{
 	_lock glock;
 #endif //PLATFORM_FREEBSD
 	int net_closed;
-
+	
 	u8 netif_up;
 
 	u8 bFWReady;
@@ -921,7 +921,7 @@ int rtw_handle_dualmac(_adapter *adapter, bool init);
 
 #ifdef CONFIG_PNO_SUPPORT
 int rtw_parse_ssid_list_tlv(char** list_str, pno_ssid_t* ssid, int max, int *bytes_left);
-int rtw_dev_pno_set(struct net_device *net, pno_ssid_t* ssid, int num,
+int rtw_dev_pno_set(struct net_device *net, pno_ssid_t* ssid, int num, 
 					int pno_time, int pno_repeat, int pno_freq_expo_max);
 #ifdef CONFIG_PNO_SET_DEBUG
 void rtw_dev_pno_debug(struct net_device *net);
@@ -963,3 +963,4 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 #endif // CONFIG_BT_COEXIST
 
 #endif //__DRV_TYPES_H__
+

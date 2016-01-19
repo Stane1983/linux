@@ -24,7 +24,7 @@ struct sk_buff *rtw_alloc_skb_premem(void)
 
 	printk("%s, rtk_skb_mem_q len : %d\n", __func__, skb_queue_len(&rtk_skb_mem_q));
 
-	return skb;
+	return skb;	
 }
 EXPORT_SYMBOL(rtw_alloc_skb_premem);
 
@@ -33,11 +33,11 @@ int rtw_free_skb_premem(struct sk_buff *pskb)
 	if(!pskb)
 		return -1;
 
-	if(skb_queue_len(&rtk_skb_mem_q) >= NR_PREALLOC_RECV_SKB)
+	if(skb_queue_len(&rtk_skb_mem_q) >= NR_PREALLOC_RECV_SKB)	
 		return -1;
-
+	
 	skb_queue_tail(&rtk_skb_mem_q, pskb);
-
+	
 	printk("%s, rtk_skb_mem_q len : %d\n", __func__, skb_queue_len(&rtk_skb_mem_q));
 
 	return 0;
@@ -52,6 +52,8 @@ static int __init rtw_mem_init(void)
 	struct sk_buff *pskb=NULL;
 
 	printk("%s\n", __func__);
+	pr_info("NR_PREALLOC_RECV_SKB: %d\n", NR_PREALLOC_RECV_SKB);
+	pr_info("MAX_RECVBUF_SZ: %d\n", MAX_RECVBUF_SZ);
 
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
 	for(i=0; i<NR_RECVBUFF; i++)
@@ -66,7 +68,7 @@ static int __init rtw_mem_init(void)
 	{
 		pskb = __dev_alloc_skb(MAX_RECVBUF_SZ + RECVBUFF_ALIGN_SZ, in_interrupt() ? GFP_ATOMIC : GFP_KERNEL);
 		if(pskb)
-		{
+		{		
 			tmpaddr = (SIZE_PTR)pskb->data;
 			alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
 			skb_reserve(pskb, (RECVBUFF_ALIGN_SZ - alignment));
@@ -84,7 +86,7 @@ static int __init rtw_mem_init(void)
 	printk("%s, rtk_skb_mem_q len : %d\n", __func__, skb_queue_len(&rtk_skb_mem_q));
 
 	return 0;
-
+	
 }
 
 static void __exit rtw_mem_exit(void)
@@ -100,3 +102,4 @@ static void __exit rtw_mem_exit(void)
 
 module_init(rtw_mem_init);
 module_exit(rtw_mem_exit);
+

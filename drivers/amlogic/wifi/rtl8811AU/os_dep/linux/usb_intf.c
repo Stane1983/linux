@@ -359,7 +359,7 @@ struct rtw_usb_drv usb_drv = {
 	.usbdrv.suspend =  rtw_suspend,
 	.usbdrv.resume = rtw_resume,
 	#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 22))
-	.usbdrv.reset_resume   = rtw_resume,
+  	.usbdrv.reset_resume   = rtw_resume,
 	#endif
 	#ifdef CONFIG_AUTOSUSPEND
 	.usbdrv.supports_autosuspend = 1,
@@ -389,7 +389,7 @@ static inline int RT_usb_endpoint_xfer_int(const struct usb_endpoint_descriptor 
 
 static inline int RT_usb_endpoint_xfer_bulk(const struct usb_endpoint_descriptor *epd)
 {
-	return ((epd->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_BULK);
+ 	return ((epd->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_BULK);
 }
 
 static inline int RT_usb_endpoint_is_bulk_in(const struct usb_endpoint_descriptor *epd)
@@ -632,9 +632,9 @@ _func_enter_;
 free_dvobj:
 	if (status != _SUCCESS && pdvobjpriv) {
 		usb_set_intfdata(usb_intf, NULL);
-
+		
 		devobj_deinit(pdvobjpriv);
-
+		
 		pdvobjpriv = NULL;
 	}
 exit:
@@ -662,8 +662,8 @@ _func_enter_;
 		}
 
 		rtw_deinit_intf_priv(dvobj);
-
-		devobj_deinit(dvobj);
+	
+		devobj_deinit(dvobj);		
 	}
 
 	//DBG_871X("%s %d\n", __func__, ATOMIC_READ(&usb_intf->dev.kobj.kref.refcount));
@@ -877,11 +877,11 @@ int rtw_hw_suspend(_adapter *padapter )
 			padapter->bup, padapter->bDriverStopped,padapter->bSurpriseRemoved);
 		goto error_exit;
 	}
-
+	
 	pwrpriv = adapter_to_pwrctl(padapter);
 	pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	pnetdev = padapter->pnetdev;
-
+	
 	LeaveAllPowerSaveMode(padapter);
 
 	DBG_871X("==> rtw_hw_suspend\n");
@@ -926,7 +926,7 @@ int rtw_hw_suspend(_adapter *padapter )
 	pwrpriv->rf_pwrstate = rf_off;
 	pwrpriv->bips_processing = _FALSE;
 	_exit_pwrlock(&pwrpriv->lock);
-
+	
 	_func_exit_;
 	return 0;
 
@@ -942,7 +942,7 @@ int rtw_hw_resume(_adapter *padapter)
 	struct usb_interface *pusb_intf = adapter_to_dvobj(padapter)->pusbintf;
 	struct net_device *pnetdev = padapter->pnetdev;
 
-	_func_enter_;
+	_func_enter_;	
 	DBG_871X("==> rtw_hw_resume\n");
 	_enter_pwrlock(&pwrpriv->lock);
 	pwrpriv->bips_processing = _TRUE;
@@ -958,7 +958,7 @@ int rtw_hw_resume(_adapter *padapter)
 	netif_carrier_on(pnetdev);
 
 	if(!rtw_netif_queue_stopped(pnetdev))
-		rtw_netif_start_queue(pnetdev);
+      		rtw_netif_start_queue(pnetdev);
 	else
 		rtw_netif_wake_queue(pnetdev);
 
@@ -978,7 +978,7 @@ error_exit:
 }
 #endif
 
-#ifdef CONFIG_SUSPEND_REFINE
+#ifdef CONFIG_SUSPEND_REFINE	
 static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 {
 	int ret = 0;
@@ -1010,7 +1010,7 @@ int rtw_resume_process(_adapter *padapter)
 {
 	int ret,pm_cnt = 0;
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
-
+	
 	#if defined(CONFIG_BT_COEXIST) && defined(CONFIG_AUTOSUSPEND) //add by amy for 8723as-vau
 	#if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,32))
 	DBG_871X("%s...pm_usage_cnt(%d)  pwrpriv->bAutoResume=%x.  ....\n",__func__,atomic_read(&(adapter_to_dvobj(padapter)->pusbintf->pm_usage_cnt)),pwrpriv->bAutoResume);
@@ -1032,7 +1032,7 @@ int rtw_resume_process(_adapter *padapter)
 	/*
 	 * Due to usb wow suspend flow will cancel read/write port via intf_stop and
 	 * bReadPortCancel and bWritePortCancel are set _TRUE in intf_stop.
-	 * But they will not be clear in intf_start during wow resume flow.
+	 * But they will not be clear in intf_start during wow resume flow. 
 	 * It should move to os_intf in the feature.
 	 */
 	RTW_ENABLE_FUNC(padapter, DF_RX_BIT);
@@ -1051,7 +1051,7 @@ int rtw_resume_process(_adapter *padapter)
 			//rtl8192c_set_FwSelectSuspend_cmd(padapter,_FALSE ,500);//note fw to support hw power down ping detect
 			u8 bOpen = _FALSE;
 			rtw_interface_ps_func(padapter,HAL_USB_SELECT_SUSPEND,&bOpen);
-		}
+		}	
 		#endif
 		#ifdef CONFIG_BT_COEXIST // for 8723as-vau
 		DBG_871X("pwrpriv->bAutoResume (%x)\n",pwrpriv->bAutoResume );
@@ -1080,7 +1080,7 @@ static int rtw_suspend(struct usb_interface *pusb_intf, pm_message_t message)
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct pwrctrl_priv *pwrpriv = dvobj_to_pwrctl(dvobj);
 	struct usb_device *usb_dev = interface_to_usbdev(pusb_intf);
-
+	
 #ifdef CONFIG_WOWLAN
 	struct wowlan_ioctl_param poidparam;
 #endif // CONFIG_WOWLAN
@@ -1256,7 +1256,7 @@ int rtw_resume_process(_adapter *padapter)
 		_exit_pwrlock(&pwrpriv->lock);
 		goto exit;
 	}
-
+	
 	netif_device_attach(pnetdev);
 	netif_carrier_on(pnetdev);
 
@@ -1322,7 +1322,7 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 	 int ret = 0;
 
 	if(pwrpriv->bInternalAutoSuspend ){
-		ret = rtw_resume_process(padapter);
+ 		ret = rtw_resume_process(padapter);
 	} else {
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 		rtw_resume_in_workqueue(pwrpriv);
@@ -1507,7 +1507,7 @@ _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 	padapter->iface_type = IFACE_PORT0;
 	#else
 	padapter->iface_type = IFACE_PORT1;
-	#endif
+	#endif	
 #endif
 
 	//step 1-1., decide the chip_type via driver_info
@@ -1611,7 +1611,7 @@ _adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
 
 	// set mac addr
 	rtw_macaddr_cfg(padapter->eeprompriv.mac_addr);
-#ifdef CONFIG_P2P
+#ifdef CONFIG_P2P	
 	rtw_init_wifidirect_addrs(padapter, padapter->eeprompriv.mac_addr, padapter->eeprompriv.mac_addr);
 #endif // CONFIG_P2P
 	DBG_871X("bDriverStopped:%d, bSurpriseRemoved:%d, bup:%d, hw_init_completed:%d\n"
@@ -1949,3 +1949,4 @@ _adapter  *rtw_usb_get_sw_pointer(void)
 }
 EXPORT_SYMBOL(rtw_usb_get_sw_pointer);
 #endif	//CONFIG_INTEL_PROXIM
+

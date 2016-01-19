@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -26,6 +26,7 @@
 
 #if defined(CONFIG_USB_HCI)
 
+#ifndef MAX_RECVBUF_SZ
 #ifdef PLATFORM_OS_CE
 #define MAX_RECVBUF_SZ (8192+1024) // 8K+1k
 #else
@@ -43,6 +44,7 @@
 		#define MAX_RECVBUF_SZ (4000) // about 4K
 	#endif
 #endif
+#endif //!MAX_RECVBUF_SZ
 
 #elif defined(CONFIG_PCI_HCI)
 //#ifndef CONFIG_MINIMAL_MEMORY_USAGE
@@ -52,7 +54,7 @@
 //#endif
 
 
-#elif defined(CONFIG_SDIO_HCI)
+#elif defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 
 #define MAX_RECVBUF_SZ (10240)
 
@@ -108,3 +110,4 @@ void rtl8192c_translate_rx_signal_stuff(union recv_frame *precvframe, struct phy
 void rtl8192c_query_rx_desc_status(union recv_frame *precvframe, struct recv_stat *pdesc);
 
 #endif
+

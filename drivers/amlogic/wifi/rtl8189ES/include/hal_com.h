@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -27,7 +27,7 @@
 #include "hal_com_reg.h"
 #include "hal_com_phycfg.h"
 
-/*------------------------------ Tx Desc definition Macro ------------------------*/
+/*------------------------------ Tx Desc definition Macro ------------------------*/ 
 //#pragma mark -- Tx Desc related definition. --
 //----------------------------------------------------------------------------
 //-----------------------------------------------------------
@@ -176,7 +176,7 @@
 
 enum{
 	UP_LINK,
-	DOWN_LINK,
+	DOWN_LINK,	
 };
 typedef enum _RT_MEDIA_STATUS {
 	RT_MEDIA_DISCONNECT = 0,
@@ -189,6 +189,17 @@ typedef enum _FIRMWARE_SOURCE {
 	FW_SOURCE_HEADER_FILE = 1,		//from header file
 } FIRMWARE_SOURCE, *PFIRMWARE_SOURCE;
 
+//
+// Queue Select Value in TxDesc
+//
+#define QSLT_BK							0x2//0x01
+#define QSLT_BE							0x0
+#define QSLT_VI							0x5//0x4
+#define QSLT_VO							0x7//0x6
+#define QSLT_BEACON						0x10
+#define QSLT_HIGH						0x11
+#define QSLT_MGNT						0x12
+#define QSLT_CMD						0x13
 
 // BK, BE, VI, VO, HCCA, MANAGEMENT, COMMAND, HIGH, BEACON.
 //#define MAX_TX_QUEUE		9
@@ -203,6 +214,9 @@ typedef enum _FIRMWARE_SOURCE {
 #define PageNum_512(_Len)		(u32)(((_Len)>>9) + ((_Len)&0x1FF ? 1:0))
 #define PageNum(_Len, _Size)		(u32)(((_Len)/(_Size)) + ((_Len)&((_Size) - 1) ? 1:0))
 
+
+u8 rtw_hal_data_init(_adapter *padapter);
+void rtw_hal_data_deinit(_adapter *padapter);
 
 void dump_chip_info(HAL_VERSION	ChipVersion);
 
@@ -257,14 +271,14 @@ void rtw_hal_check_rxfifo_full(_adapter *adapter);
 u8 SetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value);
 u8 GetHalDefVar(_adapter *adapter, HAL_DEF_VARIABLE variable, void *value);
 
-BOOLEAN
+BOOLEAN 
 eqNByte(
 	u8*	str1,
 	u8*	str2,
 	u32	num
 	);
 
-BOOLEAN
+BOOLEAN 
 IsHexDigit(
 	IN	char	chTmp
 	);
@@ -274,14 +288,14 @@ MapCharToHexDigit(
 	IN	char	chTmp
 );
 
-BOOLEAN
+BOOLEAN 
 GetHexValueFromString(
 	IN		char*			szStr,
 	IN OUT	u32*			pu4bVal,
 	IN OUT	u32*			pu4bMove
 	);
 
-BOOLEAN
+BOOLEAN 
 GetFractionValueFromString(
 	IN		char*		szStr,
 	IN OUT	u8*			pInteger,
@@ -294,12 +308,12 @@ IsCommentString(
 	IN		char*		szStr
 	);
 
-BOOLEAN
+BOOLEAN 
 ParseQualifiedString(
-    IN	char* In,
-    IN OUT  u32* Start,
-    OUT	char* Out,
-    IN	char  LeftQualifier,
+    IN	char* In, 
+    IN OUT  u32* Start, 
+    OUT	char* Out, 
+    IN	char  LeftQualifier, 
     IN	char  RightQualifier
     );
 
@@ -322,9 +336,56 @@ void rtw_store_phy_info(_adapter *padapter, union recv_frame *prframe);
 void rtw_dump_raw_rssi_info(_adapter *padapter);
 #endif
 
+#define		HWSET_MAX_SIZE			512
+#ifdef CONFIG_EFUSE_CONFIG_FILE
+#define		EFUSE_FILE_COLUMN_NUM		16
+u32 Hal_readPGDataFromConfigFile(PADAPTER padapter, struct file *fp);
+void Hal_ReadMACAddrFromFile(PADAPTER padapter, struct file *fp);
+void Hal_GetPhyEfuseMACAddr(PADAPTER padapter, u8* mac_addr);
+int check_phy_efuse_tx_power_info_valid(PADAPTER padapter);
+int check_phy_efuse_macaddr_info_valid(PADAPTER padapter);
+#endif //CONFIG_EFUSE_CONFIG_FILE
 
 #ifdef CONFIG_RF_GAIN_OFFSET
 void rtw_bb_rf_gain_offset(_adapter *padapter);
 #endif //CONFIG_RF_GAIN_OFFSET
+
+void dm_DynamicUsbTxAgg(_adapter *padapter, u8 from_timer);
 u8 rtw_hal_busagg_qsel_check(_adapter *padapter,u8 pre_qsel,u8 next_qsel);
+void GetHalODMVar(	
+	PADAPTER				Adapter,
+	HAL_ODM_VARIABLE		eVariable,
+	PVOID					pValue1,
+	PVOID					pValue2);
+void SetHalODMVar(
+	PADAPTER				Adapter,
+	HAL_ODM_VARIABLE		eVariable,
+	PVOID					pValue1,
+	BOOLEAN					bSet);
+
+#ifdef CONFIG_BACKGROUND_NOISE_MONITOR
+struct noise_info
+{
+	u8 		bPauseDIG;
+	u8 		IGIValue;
+	u32 	max_time;//ms	
+	u8		chan;
+};
+#endif
+
+void rtw_hal_set_fw_rsvd_page(_adapter* adapter, bool finished);
+
+#ifdef CONFIG_GPIO_API
+u8 rtw_hal_get_gpio(_adapter* adapter, u8 gpio_num);
+int rtw_hal_set_gpio_output_value(_adapter* adapter, u8 gpio_num, BOOLEAN isHigh);
+int rtw_hal_config_gpio(_adapter* adapter, u8 gpio_num, BOOLEAN isOutput);
+#endif
+
+#ifdef CONFIG_LOAD_PHY_PARA_FROM_FILE
+extern char *rtw_phy_file_path;
+extern char file_path[PATH_LENGTH_MAX];
+#define GetLineFromBuffer(buffer)   strsep(&buffer, "\n")
+#endif
+
 #endif //__HAL_COMMON_H__
+

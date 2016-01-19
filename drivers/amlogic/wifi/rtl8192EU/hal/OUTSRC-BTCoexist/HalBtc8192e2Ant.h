@@ -115,7 +115,7 @@ typedef struct _COEX_DM_8192E_2ANT{
 	u1Byte		curAmpduTimeType;
 } COEX_DM_8192E_2ANT, *PCOEX_DM_8192E_2ANT;
 
-typedef struct _COEX_STA_8192E_2ANT{
+typedef struct _COEX_STA_8192E_2ANT{	
 	BOOLEAN					bBtLinkExist;
 	BOOLEAN					bScoExist;
 	BOOLEAN					bA2dpExist;
@@ -142,6 +142,10 @@ typedef struct _COEX_STA_8192E_2ANT{
 //===========================================
 // The following is interface which will notify coex module.
 //===========================================
+VOID
+EXhalbtc8192e2ant_PowerOnSetting(
+	IN	PBTC_COEXIST		pBtCoexist
+	);
 VOID
 EXhalbtc8192e2ant_InitHwConfig(
 	IN	PBTC_COEXIST		pBtCoexist,
@@ -199,3 +203,4 @@ VOID
 EXhalbtc8192e2ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
+

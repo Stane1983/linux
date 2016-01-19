@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -65,7 +65,7 @@ int	rtl8192du_init_recv_priv(_adapter *padapter)
 	int	i, res = _SUCCESS;
 	struct recv_buf *precvbuf;
 
-#ifdef CONFIG_RECV_THREAD_MODE
+#ifdef CONFIG_RECV_THREAD_MODE	
 	_rtw_init_sema(&precvpriv->recv_sema, 0);//will be removed
 	_rtw_init_sema(&precvpriv->terminate_recvthread_sema, 0);//will be removed
 #endif //CONFIG_RECV_THREAD_MODE
@@ -75,9 +75,7 @@ int	rtl8192du_init_recv_priv(_adapter *padapter)
 	     (void(*)(unsigned long))rtl8192du_recv_tasklet,
 	     (unsigned long)padapter);
 
-#ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
 	_rtw_init_queue(&precvpriv->recv_buf_pending_queue);
-#endif	// CONFIG_USE_USB_BUFFER_ALLOC_RX
 #endif	// PLATFORM_LINUX
 
 #ifdef PLATFORM_FREEBSD
@@ -243,16 +241,16 @@ void rtl8192du_free_recv_priv (_adapter *padapter)
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue)))
 	{
 		rtw_skb_free(pskb);
-
+				
 	}
 
 #ifdef CONFIG_PREALLOC_RECV_SKB
 	while (NULL != (pskb = skb_dequeue(&precvpriv->free_recv_skb_queue)))
 	{
 		rtw_skb_free(pskb);
-
+				
 	}
-#endif
+#endif	
 
 #ifdef CONFIG_RX_INDICATE_QUEUE
 	struct mbuf *m;
@@ -270,3 +268,5 @@ void rtl8192du_free_recv_priv (_adapter *padapter)
 
 
 }
+
+

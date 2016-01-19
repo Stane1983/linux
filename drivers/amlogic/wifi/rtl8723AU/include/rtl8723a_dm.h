@@ -30,7 +30,7 @@
 
 enum{
 	UP_LINK,
-	DOWN_LINK,
+	DOWN_LINK,	
 };
 //============================================================
 // structure and define
@@ -157,7 +157,7 @@ struct dm_priv
 
 #ifdef CONFIG_SW_ANTENNA_DIVERSITY
 //	_timer SwAntennaSwitchTimer;
-/*
+/*	
 	u64	lastTxOkCnt;
 	u64	lastRxOkCnt;
 	u64	TXByteCnt_A;
@@ -184,10 +184,11 @@ struct dm_priv
 
 void rtl8723a_init_dm_priv(PADAPTER padapter);
 void rtl8723a_deinit_dm_priv(PADAPTER padapter);
-
+	
 void rtl8723a_InitHalDm(PADAPTER padapter);
 void rtl8723a_HalDmWatchDog(PADAPTER padapter);
 
 
 
 #endif
+

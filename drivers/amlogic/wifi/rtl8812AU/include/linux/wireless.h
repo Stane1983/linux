@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -35,7 +35,13 @@
 #endif
 
 /****************************** TYPES ******************************/
-
+#ifdef CONFIG_COMPAT
+struct compat_iw_point {
+         compat_caddr_t pointer;
+         __u16 length;
+         __u16 flags;
+};
+#endif
 /* --------------------------- SUBTYPES --------------------------- */
 /*
  *	For all data larger than 16 octets, we need to use a
@@ -51,7 +57,7 @@ struct	iw_point
 
 /* ------------------------ IOCTL REQUEST ------------------------ */
 /*
- * This structure defines the payload of an ioctl, and is used
+ * This structure defines the payload of an ioctl, and is used 
  * below.
  *
  * Note that this structure should fit on the memory footprint
@@ -76,7 +82,7 @@ union	iwreq_data
  * convenience...
  * Do I need to remind you about structure size (32 octets) ?
  */
-struct	iwreq
+struct	iwreq 
 {
 	union
 	{
@@ -88,3 +94,4 @@ struct	iwreq
 };
 
 #endif	/* _LINUX_WIRELESS_H */
+

@@ -3,3 +3,4 @@ config RTL8821AU
 	depends on USB
 	---help---
 	  Help message of RTL8821AU
+

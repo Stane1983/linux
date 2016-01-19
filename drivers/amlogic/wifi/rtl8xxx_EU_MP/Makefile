@@ -88,7 +88,7 @@ OUTSRC_FILES := hal/OUTSRC/odm_debug.o	\
 								hal/OUTSRC/odm_HWConfig.o\
 								hal/OUTSRC/odm.o\
 		hal/OUTSRC/HalPhyRf.o
-
+										
 ifeq ($(CONFIG_RTL8192C), y)
 RTL871X = rtl8192c
 
@@ -225,7 +225,7 @@ endif
 PWRSEQ_FILES := hal/HalPwrSeqCmd.o \
 				hal/$(RTL871X)/Hal8188EPwrSeq.o
 
-CHIP_FILES += $(HAL_COMM_FILES) $(OUTSRC_FILES) $(PWRSEQ_FILES)
+CHIP_FILES += $(HAL_COMM_FILES) $(OUTSRC_FILES) $(PWRSEQ_FILES) 
 
 endif
 
@@ -300,7 +300,7 @@ _HAL_INTFS_FILES += $(CHIP_FILES)
 
 ifeq ($(CONFIG_AUTOCFG_CP), y)
 
-ifeq ($(CONFIG_RTL8188E)$(CONFIG_SDIO_HCI),yy)
+ifeq ($(CONFIG_RTL8188E)$(CONFIG_SDIO_HCI),yy) 
 $(shell cp $(TopDIR)/autoconf_rtl8189e_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
 else
 $(shell cp $(TopDIR)/autoconf_$(RTL871X)_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
@@ -637,7 +637,7 @@ endif
 ifeq ($(CONFIG_PLATFORM_SZEBOOK), y)
 EXTRA_CFLAGS += -DCONFIG_BIG_ENDIAN
 ARCH:=arm
-CROSS_COMPILE:=/opt/crosstool2/bin/armeb-unknown-linux-gnueabi-
+CROSS_COMPILE:=/opt/crosstool2/bin/armeb-unknown-linux-gnueabi- 
 KVER:= 2.6.31.6
 KSRC:= ../code/linux-2.6.31.6-2020/
 endif
@@ -771,9 +771,10 @@ clean: $(clean_more)
 	cd core ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd hal/$(RTL871X)/$(HCI_NAME) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd hal/$(RTL871X) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd hal/OUTSRC/$(RTL871X) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
-	cd hal/OUTSRC/ ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
+	cd hal/OUTSRC/$(RTL871X) ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko 
+	cd hal/OUTSRC/ ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko 
 	cd hal ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep/linux ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 endif
+

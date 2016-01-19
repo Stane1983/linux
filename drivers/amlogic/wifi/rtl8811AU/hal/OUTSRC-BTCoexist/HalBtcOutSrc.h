@@ -203,13 +203,13 @@ typedef enum _BTC_WIFI_BW_MODE{
 	BTC_WIFI_BW_LEGACY					= 0x0,
 	BTC_WIFI_BW_HT20					= 0x1,
 	BTC_WIFI_BW_HT40					= 0x2,
-	BTC_WIFI_BW_MAX
+	BTC_WIFI_BW_MAX	
 }BTC_WIFI_BW_MODE,*PBTC_WIFI_BW_MODE;
 
 typedef enum _BTC_WIFI_TRAFFIC_DIR{
 	BTC_WIFI_TRAFFIC_TX					= 0x0,
 	BTC_WIFI_TRAFFIC_RX					= 0x1,
-	BTC_WIFI_TRAFFIC_MAX
+	BTC_WIFI_TRAFFIC_MAX	
 }BTC_WIFI_TRAFFIC_DIR,*PBTC_WIFI_TRAFFIC_DIR;
 
 typedef enum _BTC_WIFI_PNP{
@@ -250,7 +250,7 @@ typedef enum _BTC_GET_TYPE{
 	// type s4Byte
 	BTC_GET_S4_WIFI_RSSI,
 	BTC_GET_S4_HS_RSSI,
-
+	
 	// type u4Byte
 	BTC_GET_U4_WIFI_BW,
 	BTC_GET_U4_WIFI_TRAFFIC_DIRECTION,
@@ -411,21 +411,21 @@ typedef VOID
 	IN	u4Byte			BitMask,
 	IN	u4Byte			Data
 	);
-typedef u4Byte
+typedef u4Byte 
 (*BFP_BTC_GET_BB_REG)(
 	IN 	PVOID			pBtcContext,
 	IN	u4Byte			RegAddr,
 	IN	u4Byte			BitMask
 	);
 typedef VOID
-(*BFP_BTC_SET_RF_REG)(
+(*BFP_BTC_SET_RF_REG)(	
 	IN 	PVOID			pBtcContext,
 	IN	u1Byte			eRFPath,
 	IN	u4Byte			RegAddr,
 	IN	u4Byte			BitMask,
 	IN	u4Byte			Data
 	);
-typedef u4Byte
+typedef u4Byte 
 (*BFP_BTC_GET_RF_REG)(
 	IN 	PVOID			pBtcContext,
 	IN	u1Byte			eRFPath,
@@ -460,7 +460,7 @@ typedef VOID
 	IN	u4Byte			offset,
 	IN	u4Byte			value
 	);
-typedef u4Byte
+typedef u4Byte 
 (*BFP_BTC_GET_BT_REG)(
 	IN 	PVOID			pBtcContext,
 	IN	u1Byte			regType,
@@ -558,7 +558,7 @@ typedef struct _BTC_COEXIST{
 	pu1Byte				cliBuf;
 	BTC_STATISTICS		statistics;
 	u1Byte				pwrModeVal[10];
-
+		
 	// function pointers
 	// io related
 	BFP_BTC_R1			fBtcRead1Byte;
@@ -575,7 +575,7 @@ typedef struct _BTC_COEXIST{
 	// read/write rf related
 	BFP_BTC_SET_RF_REG	fBtcSetRfReg;
 	BFP_BTC_GET_RF_REG	fBtcGetRfReg;
-
+	
 	// fill h2c related
 	BFP_BTC_FILL_H2C		fBtcFillH2c;
 	// other

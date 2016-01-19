@@ -72,3 +72,4 @@ extern u32 Rtl8723UPHY_REG_Array_MP[Rtl8723UPHY_REG_Array_MPLength];
 #endif //#if MP_DRIVER == 1
 
 #endif //#ifndef __INC_HAL8723U_FW_IMG_H
+

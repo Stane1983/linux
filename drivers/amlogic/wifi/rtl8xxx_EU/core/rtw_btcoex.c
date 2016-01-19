@@ -67,7 +67,7 @@ void rtw_btcoex_ConnectNotify(PADAPTER padapter, u8 action)
 		return;
 	}
 #endif // DBG_CONFIG_ERROR_RESET
-
+		
 #ifdef CONFIG_CONCURRENT_MODE
 	if ((_FALSE == action) && (padapter->pbuddy_adapter))
 	{
@@ -152,7 +152,7 @@ void rtw_btcoex_HaltNotify(PADAPTER padapter)
 
 void rtw_btcoex_SwitchGntBt(PADAPTER padapter)
 {
-	hal_btcoex_SwitchGntBt(padapter);
+	hal_btcoex_SwitchGntBt(padapter);	
 }
 
 void rtw_btcoex_Switch(PADAPTER padapter, u8 enable)
@@ -335,3 +335,4 @@ void rtw_btcoex_LPS_Leave(PADAPTER padapter)
 	}
 }
 #endif // CONFIG_BT_COEXIST
+

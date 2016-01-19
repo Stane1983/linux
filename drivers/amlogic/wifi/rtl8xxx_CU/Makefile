@@ -416,7 +416,7 @@ KSRC ?= /lib/modules/2.6.31-770-g0e46b52/source
 endif
 
 ifeq ($(CONFIG_PLATFORM_FS_MX61), y)
-EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN 
 ARCH := arm
 CROSS_COMPILE := /home/share/CusEnv/FreeScale/arm-eabi-4.4.3/bin/arm-eabi-
 KSRC ?= /home/share/CusEnv/FreeScale/FS_kernel_env
@@ -664,7 +664,8 @@ endif
 ifeq ($(CONFIG_PLATFORM_ARM_ANDROID_AML), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
 ARCH ?= arm
-CROSS_COMPILE ?= arm-none-linux-gnueabi-
+CROSS_COMPILE := arm-linux-gnueabihf-
+KSRC := ../../../../../../common
 KVER:= 3.10
 endif
 
@@ -754,4 +755,6 @@ clean:
 	cd hal ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep/linux ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
+	cd platform ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 endif
+

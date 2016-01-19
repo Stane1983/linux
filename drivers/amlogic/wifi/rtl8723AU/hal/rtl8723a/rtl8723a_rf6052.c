@@ -687,7 +687,7 @@ phy_RF6052_Config_ParaFile(
 #ifdef CONFIG_EMBEDDED_FWIMG
 			#ifdef CONFIG_PHY_SETTING_WITH_ODM
 			if(HAL_STATUS_FAILURE ==ODM_ConfigRFWithHeaderFile(&pHalData->odmpriv,(ODM_RF_RADIO_PATH_E)eRFPath, (ODM_RF_RADIO_PATH_E)eRFPath))
-				rtStatus= _FAIL;
+				rtStatus= _FAIL;	
 			#else
 			rtStatus = rtl8723a_PHY_ConfigRFWithHeaderFile(Adapter,(RF_RADIO_PATH_E)eRFPath);
 			#endif
@@ -982,3 +982,4 @@ PHY_RFShadowRefresh(
 }	/* PHY_RFShadowRead */
 
 /* End of HalRf6052.c */
+

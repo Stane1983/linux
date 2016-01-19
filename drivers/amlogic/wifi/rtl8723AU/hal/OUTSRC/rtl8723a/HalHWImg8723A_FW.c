@@ -1594,3 +1594,4 @@ ODM_ReadFirmware_8723A_rtl8723fw_B(
 
 
 #endif // end of HWIMG_SUPPORT
+

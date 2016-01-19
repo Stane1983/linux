@@ -155,3 +155,4 @@ void	rtl8812_query_rx_desc_status(union recv_frame *precvframe, u8 *pdesc);
 void	rtl8812_query_rx_phy_status(union recv_frame *prframe, u8 *pphy_stat);
 
 #endif
+

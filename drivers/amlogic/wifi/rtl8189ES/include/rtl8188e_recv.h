@@ -94,7 +94,7 @@ typedef struct rxreport_8188e
 	u32 pattern9match:1;
 	u32 patternamatch:1;
 	u32 patternbmatch:1;
-	u32 patterncmatch:1;
+	u32 patterncmatch:1;	
 	u32 rsvd1613:19;
 	*/
 	u32 rsvd16;
@@ -109,7 +109,7 @@ typedef struct rxreport_8188e
 } RXREPORT, *PRXREPORT;
 
 
-#ifdef CONFIG_SDIO_HCI
+#if defined (CONFIG_SDIO_HCI)||defined(CONFIG_GSPI_HCI)
 s32 rtl8188es_init_recv_priv(PADAPTER padapter);
 void rtl8188es_free_recv_priv(PADAPTER padapter);
 void rtl8188es_recv_hdl(PADAPTER padapter, struct recv_buf *precvbuf);
@@ -136,3 +136,4 @@ void update_recvframe_phyinfo_88e(union recv_frame	*precvframe,struct phy_stat *
 void update_recvframe_attrib_88e(	union recv_frame *precvframe,	struct recv_stat *prxstat);
 
 #endif
+

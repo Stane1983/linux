@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -20,7 +20,7 @@
 #ifndef __HAL_VERSION_DEF_H__
 #define __HAL_VERSION_DEF_H__
 
-#define TRUE 	_TRUE
+#define TRUE 	_TRUE	
 #define FALSE	_FALSE
 
 // HAL_IC_TYPE_E
@@ -36,7 +36,7 @@ typedef enum tag_HAL_IC_Type_Definition
 	CHIP_8812A 	=	7,
 	CHIP_8821A 	=	8,
 	CHIP_8723B 	=	9,
-	CHIP_8192E 		=	10,
+	CHIP_8192E 		=	10,	
 }HAL_IC_TYPE_E;
 
 //HAL_CHIP_TYPE_E
@@ -84,7 +84,7 @@ typedef	struct tag_HAL_VERSION
 	HAL_CHIP_TYPE_E		ChipType;
 	HAL_CUT_VERSION_E	CUTVersion;
 	HAL_VENDOR_E		VendorType;
-	HAL_RF_TYPE_E		RFType;
+	HAL_RF_TYPE_E		RFType;	
 	u8					ROMVer;
 }HAL_VERSION,*PHAL_VERSION;
 
@@ -153,3 +153,4 @@ typedef	struct tag_HAL_VERSION
 #define IS_8723A_B_CUT(version)				((IS_8723_SERIES(version)) ? ( IS_B_CUT(version)?TRUE : FALSE) : FALSE)
 
 #endif
+

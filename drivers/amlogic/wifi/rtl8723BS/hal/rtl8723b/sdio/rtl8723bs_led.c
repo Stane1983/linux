@@ -104,7 +104,7 @@ rtl8723bs_InitSwLeds(
 
 	pledpriv->SwLedOn = SwLedOn_8723BS;
 	pledpriv->SwLedOff = SwLedOff_8723BS;
-
+	
 	InitLed871x(padapter, &(pledpriv->SwLed0), LED_PIN_LED0);
 
 	InitLed871x(padapter,&(pledpriv->SwLed1), LED_PIN_LED1);
@@ -128,3 +128,4 @@ rtl8723bs_DeInitSwLeds(
 	DeInitLed871x( &(ledpriv->SwLed1) );
 #endif
 }
+

@@ -155,13 +155,6 @@ typedef struct _RT_FIRMWARE_8723A {
 	u8			szFwBuffer[FW_8723A_SIZE];
 #endif
 	u32			ulFwLength;
-
-#ifdef CONFIG_EMBEDDED_FWIMG
-	u8*			szBTFwBuffer;
-#else
-	u8			szBTFwBuffer[FW_8723A_SIZE];
-#endif
-	u32			ulBTFwLength;
 } RT_FIRMWARE_8723A, *PRT_FIRMWARE_8723A;
 
 //
@@ -448,6 +441,7 @@ void Hal_InitChannelPlan(PADAPTER padapter);
 void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc);
 void SetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val);
 void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val);
+u8 GetHalDefVar8723A(PADAPTER Adapter, HAL_DEF_VARIABLE eVariable, PVOID pValue);
 #ifdef CONFIG_BT_COEXIST
 void rtl8723a_SingleDualAntennaDetection(PADAPTER padapter);
 #endif
@@ -464,3 +458,4 @@ void rtl8723a_stop_thread(_adapter *padapter);
 s32 c2h_id_filter_ccx_8723a(u8 *buf);
 void _InitTransferPageSize(PADAPTER padapter);
 #endif// __RTL8723A_HAL_H__
+

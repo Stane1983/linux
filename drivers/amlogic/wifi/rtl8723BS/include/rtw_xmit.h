@@ -77,7 +77,12 @@
 
 // xmit extension buff defination
 #define MAX_XMIT_EXTBUF_SZ	(1536)
+
+#ifdef CONFIG_SINGLE_XMIT_BUF
+#define NR_XMIT_EXTBUFF	(1)
+#else
 #define NR_XMIT_EXTBUFF	(32)
+#endif
 
 #define MAX_CMDBUF_SZ	(5120)	//(4096)
 
@@ -145,20 +150,20 @@ do{\
 #define HWXMIT_ENTRY	4
 
 // For Buffer Descriptor ring architecture
-#ifdef BUF_DESC_ARCH
+#ifdef BUF_DESC_ARCH	
 #if defined (CONFIG_RTL8192E)
-#define TX_BUFFER_SEG_NUM 	1 // 0:2 seg, 1: 4 seg, 2: 8 seg.
+#define TX_BUFFER_SEG_NUM 	1 // 0:2 seg, 1: 4 seg, 2: 8 seg.  	
 #endif
 #endif
 
-#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)|| defined(CONFIG_RTL8723B)
+#if defined(CONFIG_RTL8812A) || defined(CONFIG_RTL8821A)|| defined(CONFIG_RTL8723B) || defined(CONFIG_RTL8814A)
 #define TXDESC_SIZE 40
 //8192EE_TODO
 #elif defined (CONFIG_RTL8192E) // this section is defined for buffer descriptor ring architecture
 	#ifdef CONFIG_PCI_HCI
 		#define TXDESC_SIZE ((TX_BUFFER_SEG_NUM ==0)?16: ((TX_BUFFER_SEG_NUM ==1)? 32:64) )
-		#define TX_WIFI_INFO_SIZE 40
-	#else  //USB or SDIO
+		#define TX_WIFI_INFO_SIZE 40  
+	#else  //8192E USB or SDIO
 		#define TXDESC_SIZE 40
 	#endif
 //8192EE_TODO
@@ -189,13 +194,13 @@ do{\
 #define TXDESC_OFFSET TX_WIFI_INFO_SIZE
 #else
 #define TXDESC_OFFSET 0
-#endif
+#endif 
 #define TX_DESC_NEXT_DESC_OFFSET	(TXDESC_SIZE + 8)
 #endif //CONFIG_PCI_HCI
 
 enum TXDESC_SC{
 	SC_DONT_CARE = 0x00,
-	SC_UPPER= 0x01,
+	SC_UPPER= 0x01,	
 	SC_LOWER=0x02,
 	SC_DUPLICATE=0x03
 };
@@ -340,6 +345,7 @@ struct pkt_attrib
 	u8	dhcp_pkt;
 	u16	ether_type;
 	u16	seqnum;
+	u8 	hw_ssn_sel;	//for HW_SEQ0,1,2,3
 	u16	pkt_hdrlen;	//the original 802.3 pkt header len
 	u16	hdrlen;		//the WLAN Header Len
 	u32	pktlen;		//the original 802.3 pkt raw_data len (not include ether_hdr data)
@@ -396,7 +402,7 @@ struct pkt_attrib
 #endif //CONFIG_TDLS
 
 	u8 icmp_pkt;
-
+	
 };
 #endif
 
@@ -518,7 +524,7 @@ struct xmit_buf
 	u8 *ptail;
 	u8 *pend;
 	u32 ff_hwaddr;
-	u8	pg_num;
+	u8	pg_num;	
 	u8	agg_num;
 #ifdef PLATFORM_OS_XP
 	PMDL pxmitbuf_mdl;
@@ -564,10 +570,6 @@ struct xmit_frame
 	u8	agg_num;
 #endif
 	s8	pkt_offset;
-#ifdef CONFIG_RTL8192D
-	u8	EMPktNum;
-	u16	EMPktLen[5];//The max value by HW
-#endif
 #endif
 
 #ifdef CONFIG_XMIT_ACK
@@ -632,6 +634,8 @@ enum cmdbuf_type {
 	CMDBUF_RSVD,
 	CMDBUF_MAX
 };
+
+u8 rtw_get_hwseq_no(_adapter *padapter);
 
 struct	xmit_priv	{
 
@@ -720,7 +724,7 @@ struct	xmit_priv	{
 #endif
 #endif
 
-#ifdef CONFIG_SDIO_HCI
+#if defined (CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
 #ifdef CONFIG_SDIO_TX_TASKLET
 	#ifdef PLATFORM_LINUX
 	struct tasklet_struct xmit_tasklet;
@@ -744,16 +748,16 @@ struct	xmit_priv	{
 	uint free_xmit_extbuf_cnt;
 
 	struct xmit_buf	pcmd_xmitbuf[CMDBUF_MAX];
-
+	u8   hw_ssn_seq_no;//mapping to REG_HW_SEQ 0,1,2,3
 	u16	nqos_ssn;
 	#ifdef CONFIG_TX_EARLY_MODE
 
 	#ifdef CONFIG_SDIO_HCI
-	#define MAX_AGG_PKT_NUM 20
+	#define MAX_AGG_PKT_NUM 20	
 	#else
-	#define MAX_AGG_PKT_NUM 256 //Max tx ampdu coounts
+	#define MAX_AGG_PKT_NUM 256 //Max tx ampdu coounts		
 	#endif
-
+	
 	struct agg_pkt_info agg_pkt[MAX_AGG_PKT_NUM];
 	#endif
 
@@ -769,7 +773,13 @@ struct	xmit_priv	{
 extern struct xmit_frame *__rtw_alloc_cmdxmitframe(struct xmit_priv *pxmitpriv,
 		enum cmdbuf_type buf_type);
 #define rtw_alloc_cmdxmitframe(p) __rtw_alloc_cmdxmitframe(p, CMDBUF_RSVD)
+#if defined(CONFIG_RTL8192E) && defined(CONFIG_PCI_HCI) 
+extern struct xmit_frame *__rtw_alloc_cmdxmitframe_8192ee(struct xmit_priv *pxmitpriv,
+		enum cmdbuf_type buf_type);
+#define rtw_alloc_bcnxmitframe(p) __rtw_alloc_cmdxmitframe_8192ee(p, CMDBUF_BEACON)
+#else
 #define rtw_alloc_bcnxmitframe(p) __rtw_alloc_cmdxmitframe(p, CMDBUF_BEACON)
+#endif
 
 extern struct xmit_buf *rtw_alloc_xmitbuf_ext(struct xmit_priv *pxmitpriv);
 extern s32 rtw_free_xmitbuf_ext(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf);
@@ -857,3 +867,4 @@ void rtw_ack_tx_done(struct xmit_priv *pxmitpriv, int status);
 #include <xmit_osdep.h>
 
 #endif	//_RTL871X_XMIT_H_
+

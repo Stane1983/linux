@@ -28,7 +28,7 @@
 #include "../hal/OUTSRC/odm_precomp.h"
 #endif
 
-//include HAL Related header after HAL Related compiling flags
+//include HAL Related header after HAL Related compiling flags 
 #include "rtl8192e_spec.h"
 #include "rtl8192e_rf.h"
 #include "rtl8192e_dm.h"
@@ -51,15 +51,15 @@
 //---------------------------------------------------------------------
 	#define RTL8192E_FW_IMG					"rtl8192e/FW_NIC.bin"
 	#define RTL8192E_FW_WW_IMG				"rtl8192e/FW_WoWLAN.bin"
-	#define RTL8192E_PHY_REG					"rtl8192e/PHY_REG.txt"
+	#define RTL8192E_PHY_REG					"rtl8192e/PHY_REG.txt" 
 	#define RTL8192E_PHY_RADIO_A				"rtl8192e/RadioA.txt"
 	#define RTL8192E_PHY_RADIO_B				"rtl8192e/RadioB.txt"
 	#define RTL8192E_TXPWR_TRACK				"rtl8192e/TxPowerTrack.txt"
 	#define RTL8192E_AGC_TAB					"rtl8192e/AGC_TAB.txt"
 	#define RTL8192E_PHY_MACREG 				"rtl8192e/MAC_REG.txt"
 	#define RTL8192E_PHY_REG_PG				"rtl8192e/PHY_REG_PG.txt"
-	#define RTL8192E_PHY_REG_MP 				"rtl8192e/PHY_REG_MP.txt"
-	#define RTL8192E_TXPWR_LMT				"rtl8192e/TXPWR_LMT.txt"
+	#define RTL8192E_PHY_REG_MP 				"rtl8192e/PHY_REG_MP.txt" 
+	#define RTL8192E_TXPWR_LMT				"rtl8192e/TXPWR_LMT.txt" 
 
 //---------------------------------------------------------------------
 //		RTL8192E Power Configuration CMDs for PCIe interface
@@ -72,7 +72,7 @@
 #define Rtl8192E_NIC_RESUME_FLOW				rtl8192E_resume_flow
 #define Rtl8192E_NIC_PDN_FLOW					rtl8192E_hwpdn_flow
 #define Rtl8192E_NIC_LPS_ENTER_FLOW			rtl8192E_enter_lps_flow
-#define Rtl8192E_NIC_LPS_LEAVE_FLOW			rtl8192E_leave_lps_flow
+#define Rtl8192E_NIC_LPS_LEAVE_FLOW			rtl8192E_leave_lps_flow	
 
 
 #if 1 // download firmware related data structure
@@ -109,7 +109,7 @@ typedef struct _RT_FIRMWARE_8192E {
 #define GET_FIRMWARE_HDR_FUNCTION_8192E(__FwHdr)		LE_BITS_TO_4BYTE(__FwHdr, 24, 8) // Reserved for different FW function indcation, for further use when driver needs to download different FW in different conditions
 #define GET_FIRMWARE_HDR_VERSION_8192E(__FwHdr)			LE_BITS_TO_4BYTE(__FwHdr+4, 0, 16)// FW Version
 #define GET_FIRMWARE_HDR_SUB_VER_8192E(__FwHdr)			LE_BITS_TO_4BYTE(__FwHdr+4, 16, 8) // FW Subversion, default 0x00
-#define GET_FIRMWARE_HDR_RSVD1_8192E(__FwHdr)			LE_BITS_TO_4BYTE(__FwHdr+4, 24, 8)
+#define GET_FIRMWARE_HDR_RSVD1_8192E(__FwHdr)			LE_BITS_TO_4BYTE(__FwHdr+4, 24, 8) 		
 
 //--- LONG WORD 1 ----
 #define GET_FIRMWARE_HDR_MONTH_8192E(__FwHdr)			LE_BITS_TO_4BYTE(__FwHdr+8, 0, 8) // Release time Month field
@@ -176,7 +176,7 @@ typedef struct _RT_FIRMWARE_8192E {
 // <Roger_Notes> To prevent out of boundary programming case, leave 1byte and program full section
 // 9bytes + 1byt + 5bytes and pre 1byte.
 // For worst case:
-// | 1byte|----8bytes----|1byte|--5bytes--|
+// | 1byte|----8bytes----|1byte|--5bytes--| 
 // |         |            Reserved(14bytes)	      |
 //
 #define		EFUSE_OOB_PROTECT_BYTES_8192E 		15	// PG data exclude header, dummy 6 bytes frome CP test and reserved 1byte.
@@ -228,7 +228,7 @@ void	Hal_EfuseParseBTCoexistInfo8192E(PADAPTER Adapter, u8* hwinfo, BOOLEAN Auto
 u8 Hal_CrystalAFEAdjust(_adapter * Adapter);
 
 BOOLEAN HalDetectPwrDownMode8192E(PADAPTER Adapter);
-
+	
 #ifdef CONFIG_WOWLAN
 void Hal_DetectWoWMode(PADAPTER pAdapter);
 #endif //CONFIG_WOWLAN
@@ -281,3 +281,4 @@ void SetBcnCtrlReg(PADAPTER padapter, u8 SetBits, u8 ClearBits);
 void rtl8192e_start_thread(_adapter *padapter);
 void rtl8192e_stop_thread(_adapter *padapter);
 #endif //__RTL8192E_HAL_H__
+

@@ -642,7 +642,7 @@ s32 _sdio_local_read(
 	u32 n;
 
 	pintfhdl=&padapter->iopriv.intf;
-
+	
 	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
 
 	rtw_hal_get_hwreg(padapter, HW_VAR_APFM_ON_MAC, &bMacPwrCtrlOn);
@@ -768,7 +768,7 @@ s32 sdio_local_write(
 	u32		cnt,
 	u8		*pbuf)
 {
-	struct intf_hdl * pintfhdl;
+	struct intf_hdl * pintfhdl;	
 	u8 bMacPwrCtrlOn;
 	s32 err;
 	u8 *ptmpbuf;
@@ -780,7 +780,7 @@ s32 sdio_local_write(
 		DBG_8192C("%s, size must be the multiple of 4 \n", __FUNCTION__);
 
 	pintfhdl=&padapter->iopriv.intf;
-
+	
 	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
 
 	rtw_hal_get_hwreg(padapter, HW_VAR_APFM_ON_MAC, &bMacPwrCtrlOn);
@@ -1376,7 +1376,7 @@ static struct recv_buf* sd_recv_rxfifo(PADAPTER padapter, u32 size)
 		RT_TRACE(_module_hci_ops_os_c_, _drv_err_, ("%s: read port FAIL!\n", __FUNCTION__));
 		return NULL;
 	}
-
+	
 
 	//3 4. init recvbuf
 	precvbuf->len = readsize;
@@ -1651,3 +1651,4 @@ u8 HalQueryTxBufferStatus8723ASdio(PADAPTER padapter)
 
 	return _TRUE;
 }
+

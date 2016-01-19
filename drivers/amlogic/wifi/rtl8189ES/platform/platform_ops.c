@@ -42,6 +42,5 @@ int platform_wifi_power_on(void)
 
 void platform_wifi_power_off(void)
 {
-//	extern_wifi_set_enable(0);
 }
 #endif // !CONFIG_PLATFORM_OPS

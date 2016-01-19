@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -32,7 +32,7 @@
 
 
 //================================================================================
-// LED_819xUsb routines.
+// LED_819xUsb routines. 
 //================================================================================
 
 //
@@ -41,7 +41,7 @@
 //
 static void
 SwLedOn_8188EU(
-	_adapter			*padapter,
+	_adapter			*padapter, 
 	PLED_USB		pLed
 )
 {
@@ -55,7 +55,7 @@ SwLedOn_8188EU(
 
 	LedCfg = rtw_read8(padapter, REG_LEDCFG2);
 	switch(pLed->LedPin)
-	{
+	{	
 		case LED_PIN_LED0:
 			rtw_write8(padapter, REG_LEDCFG2, (LedCfg&0xf0)|BIT5|BIT6); // SW control led0 on.
 			break;
@@ -67,7 +67,7 @@ SwLedOn_8188EU(
 		default:
 			break;
 	}
-
+	
 	pLed->bLedOn = _TRUE;
 }
 
@@ -78,7 +78,7 @@ SwLedOn_8188EU(
 //
 static void
 SwLedOff_8188EU(
-	_adapter			*padapter,
+	_adapter			*padapter, 
 	PLED_USB		pLed
 )
 {
@@ -98,11 +98,11 @@ SwLedOff_8188EU(
 		case LED_PIN_LED0:
 			if(pHalData->bLedOpenDrain == _TRUE) // Open-drain arrangement for controlling the LED)
 			{
-				LedCfg &= 0x90; // Set to software control.
-				rtw_write8(padapter, REG_LEDCFG2, (LedCfg|BIT3));
+				LedCfg &= 0x90; // Set to software control.				
+				rtw_write8(padapter, REG_LEDCFG2, (LedCfg|BIT3));				
 				LedCfg = rtw_read8(padapter, REG_MAC_PINMUX_CFG);
 				LedCfg &= 0xFE;
-				rtw_write8(padapter, REG_MAC_PINMUX_CFG, LedCfg);
+				rtw_write8(padapter, REG_MAC_PINMUX_CFG, LedCfg);									
 			}
 			else
 			{
@@ -120,7 +120,7 @@ SwLedOff_8188EU(
 	}
 exit:
 	pLed->bLedOn = _FALSE;
-
+	
 }
 
 //================================================================================
@@ -168,3 +168,4 @@ rtl8188eu_DeInitSwLeds(
 	DeInitLed( &(ledpriv->SwLed0) );
 	DeInitLed( &(ledpriv->SwLed1) );
 }
+

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -20,8 +20,6 @@
 //***** temporarily flag *******
 #define CONFIG_SINGLE_IMG
 //#define CONFIG_DISABLE_ODM
-//for FPGA VERIFICATION config
-#define RTL8188E_FPGA_TRUE_PHY_VERIFICATION 0
 
 //***** temporarily flag *******
 /*
@@ -43,15 +41,15 @@
 #ifdef CONFIG_IOCTL_CFG80211
 	#define RTW_USE_CFG80211_STA_EVENT /* Indecate new sta asoc through cfg80211_new_sta */
 	#define CONFIG_CFG80211_FORCE_COMPATIBLE_2_6_37_UNDER
-	//#define CONFIG_DEBUG_CFG80211
+	//#define CONFIG_DEBUG_CFG80211 
 	//#define CONFIG_DRV_ISSUE_PROV_REQ // IOT FOR S2
 	#define CONFIG_SET_SCAN_DENY_TIMER
+	#define CONFIG_IEEE80211_BAND_5GHZ
 #endif
 
 /*
  * Internal  General Config
  */
-//#define CONFIG_PWRCTRL
 //#define CONFIG_H2CLBK
 
 #define CONFIG_EMBEDDED_FWIMG	1
@@ -85,8 +83,8 @@
 //#ifndef CONFIG_MP_INCLUDED
 	#define CONFIG_IPS	1
 	#ifdef CONFIG_IPS
-	//#define CONFIG_IPS_LEVEL_2	1 //enable this to set default IPS mode to IPS_LEVEL_2
-	#define CONFIG_IPS_CHECK_IN_WD // Do IPS Check in WatchDog.
+	//#define CONFIG_IPS_LEVEL_2	1 //enable this to set default IPS mode to IPS_LEVEL_2	
+	#define CONFIG_IPS_CHECK_IN_WD // Do IPS Check in WatchDog.	
 	#endif
 	//#define SUPPORT_HW_RFOFF_DETECTED	1
 
@@ -103,8 +101,8 @@
 	//#define CONFIG_ANTENNA_DIVERSITY
 
 	//after link
-	#ifdef CONFIG_ANTENNA_DIVERSITY
-	#define CONFIG_HW_ANTENNA_DIVERSITY
+	#ifdef CONFIG_ANTENNA_DIVERSITY	 
+	#define CONFIG_HW_ANTENNA_DIVERSITY		
 	#endif
 
 
@@ -119,9 +117,8 @@
 		//#endif
 	#endif
 
-	//#define CONFIG_IOL
 //#else 	//#ifndef CONFIG_MP_INCLUDED
-
+	
 //#endif 	//#ifndef CONFIG_MP_INCLUDED
 
 #define CONFIG_AP_MODE	1
@@ -132,15 +129,14 @@
 	#endif
 	#ifdef CONFIG_INTERRUPT_BASED_TXBCN
 		//#define CONFIG_INTERRUPT_BASED_TXBCN_EARLY_INT
-		#define CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR
+		#define CONFIG_INTERRUPT_BASED_TXBCN_BCN_OK_ERR		
 	#endif
-
+	
 	#define CONFIG_NATIVEAP_MLME
 	#ifndef CONFIG_NATIVEAP_MLME
 		#define CONFIG_HOSTAPD_MLME	1
-	#endif
+	#endif			
 	#define CONFIG_FIND_BEST_CHANNEL	1
-	//#define CONFIG_NO_WIRELESS_HANDLERS	1
 #endif
 
 #define CONFIG_P2P	1
@@ -148,9 +144,8 @@
 	//The CONFIG_WFD is for supporting the Wi-Fi display
 	#define CONFIG_WFD
 
-	#ifndef CONFIG_WIFI_TEST
-		#define CONFIG_P2P_REMOVE_GROUP_INFO
-	#endif
+	#define CONFIG_P2P_REMOVE_GROUP_INFO
+
 	//#define CONFIG_DBG_P2P
 
 	#define CONFIG_P2P_PS
@@ -161,13 +156,14 @@
 #endif
 
 //	Added by Kurt 20110511
-//#define CONFIG_TDLS	1
 #ifdef CONFIG_TDLS
+	#define CONFIG_TDLS_DRIVER_SETUP
 //	#ifndef CONFIG_WFD
-//		#define CONFIG_WFD	1
+//		#define CONFIG_WFD
 //	#endif
-//	#define CONFIG_TDLS_AUTOSETUP			1
-//	#define CONFIG_TDLS_AUTOCHECKALIVE		1
+//	#define CONFIG_TDLS_AUTOSETUP
+	#define CONFIG_TDLS_AUTOCHECKALIVE
+	#define CONFIG_TDLS_CH_SW		/* Enable "CONFIG_TDLS_CH_SW" by default, however limit it to only work in wifi logo test mode but not in normal mode currently */
 #endif
 
 
@@ -181,13 +177,6 @@
 	#endif
 #endif // CONFIG_LED
 
-#ifdef CONFIG_IOL
-	#define CONFIG_IOL_READ_EFUSE_MAP
-	//#define DBG_IOL_READ_EFUSE_MAP
-	#define CONFIG_IOL_LLT
-#endif
-
-
 #define USB_INTERFERENCE_ISSUE // this should be checked in all usb interface
 #define CONFIG_GLOBAL_UI_PID
 
@@ -199,20 +188,18 @@
 #define CONFIG_LONG_DELAY_ISSUE
 #define CONFIG_NEW_SIGNAL_STAT_PROCESS
 //#define CONFIG_SIGNAL_DISPLAY_DBM //display RX signal with dbm
+#ifdef CONFIG_SIGNAL_DISPLAY_DBM
+//#define CONFIG_BACKGROUND_NOISE_MONITOR
+#endif
 #define RTW_NOTCH_FILTER 0 /* 0:Disable, 1:Enable, */
 #define CONFIG_DEAUTH_BEFORE_CONNECT
-
-#define CONFIG_BR_EXT	1	// Enable NAT2.5 support for STA mode interface with a L2 Bridge
-#ifdef CONFIG_BR_EXT
-#define CONFIG_BR_EXT_BRNAME	"br0"
-#endif	// CONFIG_BR_EXT
 
 #define CONFIG_TX_MCAST2UNI	1	// Support IP multicast->unicast
 //#define CONFIG_CHECK_AC_LIFETIME 1	// Check packet lifetime of 4 ACs.
 
 
-/*
- * Interface  Related Config
+/* 
+ * Interface  Related Config 
  */
 
 #ifndef CONFIG_MINIMAL_MEMORY_USAGE
@@ -220,22 +207,24 @@
 	#define CONFIG_USB_RX_AGGREGATION	1
 #endif
 
-#define CONFIG_PREALLOC_RECV_SKB	1
 //#define CONFIG_REDUCE_USB_TX_INT	1	// Trade-off: Improve performance, but may cause TX URBs blocked by USB Host/Bus driver on few platforms.
 //#define CONFIG_EASY_REPLACEMENT	1
 
-/*
+/* 
  * CONFIG_USE_USB_BUFFER_ALLOC_XX uses Linux USB Buffer alloc API and is for Linux platform only now!
  */
 //#define CONFIG_USE_USB_BUFFER_ALLOC_TX 1	// Trade-off: For TX path, improve stability on some platforms, but may cause performance degrade on other platforms.
 //#define CONFIG_USE_USB_BUFFER_ALLOC_RX 1	// For RX path
-
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_RX
-#undef CONFIG_PREALLOC_RECV_SKB
+
+#else
+	#define CONFIG_PREALLOC_RECV_SKB
+	#ifdef CONFIG_PREALLOC_RECV_SKB
+		//#define CONFIG_FIX_NR_BULKIN_BUFFER /* only use PREALLOC_RECV_SKB buffer, don't alloc skb at runtime */
+	#endif
 #endif
 
-
-/*
+/* 
  * USB VENDOR REQ BUFFER ALLOCATION METHOD
  * if not set we'll use function local variable (stack memory)
  */
@@ -247,6 +236,16 @@
 
 //#define CONFIG_USB_SUPPORT_ASYNC_VDN_REQ 1
 
+#ifdef CONFIG_WOWLAN
+	#define CONFIG_GTK_OL
+	#define CONFIG_ARP_KEEP_ALIVE
+#endif // CONFIG_WOWLAN
+
+#ifdef CONFIG_GPIO_WAKEUP
+	#ifndef WAKEUP_GPIO_IDX
+#define WAKEUP_GPIO_IDX	1	//WIFI Chip Side
+	#endif // !WAKEUP_GPIO_IDX
+#endif // CONFIG_GPIO_WAKEUP
 
 /*
  * HAL  Related Config
@@ -282,8 +281,8 @@
  */
 #ifdef CONFIG_PLATFORM_MN10300
 	#define CONFIG_SPECIAL_SETTING_FOR_FUNAI_TV
-	#define CONFIG_USE_USB_BUFFER_ALLOC_RX
-
+	#define CONFIG_USE_USB_BUFFER_ALLOC_RX 
+	
 	#if	defined (CONFIG_SW_ANTENNA_DIVERSITY)
 		#undef CONFIG_SW_ANTENNA_DIVERSITY
 		#define CONFIG_HW_ANTENNA_DIVERSITY
@@ -292,16 +291,12 @@
 	#if	defined (CONFIG_POWER_SAVING)
 		#undef CONFIG_POWER_SAVING
 	#endif
-
+	
 #endif//CONFIG_PLATFORM_MN10300
-
-#ifdef CONFIG_PLATFORM_TI_DM365
-#define CONFIG_USE_USB_BUFFER_ALLOC_RX
-#endif
 
 
 #if defined(CONFIG_PLATFORM_ACTIONS_ATM702X)
-	#ifdef CONFIG_USB_TX_AGGREGATION
+	#ifdef CONFIG_USB_TX_AGGREGATION	
 		#undef CONFIG_USB_TX_AGGREGATION
 	#endif
 	#ifndef CONFIG_USE_USB_BUFFER_ALLOC_TX
@@ -312,6 +307,16 @@
 	#endif
 #endif
 
+#ifdef CONFIG_BT_COEXIST
+	// for ODM and outsrc BT-Coex
+	#define BT_30_SUPPORT 1
+	#define CONFIG_BT_COEXIST_SOCKET_TRX
+	#ifndef CONFIG_LPS
+		#define CONFIG_LPS	// download reserved page to FW
+	#endif
+#else // !CONFIG_BT_COEXIST
+	#define BT_30_SUPPORT 0
+#endif // !CONFIG_BT_COEXIST
 
 /*
  * Outsource  Related Config
@@ -321,11 +326,11 @@
 
 #define RTL8192CE_SUPPORT 				0
 #define RTL8192CU_SUPPORT 				0
-#define RTL8192C_SUPPORT 				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)
+#define RTL8192C_SUPPORT 				(RTL8192CE_SUPPORT|RTL8192CU_SUPPORT)	
 
 #define RTL8192DE_SUPPORT 				0
 #define RTL8192DU_SUPPORT 				0
-#define RTL8192D_SUPPORT 				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)
+#define RTL8192D_SUPPORT 				(RTL8192DE_SUPPORT|RTL8192DU_SUPPORT)	
 
 #define RTL8723AU_SUPPORT				0
 #define RTL8723AS_SUPPORT				0
@@ -346,7 +351,8 @@
 #endif
 #define RTL8723B_SUPPORT				0
 #define RTL8192E_SUPPORT				0
-#define RTL8813A_SUPPORT				0
+#define RTL8814A_SUPPORT				0
+#define 	RTL8195A_SUPPORT				0
 
 #define RATE_ADAPTIVE_SUPPORT 			0
 #define POWER_TRAINING_ACTIVE			0
@@ -364,9 +370,9 @@
 /*
  * Debug Related Config
  */
-#define DBG	1
+#define DBG	0
 
-#define CONFIG_DEBUG /* DBG_871X, etc... */
+//#define CONFIG_DEBUG /* DBG_871X, etc... */
 //#define CONFIG_DEBUG_RTL871X /* RT_TRACE, RT_PRINT_DATA, _func_enter_, _func_exit_ */
 
 #define CONFIG_PROC_DEBUG
@@ -398,3 +404,4 @@
 //#define DBG_HAL_INIT_PROFILING
 
 //#define DBG_MEMORY_LEAK	1
+

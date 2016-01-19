@@ -576,7 +576,7 @@ static void HalRxAggr8723ASdio(PADAPTER padapter)
 		valueDMATimeout = 0x06;
 		//valueDMAPageCount = 0x0F;
 		valueDMAPageCount = 0x24;
-
+		
 	}
 
 	rtw_write8(padapter, REG_RXDMA_AGG_PG_TH+1, valueDMATimeout);
@@ -814,7 +814,7 @@ static void _RfPowerSave(PADAPTER padapter)
 //	PMGNT_INFO		pMgntInfo;
 	struct pwrctrl_priv *pwrctrlpriv;
 	u8				u1bTmp;
-	rt_rf_power_state	eRfPowerStateToSet;
+	rt_rf_power_state	eRfPowerStateToSet; 
 
 
 #if (DISABLE_BB_RF)
@@ -827,11 +827,11 @@ static void _RfPowerSave(PADAPTER padapter)
 
 	//
 	// 2010/08/11 MH Merge from 8192SE for Minicard init. We need to confirm current radio status
-	// and then decide to enable RF or not.!!!??? For Selective suspend mode. We may not
+	// and then decide to enable RF or not.!!!??? For Selective suspend mode. We may not 
 	// call init_adapter. May cause some problem??
 	//
-	// Fix the bug that Hw/Sw radio off before S3/S4, the RF off action will not be executed
-	// in MgntActSet_RF_State() after wake up, because the value of pHalData->eRFPowerState
+	// Fix the bug that Hw/Sw radio off before S3/S4, the RF off action will not be executed 
+	// in MgntActSet_RF_State() after wake up, because the value of pHalData->eRFPowerState 
 	// is the same as eRfOff, we should change it to eRfOn after we config RF parameters.
 	// Added by tynli. 2010.03.30.
 	pwrctrlpriv->rf_pwrstate = rf_on;
@@ -868,7 +868,7 @@ static void _RfPowerSave(PADAPTER padapter)
 	{ // H/W or S/W RF OFF before sleep.
 		RT_TRACE(_module_hci_hal_init_c_, _drv_notice_, ("%s: Turn off RF for RfOffReason(%x)\n", __FUNCTION__, pMgntInfo->RfOffReason));
 
-		// Selective suspend mode Resume from S3/S4 CU need to enable RF and turn off again.
+		// Selective suspend mode Resume from S3/S4 CU need to enable RF and turn off again.		
 		//MgntActSet_RF_State(padapter, rf_on, pMgntInfo->RfOffReason, _TRUE);
 		pHalData->eRFPowerState = rf_on;
 		MgntActSet_RF_State(padapter, rf_off, pMgntInfo->RfOffReason, _TRUE);
@@ -880,12 +880,12 @@ static void _RfPowerSave(PADAPTER padapter)
 	else
 	{
 		// Perform GPIO polling to find out current RF state. added by Roger, 2010.04.09.
-		if( RT_GetInterfaceSelection(padapter)==INTF_SEL2_MINICARD &&
-			(padapter->MgntInfo.PowerSaveControl.bGpioRfSw))
+		if( RT_GetInterfaceSelection(padapter)==INTF_SEL2_MINICARD && 
+			(padapter->MgntInfo.PowerSaveControl.bGpioRfSw)) 
 		{
 			RT_TRACE(_module_hci_hal_init_c_, _drv_notice_ ("%s: RF=%d \n", __FUNCTION__, eRfPowerStateToSet));
 			if (eRfPowerStateToSet == rf_off)
-			{
+			{				
 				MgntActSet_RF_State(padapter, rf_off, RF_CHANGE_BY_HW, _TRUE);
 				pHalData->bHwRadioOff = _TRUE;
 			}
@@ -906,7 +906,7 @@ static void _RfPowerSave(PADAPTER padapter)
 			//DrvIFIndicateCurrentPhyStatus(padapter);
 		}
 
-		pMgntInfo->RfOffReason = 0;
+		pMgntInfo->RfOffReason = 0; 
 		pHalData->bHwRadioOff = _FALSE;
 		pHalData->eRFPowerState = rf_on;
 		padapter->HalFunc.LedControlHandler(padapter, LED_CTL_POWER_ON);
@@ -935,7 +935,7 @@ static void _RfPowerSave(PADAPTER padapter)
 			rtw_write16(padapter, REG_APS_FSMCO, 0x8812);
 		}
 	}
-	//DrvIFIndicateCurrentPhyStatus(padapter);
+	//DrvIFIndicateCurrentPhyStatus(padapter);	
 }
 
 static void _InitAntenna_Selection(PADAPTER padapter)
@@ -1200,7 +1200,7 @@ static u32 rtl8723as_hal_init(PADAPTER padapter)
 	pHalData->RfRegChnlVal[0] = PHY_QueryRFReg(padapter, (RF_RADIO_PATH_E)0, RF_CHNLBW, bRFRegOffsetMask);
 	pHalData->RfRegChnlVal[1] = PHY_QueryRFReg(padapter, (RF_RADIO_PATH_E)1, RF_CHNLBW, bRFRegOffsetMask);
 
-	if (!pHalData->bMACFuncEnable) {
+	if (!pHalData->bMACFuncEnable) {	
 		_InitQueueReservedPage(padapter);
 		_InitTxBufferBoundary(padapter);
 	}
@@ -1463,7 +1463,7 @@ static void PowerDownRTL8723ASdio(PADAPTER padapter)
 	} while (1);
 	if (retry == 1000)
 		DBG_8192C(KERN_ERR "%s: can't wait REG_APS_FSMCO BIT9 to 0! (0x%02x)\n", __func__, v8);
-
+	
 	v8 = rtw_read8(padapter, REG_APS_FSMCO+2);
 	v8 &= ~BIT(0);
 	rtw_write8(padapter, REG_APS_FSMCO+2, v8);
@@ -1655,7 +1655,7 @@ static void rtl8723as_interface_configure(PADAPTER padapter)
 		case 1:
 			pHalData->OutEpQueueSel=TX_SELE_HQ;
 			break;
-		default:
+		default:				
 			break;
 	}
 
@@ -2188,7 +2188,7 @@ SetHalDefVar8723ASDIO(
 				u8 dm_func = *(( u8*)pValue);
 				struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 				DM_ODM_T 		*podmpriv = &pHalData->odmpriv;
-
+				
 				if(dm_func == 0){ //disable all dynamic func
 					podmpriv->SupportAbility = DYNAMIC_FUNC_DISABLE;
 					DBG_8192C("==> Disable all dynamic function...\n");
@@ -2209,17 +2209,17 @@ SetHalDefVar8723ASDIO(
 				}
 				else if(dm_func == 5){//disable antenna diversity
 					podmpriv->SupportAbility  &= (~DYNAMIC_BB_ANT_DIV);
-				}
+				}				
 				else if(dm_func == 6){//turn on all dynamic func
 					if(!(podmpriv->SupportAbility  & DYNAMIC_BB_DIG))
-					{
+					{						
 						DIG_T	*pDigTable = &podmpriv->DM_DigTable;
-						pDigTable->CurIGValue= rtw_read8(Adapter,0xc50);
+						pDigTable->CurIGValue= rtw_read8(Adapter,0xc50);	
 					}
 					pdmpriv->DMFlag |= DYNAMIC_FUNC_BT;
 					podmpriv->SupportAbility = DYNAMIC_ALL_FUNC_ENABLE;
 					DBG_8192C("==> Turn on all dynamic function...\n");
-				}
+				}			
 			}
 			break;
 		default:
@@ -2269,7 +2269,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id, u8 rssi_level)
 			raid = networktype_to_raid(networkType);
 
 			mask = update_supported_rate(cur_network->SupportedRates, supportRateNum);
-			mask |= (pmlmeinfo->HT_enable)? update_MSC_rate(&(pmlmeinfo->HT_caps)): 0;
+			mask |= (pmlmeinfo->HT_enable)? update_MSC_rate(&(pmlmeinfo->HT_caps)): 0;			
 
 			if (support_short_GI(padapter, &(pmlmeinfo->HT_caps)))
 			{
@@ -2286,7 +2286,7 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id, u8 rssi_level)
 				networkType = WIRELESS_11G;
 			raid = networktype_to_raid(networkType);
 
-			mask = update_basic_rate(cur_network->SupportedRates, supportRateNum);
+			mask = update_basic_rate(cur_network->SupportedRates, supportRateNum);		
 
 			break;
 
@@ -2296,24 +2296,24 @@ void UpdateHalRAMask8192CUsb(PADAPTER padapter, u32 mac_id, u8 rssi_level)
 			//pmlmeext->cur_wireless_mode = networkType;
 			raid = networktype_to_raid(networkType);
 
-			mask = update_supported_rate(cur_network->SupportedRates, supportRateNum);
+			mask = update_supported_rate(cur_network->SupportedRates, supportRateNum);			
 
 			//todo: support HT in IBSS
 
 			break;
 	}
 	//mask &=0x0fffffff;
-	rate_bitmap = 0x0fffffff;
+	rate_bitmap = 0x0fffffff;	
 #ifdef	CONFIG_ODM_REFRESH_RAMASK
-	{
+	{				
 		rate_bitmap = ODM_Get_Rate_Bitmap(&pHalData->odmpriv,mac_id,mask,rssi_level);
 		DBG_8192C("%s => mac_id:%d, networkType:0x%02x, mask:0x%08x\n\t ==> rssi_level:%d, rate_bitmap:0x%08x\n",
 			__FUNCTION__,mac_id,networkType,mask,rssi_level,rate_bitmap);
 	}
 #endif
-	mask &= rate_bitmap;
+	mask &= rate_bitmap; 
 	mask |= ((raid<<28)&0xf0000000);
-
+	
 	init_rate = get_highest_rate_idx(mask)&0x3f;
 
 	if(pHalData->fw_ractrl == _TRUE)
@@ -2369,9 +2369,9 @@ _func_enter_;
 	}
 
 	//_rtw_memset(padapter->HalData, 0, sizeof(HAL_DATA_TYPE));
-	padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);
-
-
+	padapter->hal_data_sz = sizeof(HAL_DATA_TYPE);	
+	
+	
 	rtl8723a_set_hal_ops(pHalFunc);
 
 	pHalFunc->hal_init = &rtl8723as_hal_init;
@@ -2399,7 +2399,7 @@ _func_enter_;
 	pHalFunc->SetHwRegHandler = &SetHwReg8723AS;
 	pHalFunc->GetHwRegHandler = &GetHwReg8723AS;
 	pHalFunc->GetHalDefVarHandler = &GetHalDefVar8723ASDIO;
-	pHalFunc->SetHalDefVarHandler = &SetHalDefVar8723ASDIO;
+ 	pHalFunc->SetHalDefVarHandler = &SetHalDefVar8723ASDIO;
 
 //	pHalFunc->UpdateRAMaskHandler = &UpdateHalRAMask8723ASdio;
 	pHalFunc->UpdateRAMaskHandler = &UpdateHalRAMask8192CUsb;
@@ -2416,3 +2416,5 @@ _func_enter_;
 
 _func_exit_;
 }
+
+

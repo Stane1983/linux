@@ -54,7 +54,7 @@ enum cmd_msg_element_id
 	SCAN_EN_EID = 59,
 	LOWPWR_LPS_EID = 71,
 	H2C_RESET_TSF = 75,
-	MAX_CMDMSG_EID
+	MAX_CMDMSG_EID	 
 };
 
 struct cmd_msg_parm {
@@ -226,3 +226,4 @@ void rtl8723a_set_FwMediaStatus_cmd(PADAPTER padapter, u16 mstatus_rpt );
 #ifdef CONFIG_TSF_RESET_OFFLOAD
 u8 rtl8723c_reset_tsf(_adapter *padapter, u8 reset_port);
 #endif	// CONFIG_TSF_RESET_OFFLOAD
+

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -38,3 +38,4 @@ void rtl8188es_set_hal_ops(PADAPTER padapter);
 #endif
 
 #endif //__SDIO_HAL_H__
+

@@ -143,3 +143,4 @@ typedef	enum _BT_RadioShared
 	BT_Radio_Individual	= 1,
 } BT_RadioShared, *PBT_RadioShared;
 #endif
+

@@ -1,21 +1,21 @@
-/******************************************************************************
-*
-* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of version 2 of the GNU General Public License as
-* published by the Free Software Foundation.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along with
-* this program; if not, write to the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-*
-*
+/****************************************************************************** 
+* 
+* Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved. 
+* 
+* This program is free software; you can redistribute it and/or modify it 
+* under the terms of version 2 of the GNU General Public License as 
+* published by the Free Software Foundation. 
+* 
+* This program is distributed in the hope that it will be useful, but WITHOUT 
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for 
+* more details. 
+* 
+* You should have received a copy of the GNU General Public License along with 
+* this program; if not, write to the Free Software Foundation, Inc., 
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA 
+* 
+* 
 ******************************************************************************/
 
 #include "../odm_precomp.h"
@@ -32,7 +32,7 @@ CheckPositive(
      u1Byte    _GPA         = (pDM_Odm->BoardType & BIT3) >> 3;
      u1Byte    _ALNA        = (pDM_Odm->BoardType & BIT7) >> 7;
      u1Byte    _APA         = (pDM_Odm->BoardType & BIT6) >> 6;
-
+     
      u1Byte     cBoard      = (u1Byte)((Condition1 &  bMaskByte0)               >>  0);
      u1Byte     cInterface  = (u1Byte)((Condition1 & (BIT11|BIT10|BIT9|BIT8))   >>  8);
      u1Byte     cPackage    = (u1Byte)((Condition1 & (BIT15|BIT14|BIT13|BIT12)) >> 12);
@@ -46,29 +46,29 @@ CheckPositive(
      u1Byte     cTypeGPA    = (u1Byte)((Condition2 & bMaskByte1) >>  8);
      u1Byte     cTypeALNA   = (u1Byte)((Condition2 & bMaskByte2) >> 16);
      u1Byte     cTypeAPA    = (u1Byte)((Condition2 & bMaskByte3) >> 24);
-
-     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+     
+     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                  ("===> [8812A] CheckPositive(0x%X 0x%X)\n", Condition1, Condition2));
-     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                  ("	(Platform, Interface) = (0x%X, 0x%X)", pDM_Odm->SupportPlatform, pDM_Odm->SupportInterface));
-     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE,
+     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_TRACE, 
                  ("	(Board, Package) = (0x%X, 0x%X\n", pDM_Odm->BoardType, pDM_Odm->PackageType));
-
-     if ((cPlatform  != pDM_Odm->SupportPlatform  && cPlatform  != 0) ||
-         (cInterface != pDM_Odm->SupportInterface && cInterface != 0) ||
+     
+     if ((cPlatform  != pDM_Odm->SupportPlatform  && cPlatform  != 0) || 
+         (cInterface != pDM_Odm->SupportInterface && cInterface != 0) || 
          (cCut       != pDM_Odm->CutVersion       && cCut       != 0))
          return FALSE;
-
+     
      if (cPackage != pDM_Odm->PackageType && cPackage != 0)
          return FALSE;
-
+     
      if (((_GLNA != 0) && (_GLNA == cGLNA) && (cTypeGLNA == pDM_Odm->TypeGLNA)) ||
          ((_GPA  != 0) && (_GPA  == cGPA ) && (cTypeGPA  == pDM_Odm->TypeGPA )) ||
          ((_ALNA != 0) && (_ALNA == cALNA) && (cTypeALNA == pDM_Odm->TypeALNA)) ||
          ((_APA  != 0) && (_APA  == cAPA ) && (cTypeAPA  == pDM_Odm->TypeAPA )))
          return TRUE;
-     else
-	return FALSE;
+     else 
+     	return FALSE;
 }
 
 static BOOLEAN
@@ -85,7 +85,7 @@ CheckNegative(
 *                           MAC_REG.TXT
 ******************************************************************************/
 
-u4Byte Array_MP_8812A_MAC_REG[] = {
+u4Byte Array_MP_8812A_MAC_REG[] = { 
 		0x010, 0x0000000C,
 		0x025, 0x0000000F,
 		0x072, 0x00000000,
@@ -192,8 +192,8 @@ u4Byte Array_MP_8812A_MAC_REG[] = {
 
 void
 ODM_ReadAndConfig_MP_8812A_MAC_REG(
-	IN   PDM_ODM_T  pDM_Odm
-	)
+ 	IN   PDM_ODM_T  pDM_Odm
+ 	)
 {
     #define READ_NEXT_PAIR(v1, v2, i) do { i += 2; v1 = Array[i]; v2 = Array[i+1]; } while(0)
     #define COND_ELSE  2
@@ -201,14 +201,14 @@ ODM_ReadAndConfig_MP_8812A_MAC_REG(
     u4Byte     i         = 0;
     u4Byte     ArrayLen    = sizeof(Array_MP_8812A_MAC_REG)/sizeof(u4Byte);
     pu4Byte    Array       = Array_MP_8812A_MAC_REG;
-
+	
     ODM_RT_TRACE(pDM_Odm, ODM_COMP_INIT, ODM_DBG_LOUD, ("===> ODM_ReadAndConfig_MP_8812A_MAC_REG\n"));
 
     for (i = 0; i < ArrayLen; i += 2 )
     {
         u4Byte v1 = Array[i];
         u4Byte v2 = Array[i+1];
-
+    
         // This (offset, data) pair doesn't care the condition.
         if ( v1 < 0x40000000 )
         {
@@ -223,7 +223,7 @@ ODM_ReadAndConfig_MP_8812A_MAC_REG(
             if (cCond == COND_ELSE) { // ELSE, ENDIF
                 bMatched = TRUE;
                 READ_NEXT_PAIR(v1, v2, i);
-            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) {
+            } else if ( ! CheckPositive(pDM_Odm, v1, v2) ) { 
                 bMatched = FALSE;
                 READ_NEXT_PAIR(v1, v2, i);
                 READ_NEXT_PAIR(v1, v2, i);
@@ -257,7 +257,7 @@ ODM_ReadAndConfig_MP_8812A_MAC_REG(
                     cCond = (u1Byte)((v1 & (BIT29|BIT28)) >> 28);
                 }
             }
-        }
+        } 
     }
 }
 
@@ -269,3 +269,4 @@ ODM_GetVersion_MP_8812A_MAC_REG(
 }
 
 #endif // end of HWIMG_SUPPORT
+

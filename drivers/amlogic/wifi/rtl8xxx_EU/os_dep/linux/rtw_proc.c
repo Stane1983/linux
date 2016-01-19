@@ -63,7 +63,7 @@ inline struct proc_dir_entry *rtw_proc_create_dir(const char *name, struct proc_
 	return entry;
 }
 
-inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent,
+inline struct proc_dir_entry *rtw_proc_create_entry(const char *name, struct proc_dir_entry *parent, 
 	const struct file_operations *fops, void * data)
 {
 	struct proc_dir_entry *entry;
@@ -106,7 +106,7 @@ static ssize_t proc_set_log_level(struct file *file, const char __user *buffer, 
 	if (count < 1)
 		return -EINVAL;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
 
 		int num = sscanf(tmp, "%d ", &log_level);
 
@@ -118,13 +118,13 @@ static ssize_t proc_set_log_level(struct file *file, const char __user *buffer, 
 	} else {
 		return -EFAULT;
 	}
-
+	
 	return count;
 }
 
 #ifdef DBG_MEM_ALLOC
 static int proc_get_mstat(struct seq_file *m, void *v)
-{
+{	
 	rtw_mstat_dump(m);
 	return 0;
 }
@@ -158,7 +158,7 @@ static ssize_t rtw_drv_proc_write(struct file *file, const char __user *buffer, 
 	ssize_t index = (ssize_t)PDE_DATA(file_inode(file));
 	const struct rtw_proc_hdl *hdl = drv_proc_hdls+index;
 	ssize_t (*write)(struct file *, const char __user *, size_t, loff_t *, void *) = hdl->write;
-
+	
 	if (write)
 		return write(file, buffer, count, pos, NULL);
 
@@ -261,11 +261,22 @@ static int proc_get_rf_reg_dump(struct seq_file *m, void *v)
 
 	return 0;
 }
+
+static int proc_get_dump_adapters_status(struct seq_file *m, void *v)
+{
+	struct net_device *dev = m->private;
+	_adapter *adapter = (_adapter *)rtw_netdev_priv(dev);
+
+	dump_adapters_status(m, adapter_to_dvobj(adapter));
+
+	return 0;
+}
+
 static int proc_get_linked_info_dump(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-
+	
 	if(padapter)
 		DBG_871X_SEL_NL(m, "linked_info_dump :%s \n", (padapter->bLinkInfoDump)?"enable":"disable");
 
@@ -276,14 +287,14 @@ static ssize_t proc_set_linked_info_dump(struct file *file, const char __user *b
 {
 	struct net_device *dev = data;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
-
+	
 	char tmp[2];
 	int mode=0;
 
 	if (count < 1)
 		return -EFAULT;
 
-	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {		
 
 		int num = sscanf(tmp, "%d ", &mode);
 
@@ -291,13 +302,13 @@ static ssize_t proc_set_linked_info_dump(struct file *file, const char __user *b
 		{
 			//padapter->bLinkInfoDump = mode;
 			//DBG_871X("linked_info_dump =%s \n", (padapter->bLinkInfoDump)?"enable":"disable");
-			 linked_info_dump(padapter,mode);
+			 linked_info_dump(padapter,mode);		
 		}
 
 	}
-
+	
 	return count;
-
+	
 }
 
 int proc_get_rx_info(struct seq_file *m, void *v)
@@ -316,15 +327,25 @@ int proc_get_rx_info(struct seq_file *m, void *v)
 	DBG_871X_SEL_NL(m,"Duplicate Management Frame Drop Count: %llu\n",(unsigned long long)pdbgpriv->dbg_rx_dup_mgt_frame_drop_count);
 	DBG_871X_SEL_NL(m,"AMPDU BA window shift Count: %llu\n",(unsigned long long)pdbgpriv->dbg_rx_ampdu_window_shift_cnt);
 	return 0;
-}
+}	
 
 int proc_get_wifi_spec(struct seq_file *m, void *v)
 {
 	struct net_device *dev = m->private;
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(dev);
 	struct registry_priv	*pregpriv = &padapter->registrypriv;
-
+	
 	DBG_871X_SEL_NL(m,"wifi_spec=%d\n",pregpriv->wifi_spec);
+	return 0;
+}
+
+static int proc_get_mac_qinfo(struct seq_file *m, void *v)
+{
+	struct net_device *dev = m->private;
+	_adapter *adapter = (_adapter *)rtw_netdev_priv(dev);
+
+	rtw_hal_get_hwreg(adapter, HW_VAR_DUMP_MAC_QUEUE_INFO, (u8 *)m);
+
 	return 0;
 }
 
@@ -414,17 +435,18 @@ static int proc_get_cam_cache(struct seq_file *m, void *v)
 const struct rtw_proc_hdl adapter_proc_hdls [] = {
 	{"write_reg", proc_get_dummy, proc_set_write_reg},
 	{"read_reg", proc_get_read_reg, proc_set_read_reg},
+	{"adapters_status", proc_get_dump_adapters_status, NULL},
 	{"fwstate", proc_get_fwstate, NULL},
 	{"sec_info", proc_get_sec_info, NULL},
 	{"mlmext_state", proc_get_mlmext_state, NULL},
 	{"qos_option", proc_get_qos_option, NULL},
 	{"ht_option", proc_get_ht_option, NULL},
 	{"rf_info", proc_get_rf_info, NULL},
-	{"survey_info", proc_get_survey_info, NULL},
+	{"survey_info", proc_get_survey_info, proc_set_survey_info},
 	{"ap_info", proc_get_ap_info, NULL},
-	{"adapter_state", proc_get_adapter_state, NULL},
 	{"trx_info", proc_get_trx_info, NULL},
 	{"rate_ctl", proc_get_rate_ctl, proc_set_rate_ctl},
+	{"mac_qinfo", proc_get_mac_qinfo, NULL},
 	{"cam", proc_get_cam, proc_set_cam},
 	{"cam_cache", proc_get_cam_cache, NULL},
 	{"suspend_info", proc_get_suspend_resume_info, NULL},
@@ -447,7 +469,7 @@ const struct rtw_proc_hdl adapter_proc_hdls [] = {
 	{"mac_reg_dump", proc_get_mac_reg_dump, NULL},
 	{"bb_reg_dump", proc_get_bb_reg_dump, NULL},
 	{"rf_reg_dump", proc_get_rf_reg_dump, NULL},
-
+	
 #ifdef CONFIG_AP_MODE
 	{"all_sta_info", proc_get_all_sta_info, NULL},
 #endif /* CONFIG_AP_MODE */
@@ -485,6 +507,7 @@ const struct rtw_proc_hdl adapter_proc_hdls [] = {
 	{"sreset", proc_get_sreset, proc_set_sreset},
 #endif /* DBG_CONFIG_ERROR_DETECT */
 	{"linked_info_dump",proc_get_linked_info_dump,proc_set_linked_info_dump},
+	{"monitor", proc_get_monitor, proc_set_monitor},
 };
 
 const int adapter_proc_hdls_num = sizeof(adapter_proc_hdls) / sizeof(struct rtw_proc_hdl);
@@ -637,25 +660,20 @@ ssize_t proc_set_odm_adaptivity(struct file *file, const char __user *buffer, si
 	char tmp[32];
 	u32 TH_L2H_ini;
 	s8 TH_EDCCA_HL_diff;
-	u32 IGI_Base;
-	int ForceEDCCA;
-	u8 AdapEn_RSSI;
-	u8 IGI_LowerBound;
 
 	if (count < 1)
 		return -EFAULT;
 
 	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
 
-		int num = sscanf(tmp, "%x %hhd %x %d %hhu %hhu",
-			&TH_L2H_ini, &TH_EDCCA_HL_diff, &IGI_Base, &ForceEDCCA, &AdapEn_RSSI, &IGI_LowerBound);
+		int num = sscanf(tmp, "%x %hhd",	&TH_L2H_ini, &TH_EDCCA_HL_diff);
 
-		if (num != 6)
+		if (num != 2)
 			return count;
 
-		rtw_odm_adaptivity_parm_set(padapter, (s8)TH_L2H_ini, TH_EDCCA_HL_diff, (s8)IGI_Base, (bool)ForceEDCCA, AdapEn_RSSI, IGI_LowerBound);
+		rtw_odm_adaptivity_parm_set(padapter, (s8)TH_L2H_ini, TH_EDCCA_HL_diff);
 	}
-
+	
 	return count;
 }
 
@@ -685,7 +703,7 @@ static ssize_t rtw_odm_proc_write(struct file *file, const char __user *buffer, 
 	ssize_t index = (ssize_t)PDE_DATA(file_inode(file));
 	const struct rtw_proc_hdl *hdl = odm_proc_hdls+index;
 	ssize_t (*write)(struct file *, const char __user *, size_t, loff_t *, void *) = hdl->write;
-
+	
 	if (write)
 		return write(file, buffer, count, pos, ((struct seq_file *)file->private_data)->private);
 
@@ -851,3 +869,4 @@ void rtw_adapter_proc_replace(struct net_device *dev)
 }
 
 #endif /* CONFIG_PROC_DEBUG */
+

@@ -259,7 +259,7 @@ struct rtw_usb_drv rtl8192c_usb_drv = {
 	.usbdrv.suspend =  rtw_suspend,
 	.usbdrv.resume = rtw_resume,
 	#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 22))
-	.usbdrv.reset_resume   = rtw_resume,
+  	.usbdrv.reset_resume   = rtw_resume,
 	#endif
 	#ifdef CONFIG_AUTOSUSPEND
 	.usbdrv.supports_autosuspend = 1,
@@ -289,7 +289,7 @@ struct rtw_usb_drv rtl8192d_usb_drv = {
 	.usbdrv.suspend =  rtw_suspend,
 	.usbdrv.resume = rtw_resume,
 	#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 22))
-	.usbdrv.reset_resume   = rtw_resume,
+  	.usbdrv.reset_resume   = rtw_resume,
 	#endif
 	#ifdef CONFIG_AUTOSUSPEND
 	.usbdrv.supports_autosuspend = 1,
@@ -321,7 +321,7 @@ static inline int RT_usb_endpoint_xfer_int(const struct usb_endpoint_descriptor 
 
 static inline int RT_usb_endpoint_xfer_bulk(const struct usb_endpoint_descriptor *epd)
 {
-	return ((epd->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_BULK);
+ 	return ((epd->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) == USB_ENDPOINT_XFER_BULK);
 }
 
 static inline int RT_usb_endpoint_is_bulk_in(const struct usb_endpoint_descriptor *epd)
@@ -821,7 +821,7 @@ int rtw_hw_resume(_adapter *padapter)
 		netif_carrier_on(pnetdev);
 
 		if(!rtw_netif_queue_stopped(pnetdev))
-			rtw_netif_start_queue(pnetdev);
+      			rtw_netif_start_queue(pnetdev);
 		else
 			rtw_netif_wake_queue(pnetdev);
 
@@ -975,7 +975,7 @@ static int rtw_resume(struct usb_interface *pusb_intf)
 	 int ret = 0;
 
 	if(pwrpriv->bInternalAutoSuspend ){
-		ret = rtw_resume_process(padapter);
+ 		ret = rtw_resume_process(padapter);
 	} else {
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 		rtw_resume_in_workqueue(pwrpriv);
@@ -1644,3 +1644,4 @@ _adapter  *rtw_usb_get_sw_pointer(void)
 }
 EXPORT_SYMBOL(rtw_usb_get_sw_pointer);
 #endif	//CONFIG_INTEL_PROXIM
+

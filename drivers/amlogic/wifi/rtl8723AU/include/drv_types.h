@@ -258,8 +258,8 @@ struct registry_priv
 enum _IFACE_ID {
 	IFACE_ID0, //maping to PRIMARY_ADAPTER
 	IFACE_ID1, //maping to SECONDARY_ADAPTER
-	IFACE_ID2,
-	IFACE_ID3,
+	IFACE_ID2, 
+	IFACE_ID3, 
 	IFACE_ID_MAX,
 };
 
@@ -267,7 +267,7 @@ struct dvobj_priv
 {
 	_adapter *if1; //PRIMARY_ADAPTER
 	_adapter *if2; //SECONDARY_ADAPTER
-
+	
 	s32	processing_dev_remove;
 
 	//for local/global synchronization
@@ -361,7 +361,7 @@ struct dvobj_priv
 	struct usb_interface *pusbintf;
 	struct usb_device *pusbdev;
 #endif//PLATFORM_FREEBSD
-
+	
 #endif//CONFIG_USB_HCI
 
 /*-------- below is for PCIE INTERFACE --------*/
@@ -498,11 +498,11 @@ struct _ADAPTER{
 	struct	registry_priv	registrypriv;
 	struct 	eeprom_priv eeprompriv;
 	struct	led_priv	ledpriv;
-#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)
+#if defined(CONFIG_CHECK_BT_HANG) && defined(CONFIG_BT_COEXIST)	
 	//Check BT status for BT Hung.
 	struct workqueue_struct *priv_checkbt_wq;
 	struct delayed_work checkbt_work;
-#endif
+#endif	
 #ifdef CONFIG_MP_INCLUDED
        struct	mp_priv	mppriv;
 #endif
@@ -692,3 +692,4 @@ __inline static u8 *myid(struct eeprom_priv *peepriv)
 
 
 #endif //__DRV_TYPES_H__
+

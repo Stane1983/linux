@@ -131,7 +131,7 @@ int spi_read_write_reg(PADAPTER pAdapter, int  write_flag, u32 addr, char * buf,
 
 	domain_id = addr_convert(addr);
 
-	addr &= 0x7fff;
+   	addr &= 0x7fff;
 	len &= 0xff;
 	if (write_flag) //write register
 	{
@@ -160,16 +160,16 @@ int spi_read_write_reg(PADAPTER pAdapter, int  write_flag, u32 addr, char * buf,
 	{
 		switch(len) {
 		case 1:
-			byte_en = 0x1;
-			break;
+		    	byte_en = 0x1;
+		 	break;
 		case 2:
-			byte_en = 0x3;
-			break;
+		    	byte_en = 0x3;
+		   	break;
 		case 4:
-			byte_en = 0xf;
-			break;
+		 	byte_en = 0xf;
+		    	break;
 		default:
-			byte_en = 0xf;
+		 	byte_en = 0xf;
 			break;
 		}
 	}
@@ -280,7 +280,7 @@ u8 spi_read8(ADAPTER *Adapter, unsigned int addr, s32 *err)
 
 u16 spi_read16(ADAPTER *Adapter, u32 addr, s32 *err)
 {
-	unsigned int ret = 0;
+    	unsigned int ret = 0;
 	int val32 = 0 , remainder = 0 ;
 	s32 _err = 0;
 

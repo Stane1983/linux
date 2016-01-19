@@ -134,13 +134,13 @@ static int rtw_sdio_suspend(struct device *dev);
 static void rtw_start_runtime(struct sdio_func *func);
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,29))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,29)) 
 static const struct dev_pm_ops rtw_sdio_pm_ops = {
 	.suspend	= rtw_sdio_suspend,
 	.resume	= rtw_sdio_resume,
 };
 #endif
-
+	
 struct sdio_drv_priv {
 	struct sdio_driver r871xs_drv;
 	int drv_registered;
@@ -151,7 +151,7 @@ static struct sdio_drv_priv sdio_drvpriv = {
 	.r871xs_drv.remove = rtw_dev_remove,
 	.r871xs_drv.name = (char*)DRV_NAME,
 	.r871xs_drv.id_table = sdio_ids,
-	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,29))
+	#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,29)) 
 	.r871xs_drv.drv = {
 		.pm = &rtw_sdio_pm_ops,
 	}
@@ -214,7 +214,7 @@ void sdio_free_irq(struct dvobj_priv *dvobj)
 				DBG_871X_LEVEL(_drv_err_,"%s: sdio_release_irq FAIL(%d)!\n", __func__, err);
 			sdio_release_host(func);
 		}
-		dvobj->irq_alloc = 0;
+		dvobj->irq_alloc = 0; 
 	}
 }
 
@@ -342,10 +342,10 @@ _func_enter_;
 	_rtw_mutex_init(&dvobj->h2c_fwcmd_mutex);
 	_rtw_mutex_init(&dvobj->setch_mutex);
 	_rtw_mutex_init(&dvobj->setbw_mutex);
-
+	
 	sdio_set_drvdata(func, dvobj);
 	dvobj->processing_dev_remove = _FALSE;
-
+	
 #ifdef CONFIG_WOWLAN
 	sdio_claim_host(func);
 	mmc_host = func->card->host;
@@ -478,13 +478,13 @@ void rtw_dev_unload(PADAPTER padapter)
 
 		if (!pwrctl->bInternalAutoSuspend)
 			rtw_stop_drv_threads(padapter);
-
+		
 		RT_TRACE(_module_hci_intfs_c_, _drv_notice_, ("@ rtw_dev_unload: stop thread complete!\n"));
 
 		if (padapter->bSurpriseRemoved == _FALSE)
 		{
 #ifdef CONFIG_WOWLAN
-			if (pwrctl->bSupportRemoteWakeup == _TRUE &&
+			if (pwrctl->bSupportRemoteWakeup == _TRUE && 
 				pwrctl->wowlan_mode ==_TRUE) {
 				DBG_871X_LEVEL(_drv_always_, "%s bSupportRemoteWakeup==_TRUE  do not run rtw_hal_deinit()\n",__FUNCTION__);
 			}
@@ -512,7 +512,7 @@ _adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct sdio_device_i
 	int status = _FAIL;
 	struct net_device *pnetdev;
 	PADAPTER padapter = NULL;
-
+	
 	if ((padapter = (_adapter *)rtw_zvmalloc(sizeof(*padapter))) == NULL) {
 		goto exit;
 	}
@@ -527,7 +527,7 @@ _adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct sdio_device_i
 #if defined(CONFIG_CONCURRENT_MODE) || defined(CONFIG_DUALMAC_CONCURRENT)
 	//set adapter_type/iface type for primary padapter
 	padapter->isprimary = _TRUE;
-	padapter->adapter_type = PRIMARY_ADAPTER;
+	padapter->adapter_type = PRIMARY_ADAPTER;	
 	#ifndef CONFIG_HWPORT_SWAP
 	padapter->iface_type = IFACE_PORT0;
 	#else
@@ -537,12 +537,12 @@ _adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct sdio_device_i
 
 	padapter->interface_type = RTW_SDIO;
 	decide_chip_type_by_device_id(padapter, (u32)pdid->device);
-
+	
 	//3 1. init network device data
 	pnetdev = rtw_init_netdev(padapter);
 	if (!pnetdev)
 		goto free_adapter;
-
+	
 	SET_NETDEV_DEV(pnetdev, dvobj_to_dev(dvobj));
 
 	padapter = rtw_netdev_priv(pnetdev);
@@ -596,9 +596,9 @@ _adapter *rtw_sdio_if1_init(struct dvobj_priv *dvobj, const struct sdio_device_i
 		,padapter->bup
 		,padapter->hw_init_completed
 	);
-
+	
 	status = _SUCCESS;
-
+	
 free_hal_data:
 	if(status != _SUCCESS && padapter->HalData)
 		rtw_mfree(padapter->HalData, sizeof(*(padapter->HalData)));
@@ -658,7 +658,7 @@ static void rtw_sdio_if1_deinit(_adapter *if1)
 
 	rtw_dev_unload(if1);
 	DBG_871X("+r871xu_dev_remove, hw_init_completed=%d\n", if1->hw_init_completed);
-
+	
 	rtw_handle_dualmac(if1, 0);
 
 #ifdef CONFIG_IOCTL_CFG80211
@@ -806,8 +806,8 @@ _func_enter_;
 	RT_TRACE(_module_hci_intfs_c_, _drv_notice_, ("+rtw_dev_remove\n"));
 
 	dvobj->processing_dev_remove = _TRUE;
-	rtw_unregister_netdevs(dvobj);
-
+	rtw_unregister_netdevs(dvobj);	
+	
 	if (padapter->bSurpriseRemoved == _FALSE) {
 		int err;
 
@@ -856,7 +856,7 @@ _func_exit_;
 static int rtw_suspend_wow(_adapter *padapter)
 {
 	_adapter *pbuddy_adapter = padapter->pbuddy_adapter;
-
+	
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct net_device *pnetdev = padapter->pnetdev;
@@ -908,7 +908,7 @@ static int rtw_suspend_wow(_adapter *padapter)
 
 	DBG_871X("wowlan_mode: %d\n", pwrpriv->wowlan_mode);
 
-	if ((pwrpriv->bSupportRemoteWakeup == _TRUE) &&
+ 	if ((pwrpriv->bSupportRemoteWakeup == _TRUE) &&
 		(pwrpriv->wowlan_mode == _TRUE)) {
 		poidparam.subcode = WOWLAN_ENABLE;
 		padapter->HalFunc.SetHwRegHandler(padapter,HW_VAR_WOWLAN,(u8 *)&poidparam);
@@ -957,7 +957,7 @@ static int rtw_suspend_wow(_adapter *padapter)
 			DBG_871X_LEVEL(_drv_always_, "%s: fw_under_linking\n", __func__);
 			rtw_indicate_disconnect(padapter);
 		}
-
+		
 		sdio_deinit(adapter_to_dvobj(padapter));
 	}
 	else
@@ -1016,7 +1016,7 @@ static int rtw_sdio_suspend(struct device *dev)
 	while (pwrpriv->bips_processing == _TRUE)
 		rtw_msleep_os(1);
 
-#ifdef CONFIG_IOL_READ_EFUSE_MAP
+#ifdef CONFIG_IOL_READ_EFUSE_MAP	
 	if(!padapter->bup){
 		u8 bMacPwrCtrlOn = _FALSE;
 		rtw_hal_get_hwreg(padapter, HW_VAR_APFM_ON_MAC, &bMacPwrCtrlOn);
@@ -1035,10 +1035,10 @@ static int rtw_sdio_suspend(struct device *dev)
 
 #ifdef CONFIG_WOWLAN
 	rtw_suspend_wow(padapter);
-#else
+#else		
 	LeaveAllPowerSaveMode(padapter);
 	rtw_suspend_common(padapter);
-#endif
+#endif	
 
 	// interface deinit
 	sdio_deinit(adapter_to_dvobj(padapter));
@@ -1066,7 +1066,7 @@ exit:
 			sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
 		}
 	}
-#endif
+#endif	
 
 #ifdef CONFIG_PLATFORM_SPRD
 #ifndef CONFIG_WOWLAN
@@ -1180,7 +1180,7 @@ static int rtw_sdio_suspend(struct device *dev)
 
 	DBG_871X("wowlan_mode: %d\n", pwrpriv->wowlan_mode);
 
-	if ((pwrpriv->bSupportRemoteWakeup == _TRUE) &&
+ 	if ((pwrpriv->bSupportRemoteWakeup == _TRUE) &&
 		(pwrpriv->wowlan_mode == _TRUE)) {
 		poidparam.subcode = WOWLAN_ENABLE;
 		padapter->HalFunc.SetHwRegHandler(padapter,HW_VAR_WOWLAN,(u8 *)&poidparam);
@@ -1249,7 +1249,7 @@ static int rtw_sdio_suspend(struct device *dev)
 			DBG_871X_LEVEL(_drv_always_, "%s: fw_under_linking\n", __func__);
 			rtw_indicate_disconnect(padapter);
 		}
-
+		
 		sdio_deinit(adapter_to_dvobj(padapter));
 	}
 	else
@@ -1292,9 +1292,9 @@ static int rtw_sdio_suspend(struct device *dev)
 			rtw_get_passing_time_ms(start_time));
 
 exit:
-
+	
 //#if (defined CONFIG_WOWLAN) || (!(defined ANDROID_2X) && (defined CONFIG_PLATFORM_SPRD))
-#if (defined CONFIG_WOWLAN)
+#if (defined CONFIG_WOWLAN) 
 #if (!(defined ANDROID_2X)) &&  (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34))
 	//Android 4.0 don't support WIFI close power
 	//or power down or clock will close after wifi resume,
@@ -1344,7 +1344,7 @@ extern int pm_netdev_open(struct net_device *pnetdev,u8 bnormal);
 int rtw_resume_process_wow(_adapter *padapter)
 {
 	struct net_device *pnetdev = padapter->pnetdev;
-	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
+	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);	
 	int ret = 0;
 
 	u32 value = 0;
@@ -1385,9 +1385,9 @@ int rtw_resume_process_wow(_adapter *padapter)
 			goto exit;
 		}
 
-		netif_device_attach(pnetdev);
+		netif_device_attach(pnetdev);	
 		netif_carrier_on(pnetdev);
-	}
+	} 
 	else //pwrpriv->wowlan_mode == _TRUE
 	{
 
@@ -1418,7 +1418,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 		if (psta) {
 			set_sta_rate(padapter, psta);
 		}
-
+		
 		padapter->bDriverStopped = _FALSE;
 
 		DBG_871X("%s: wowmode resuming, DriverStopped:%d\n", __func__, padapter->bDriverStopped);
@@ -1430,7 +1430,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 		if(pnetdev) {
 			if(!rtw_netif_queue_stopped(pnetdev))
 				rtw_netif_start_queue(pnetdev);
-			else
+			else 
 				rtw_netif_wake_queue(pnetdev);
 		}
 	}
@@ -1445,7 +1445,7 @@ int rtw_resume_process_wow(_adapter *padapter)
 		DBG_871X("%s: disconnect reason: %02x\n", __func__,
 						pwrpriv->wowlan_wake_reason);
 		rtw_indicate_disconnect(padapter);
-		rtw_sta_media_status_rpt(padapter, rtw_get_stainfo(&padapter->stapriv,
+		rtw_sta_media_status_rpt(padapter, rtw_get_stainfo(&padapter->stapriv, 
 						get_bssid(&padapter->mlmepriv)), 0);
 		rtw_free_assoc_resources(padapter, 1);
 	} else {
@@ -1475,9 +1475,9 @@ int rtw_resume_process_wow(_adapter *padapter)
 	pwrpriv->wowlan_mode =_FALSE;
 
 exit:
-
+	
 	_func_exit_;
-
+	
 	return ret;
 }
 #endif //CONFIG_WOWLAN
@@ -1488,7 +1488,7 @@ int rtw_resume_process_normal(_adapter *padapter)
 	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 	struct mlme_priv *mlmepriv = &padapter->mlmepriv;
 	int ret = 0;
-
+ 
 	_func_enter_;
 	// interface init
 	if (sdio_init(adapter_to_dvobj(padapter)) != _SUCCESS)
@@ -1506,10 +1506,10 @@ int rtw_resume_process_normal(_adapter *padapter)
 	}
 
 	if(rtw_resume_common(padapter)!= 0) {
-		DBG_871X("%s rtw_resume_common failed\n",__FUNCTION__);
+		DBG_871X("%s rtw_resume_common failed\n",__FUNCTION__);	
 		goto exit;
 	}
-	_func_exit_;
+ 	_func_exit_;
 exit:
 	return ret;
 }
@@ -1521,7 +1521,7 @@ int rtw_resume_process(_adapter *padapter)
 
 	int ret = 0;
 	u32 start_time = rtw_get_current_time();
-
+ 
 	_func_enter_;
 
 	DBG_871X_LEVEL(_drv_always_, "sdio resume start\n");
@@ -1535,16 +1535,16 @@ int rtw_resume_process(_adapter *padapter)
 		goto exit;
 	}
 
-#ifdef CONFIG_WOWLAN
-	rtw_resume_process_wow( padapter);
+#ifdef CONFIG_WOWLAN	 
+	rtw_resume_process_wow( padapter);	
 #else //!CONFIG_WOWLAN
 	rtw_resume_process_normal( padapter);
-#endif
+#endif 
 
 	if( padapter->pid[1]!=0) {
 		DBG_871X("pid[1]:%d\n",padapter->pid[1]);
 		rtw_signal_process(padapter->pid[1], SIGUSR2);
-	}
+	}	
 
 	#ifdef CONFIG_RESUME_IN_WORKQUEUE
 	rtw_unlock_suspend();
@@ -1557,7 +1557,7 @@ exit:
 		rtw_get_passing_time_ms(start_time));
 
 	_func_exit_;
-
+	
 	return ret;
 }
 #else
@@ -1621,7 +1621,7 @@ int rtw_resume_process(_adapter *padapter)
 			goto exit;
 		}
 
-		netif_device_attach(pnetdev);
+		netif_device_attach(pnetdev);	
 		netif_carrier_on(pnetdev);
 	} else {
 
@@ -1652,7 +1652,7 @@ int rtw_resume_process(_adapter *padapter)
 		if (psta) {
 			set_sta_rate(padapter, psta);
 		}
-
+		
 		padapter->bDriverStopped = _FALSE;
 
 		DBG_871X("%s: wowmode resuming, DriverStopped:%d\n", __func__, padapter->bDriverStopped);
@@ -1664,7 +1664,7 @@ int rtw_resume_process(_adapter *padapter)
 		if(pnetdev) {
 			if(!rtw_netif_queue_stopped(pnetdev))
 				rtw_netif_start_queue(pnetdev);
-			else
+			else 
 				rtw_netif_wake_queue(pnetdev);
 	}
 	}
@@ -1700,7 +1700,7 @@ int rtw_resume_process(_adapter *padapter)
 	if( padapter->pid[1]!=0) {
 		DBG_871X("pid[1]:%d\n",padapter->pid[1]);
 		rtw_signal_process(padapter->pid[1], SIGUSR2);
-	}
+	}	
 
 #ifdef CONFIG_LAYER2_ROAMING_RESUME
 #ifdef CONFIG_WOWLAN
@@ -1711,7 +1711,7 @@ int rtw_resume_process(_adapter *padapter)
 		DBG_871X("%s: disconnect reason: %02x\n", __func__,
 						pwrpriv->wowlan_wake_reason);
 		rtw_indicate_disconnect(padapter);
-		rtw_sta_media_status_rpt(padapter, rtw_get_stainfo(&padapter->stapriv,
+		rtw_sta_media_status_rpt(padapter, rtw_get_stainfo(&padapter->stapriv, 
 						get_bssid(&padapter->mlmepriv)), 0);
 		rtw_free_assoc_resources(padapter, 1);
 	} else {
@@ -1755,7 +1755,7 @@ exit:
 		rtw_get_passing_time_ms(start_time));
 
 	_func_exit_;
-
+	
 	return ret;
 }
 #endif
@@ -1772,7 +1772,7 @@ static int rtw_sdio_resume(struct device *dev)
 	DBG_871X("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 
 	if(pwrpriv->bInternalAutoSuspend ){
-		ret = rtw_resume_process(padapter);
+ 		ret = rtw_resume_process(padapter);
 	} else {
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 		rtw_resume_in_workqueue(pwrpriv);
@@ -1794,7 +1794,7 @@ static int rtw_sdio_resume(struct device *dev)
 		}
 #endif /* CONFIG_RESUME_IN_WORKQUEUE */
 	}
-
+	
 	DBG_871X("<========  %s return %d\n", __FUNCTION__, ret);
 	return ret;
 
@@ -1803,7 +1803,7 @@ static int rtw_sdio_resume(struct device *dev)
 
 
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)) 
 extern int console_suspend_enabled;
 #endif
 
@@ -1828,17 +1828,17 @@ static int __init rtw_drv_entry(void)
 	{
 		rtl8189es_sdio_powerup();
 		sunximmc_rescan_card(SDIOID, 1);
-		DBG_8192C("[rtl8189es] %s: power up, rescan card.\n", __FUNCTION__);
+		DBG_8192C("[rtl8189es] %s: power up, rescan card.\n", __FUNCTION__);  			
 	}
 	else
 	{
 		ret = -1;
-		DBG_8192C("[rtl8189es] %s: mod_sel = %d is incorrect.\n", __FUNCTION__, mod_sel);
+		DBG_8192C("[rtl8189es] %s: mod_sel = %d is incorrect.\n", __FUNCTION__, mod_sel);	
 	}
 #endif	// defined CONFIG_MMC_SUNXI_POWER_CONTROL
 	if(ret != 0)
 		goto exit;
-
+	
 #endif //CONFIG_PLATFORM_ARM_SUNxI
 
 #if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
@@ -1861,12 +1861,12 @@ static int __init rtw_drv_entry(void)
 		wifi_pm_power(1);
 		mdelay(10);
 		sw_mci_rescan_card(sdc_id, 1);
-		DBG_871X("[rtw_sdio] %s: power up, rescan card.\n", __FUNCTION__);
+		DBG_871X("[rtw_sdio] %s: power up, rescan card.\n", __FUNCTION__);  
 	}
 #endif	//CONFIG_MMC
 	if(ret != 0)
-		goto exit;
-
+		goto exit;		
+	
 #endif //#if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
 
 	DBG_871X_LEVEL(_drv_always_, "module init start version:"DRIVERVERSION"\n");
@@ -1876,7 +1876,7 @@ static int __init rtw_drv_entry(void)
 	DBG_871X(DRV_NAME " driver version=%s\n", DRIVERVERSION);
 	DBG_871X("build time: %s %s\n", __DATE__, __TIME__);
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)) 
 	//console_suspend_enabled=0;
 #endif
 
@@ -1907,7 +1907,7 @@ static int __init rtw_drv_entry(void)
 
 	rtw_suspend_lock_init();
 
-
+	
 	sdio_drvpriv.drv_registered = _TRUE;
 
 	ret = sdio_register_driver(&sdio_drvpriv.r871xs_drv);
@@ -1924,11 +1924,11 @@ static void __exit rtw_drv_halt(void)
 {
 	DBG_871X_LEVEL(_drv_always_, "module exit start\n");
 
-	rtw_android_wifictrl_func_del();
+	rtw_android_wifictrl_func_del();	
 	sdio_drvpriv.drv_registered = _FALSE;
 
 	sdio_unregister_driver(&sdio_drvpriv.r871xs_drv);
-
+	
 #ifdef CONFIG_PLATFORM_SPRD
 	/* Pull down pwd pin, make wifi enter power down mode. */
 	rtw_wifi_gpio_wlan_ctrl(WLAN_PWDN_OFF);
@@ -1944,7 +1944,7 @@ static void __exit rtw_drv_halt(void)
 #endif // CONFIG_PLATFORM_SPRD
 
 #ifdef CONFIG_PLATFORM_ARM_SUNxI
-#if defined(CONFIG_MMC_SUNXI_POWER_CONTROL)
+#if defined(CONFIG_MMC_SUNXI_POWER_CONTROL)	
 	sunximmc_rescan_card(SDIOID, 0);
 #ifdef CONFIG_RTL8188E
 	rtl8189es_sdio_poweroff();
@@ -1961,7 +1961,7 @@ static void __exit rtw_drv_halt(void)
 #endif //CONFIG_MMC
 #endif //#if defined(CONFIG_PLATFORM_ARM_SUN6I) || defined(CONFIG_PLATFORM_ARM_SUN7I)
 	rtw_suspend_lock_uninit();
-	DBG_871X_LEVEL(_drv_always_, "module exit success\n");
+      	DBG_871X_LEVEL(_drv_always_, "module exit success\n");
 
 	rtw_mstat_dump();
 }
@@ -1969,3 +1969,4 @@ static void __exit rtw_drv_halt(void)
 
 module_init(rtw_drv_entry);
 module_exit(rtw_drv_halt);
+

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -64,7 +64,7 @@ int	rtl8192cu_init_recv_priv(_adapter *padapter)
 	int	i, res = _SUCCESS;
 	struct recv_buf *precvbuf;
 
-#ifdef CONFIG_RECV_THREAD_MODE
+#ifdef CONFIG_RECV_THREAD_MODE	
 	_rtw_init_sema(&precvpriv->recv_sema, 0);//will be removed
 	_rtw_init_sema(&precvpriv->terminate_recvthread_sema, 0);//will be removed
 #endif
@@ -286,15 +286,15 @@ void update_recvframe_phyinfo(
 {
 	PADAPTER 			padapter = precvframe->u.hdr.adapter;
 	struct rx_pkt_attrib	*pattrib = &precvframe->u.hdr.attrib;
-	HAL_DATA_TYPE		*pHalData= GET_HAL_DATA(padapter);
-	PODM_PHY_INFO_T 	pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info);
+	HAL_DATA_TYPE		*pHalData= GET_HAL_DATA(padapter); 	
+	PODM_PHY_INFO_T 	pPHYInfo  = (PODM_PHY_INFO_T)(&pattrib->phy_info); 
 	u8					*wlanhdr;
 	ODM_PACKET_INFO_T	pkt_info;
 	u8 *sa;
 	//_irqL		irqL;
 	struct sta_priv *pstapriv;
 	struct sta_info *psta;
-
+	
 	pkt_info.bPacketMatchBSSID =_FALSE;
 	pkt_info.bPacketToSelf = _FALSE;
 	pkt_info.bPacketBeacon = _FALSE;
@@ -311,12 +311,12 @@ void update_recvframe_phyinfo(
 
 	pkt_info.StationID = 0xFF;
 	if(pkt_info.bPacketBeacon){
-		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){
+		if(check_fwstate(&padapter->mlmepriv, WIFI_STATION_STATE) == _TRUE){				
 			sa = padapter->mlmepriv.cur_network.network.MacAddress;
 			#if 0
-			{
+			{					
 				printk("==> rx beacon from AP[%02x:%02x:%02x:%02x:%02x:%02x]\n",
-					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);
+					sa[0],sa[1],sa[2],sa[3],sa[4],sa[5]);					
 			}
 			#endif
 		}
@@ -324,8 +324,8 @@ void update_recvframe_phyinfo(
 	}
 	else{
 		sa = get_sa(wlanhdr);
-	}
-
+	}			
+		
 	pstapriv = &padapter->stapriv;
 	psta = rtw_get_stainfo(pstapriv, sa);
 	if (psta)
@@ -337,28 +337,29 @@ void update_recvframe_phyinfo(
 
 	//rtl8192c_query_rx_phy_status(precvframe, pphy_status);
 	//_enter_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
-	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));
+	 ODM_PhyStatusQuery(&pHalData->odmpriv,pPHYInfo,(u8 *)pphy_status,&(pkt_info));	
 	//_exit_critical_bh(&pHalData->odm_stainfo_lock, &irqL);
 	precvframe->u.hdr.psta = NULL;
 	if (pkt_info.bPacketMatchBSSID &&
 		(check_fwstate(&padapter->mlmepriv, WIFI_AP_STATE) == _TRUE))
-	{
+	{			
 		if (psta)
-		{
+		{                  
 			precvframe->u.hdr.psta = psta;
-			rtl8192c_process_phy_info(padapter, precvframe);
+			rtl8192c_process_phy_info(padapter, precvframe);	               
                 }
 	}
 	else if (pkt_info.bPacketToSelf || pkt_info.bPacketBeacon)
 	{
 		if (check_fwstate(&padapter->mlmepriv, WIFI_ADHOC_STATE|WIFI_ADHOC_MASTER_STATE) == _TRUE)
-		{
+		{			
 			if (psta)
 			{
 				precvframe->u.hdr.psta = psta;
 			}
 		}
 
-		rtl8192c_process_phy_info(padapter, precvframe);
+		rtl8192c_process_phy_info(padapter, precvframe);             
 	}
 }
+

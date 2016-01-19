@@ -44,7 +44,7 @@ u8 sd_f0_read8(struct intf_hdl *pintfhdl,u32 addr, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	u8 v=0;
 	struct sdio_func *func;
 	bool claim_needed;
@@ -58,8 +58,8 @@ _func_enter_;
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return v;
-	}
-
+	}	
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -81,10 +81,10 @@ void sd_f0_write8(struct intf_hdl *pintfhdl, u32 addr, u8 v, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	struct sdio_func *func;
 	bool claim_needed;
-
+	
 _func_enter_;
 	padapter = pintfhdl->padapter;
 	psdiodev = pintfhdl->pintf_dev;
@@ -93,8 +93,8 @@ _func_enter_;
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return;
-	}
-
+	}	
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -132,7 +132,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
 	}
-
+	
 	func = psdio->func;
 
 	for (i = 0; i < cnt; i++) {
@@ -158,10 +158,10 @@ s32 sd_cmd52_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	int err=0, i;
 	struct sdio_func *func;
-	bool claim_needed;
+	bool claim_needed;	
 
 _func_enter_;
 	padapter = pintfhdl->padapter;
@@ -171,8 +171,8 @@ _func_enter_;
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
-	}
-
+	}	
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -197,7 +197,7 @@ s32 _sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	int err=0, i;
 	struct sdio_func *func;
 
@@ -210,7 +210,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved)!!!\n",__FUNCTION__);
 		return err;
 	}
-
+	
 	func = psdio->func;
 
 	for (i = 0; i < cnt; i++) {
@@ -236,7 +236,7 @@ s32 sd_cmd52_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, u8 *pdata)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	int err=0, i;
 	struct sdio_func *func;
 	bool claim_needed;
@@ -250,7 +250,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -283,7 +283,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved)!!!\n",__FUNCTION__);
 		return v;
 	}
-
+	
 	func = psdio->func;
 
 	v = sdio_readb(func, addr, err);
@@ -301,7 +301,7 @@ u8 sd_read8(struct intf_hdl *pintfhdl, u32 addr, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	u8 v;
 	struct sdio_func *func;
 	bool claim_needed;
@@ -315,7 +315,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return v;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -337,7 +337,7 @@ u16 sd_read16(struct intf_hdl *pintfhdl, u32 addr, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	u16 v=0;
 	struct sdio_func *func;
 	bool claim_needed;
@@ -351,7 +351,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return v;
 	}
-
+		
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -373,7 +373,7 @@ u32 _sd_read32(struct intf_hdl *pintfhdl, u32 addr, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	u32 v=0;
 	struct sdio_func *func;
 
@@ -386,7 +386,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return v;
 	}
-
+		
 	func = psdio->func;
 
 	v = sdio_readl(func, addr, err);
@@ -410,15 +410,15 @@ _func_enter_;
 			else{
 				DBG_871X(KERN_ERR "%s: (%d) addr=0x%05x, val=0x%x, try_cnt=%d\n", __func__, *err, addr, v, i);
 				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err))
-				{
+				{			
 					padapter->bSurpriseRemoved = _TRUE;
 				}
 
 				if(rtw_inc_and_chk_continual_io_error(psdiodev) == _TRUE ){
 					padapter->bSurpriseRemoved = _TRUE;
 					break;
-				}
-
+				}						
+					
 			}
 		}
 
@@ -439,7 +439,7 @@ u32 sd_read32(struct intf_hdl *pintfhdl, u32 addr, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	u32 v=0;
 	struct sdio_func *func;
 	bool claim_needed;
@@ -453,7 +453,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return v;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -475,13 +475,13 @@ _func_enter_;
 			if (claim_needed) sdio_claim_host(func);
 			v = sdio_readl(func, addr, err);
 			if (claim_needed) sdio_release_host(func);
-
+			
 			if (*err == 0){
 				rtw_reset_continual_io_error(psdiodev);
 				break;
-			}else{
+			}else{				
 				DBG_871X(KERN_ERR "%s: (%d) addr=0x%05x, val=0x%x, try_cnt=%d\n", __func__, *err, addr, v, i);
-				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err)){
+				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err)){			
 					padapter->bSurpriseRemoved = _TRUE;
 				}
 
@@ -509,7 +509,7 @@ void sd_write8(struct intf_hdl *pintfhdl, u32 addr, u8 v, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	struct sdio_func *func;
 	bool claim_needed;
 
@@ -523,7 +523,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return ;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -543,7 +543,7 @@ void sd_write16(struct intf_hdl *pintfhdl, u32 addr, u16 v, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	struct sdio_func *func;
 	bool claim_needed;
 
@@ -556,7 +556,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return ;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -576,7 +576,7 @@ void _sd_write32(struct intf_hdl *pintfhdl, u32 addr, u32 v, s32 *err)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	struct sdio_func *func;
 
 _func_enter_;
@@ -588,7 +588,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return ;
 	}
-
+	
 	func = psdio->func;
 
 	sdio_writel(func, v, addr, err);
@@ -606,9 +606,9 @@ _func_enter_;
 			if (*err == 0){
 				rtw_reset_continual_io_error(psdiodev);
 				break;
-			}else{
+			}else{				
 				DBG_871X(KERN_ERR "%s: (%d) addr=0x%05x, val=0x%x, try_cnt=%d\n", __func__, *err, addr, v, i);
-				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err)){
+				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err)){			
 					padapter->bSurpriseRemoved = _TRUE;
 				}
 
@@ -646,7 +646,7 @@ _func_enter_;
 		//DBG_871X(" %s (padapter->bSurpriseRemoved)!!!\n",__FUNCTION__);
 		return ;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -671,9 +671,9 @@ _func_enter_;
 			if (*err == 0){
 				rtw_reset_continual_io_error(psdiodev);
 				break;
-			}else{
+			}else{				
 				DBG_871X(KERN_ERR "%s: (%d) addr=0x%05x, val=0x%x, try_cnt=%d\n", __func__, *err, addr, v, i);
-				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err)){
+				if(( -ESHUTDOWN == *err ) || ( -ENODEV == *err)){			
 					padapter->bSurpriseRemoved = _TRUE;
 				}
 
@@ -713,7 +713,7 @@ s32 _sd_read(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	int err= -EPERM;
 	struct sdio_func *func;
 
@@ -721,12 +721,12 @@ _func_enter_;
 	padapter = pintfhdl->padapter;
 	psdiodev = pintfhdl->pintf_dev;
 	psdio = &psdiodev->intf_data;
-
+	
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
 	}
-
+		
 	func = psdio->func;
 
 	if (unlikely((cnt==1) || (cnt==2)))
@@ -773,17 +773,17 @@ s32 sd_read(struct intf_hdl * pintfhdl, u32 addr, u32 cnt, void *pdata)
 {
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
-	PSDIO_DATA psdio;
-
+	PSDIO_DATA psdio;	
+	
 	struct sdio_func *func;
 	bool claim_needed;
 	s32 err= -EPERM;
-
+	
 _func_enter_;
 	padapter = pintfhdl->padapter;
 	psdiodev = pintfhdl->pintf_dev;
 	psdio = &psdiodev->intf_data;
-
+	
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
@@ -820,7 +820,7 @@ s32 _sd_write(struct intf_hdl *pintfhdl, u32 addr, u32 cnt, void *pdata)
 	PADAPTER padapter;
 	struct dvobj_priv *psdiodev;
 	PSDIO_DATA psdio;
-
+	
 	struct sdio_func *func;
 	u32 size;
 	s32 err=-EPERM;
@@ -829,12 +829,12 @@ _func_enter_;
 	padapter = pintfhdl->padapter;
 	psdiodev = pintfhdl->pintf_dev;
 	psdio = &psdiodev->intf_data;
-
+	
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
 	}
-
+	
 	func = psdio->func;
 //	size = sdio_align_size(func, cnt);
 
@@ -892,12 +892,12 @@ _func_enter_;
 	padapter = pintfhdl->padapter;
 	psdiodev = pintfhdl->pintf_dev;
 	psdio = &psdiodev->intf_data;
-
+	
 	if(padapter->bSurpriseRemoved){
 		//DBG_871X(" %s (padapter->bSurpriseRemoved )!!!\n",__FUNCTION__);
 		return err;
 	}
-
+	
 	func = psdio->func;
 	claim_needed = rtw_sdio_claim_host_needed(func);
 
@@ -909,3 +909,4 @@ _func_enter_;
 _func_exit_;
 	return err;
 }
+

@@ -70,7 +70,7 @@
 	#define Rtl8723_ImgArrayLength				Rtl8723SImgArrayLength
 	#define Rtl8723_UMCBCutImgArrayWithBTLength		Rtl8723SUMCBCutImgArrayWithBTLength
 	#define Rtl8723_UMCBCutImgArrayWithoutBTLength	Rtl8723SUMCBCutImgArrayWithoutBTLength
-
+	
 	#define Rtl8723_PHY_REG_Array_PG 			Rtl8723SPHY_REG_Array_PG
 	#define Rtl8723_PHY_REG_Array_PGLength		Rtl8723SPHY_REG_Array_PGLength
 #if MP_DRIVER == 1
@@ -849,3 +849,4 @@ void Hal_ReadRFGainOffset(PADAPTER pAdapter,u8* hwinfo,BOOLEAN AutoLoadFail);
 #endif //CONFIG_RF_GAIN_OFFSET
 
 #endif
+

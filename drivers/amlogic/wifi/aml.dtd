@@ -28,5 +28,5 @@
         dev_name = "wifi_power";
         status = "okay";
         power_gpio = "GPIOAO_6";
-    };
+    };  
 #endif

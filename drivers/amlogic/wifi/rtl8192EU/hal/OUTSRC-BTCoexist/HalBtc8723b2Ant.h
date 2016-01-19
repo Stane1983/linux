@@ -100,7 +100,7 @@ typedef struct _COEX_DM_8723B_2ANT{
 	u4Byte		backup0x948;
 } COEX_DM_8723B_2ANT, *PCOEX_DM_8723B_2ANT;
 
-typedef struct _COEX_STA_8723B_2ANT{
+typedef struct _COEX_STA_8723B_2ANT{	
 	BOOLEAN					bBtLinkExist;
 	BOOLEAN					bScoExist;
 	BOOLEAN					bA2dpExist;
@@ -128,6 +128,14 @@ typedef struct _COEX_STA_8723B_2ANT{
 //===========================================
 // The following is interface which will notify coex module.
 //===========================================
+VOID
+EXhalbtc8723b2ant_PowerOnSetting(
+	IN	PBTC_COEXIST		pBtCoexist
+	);
+VOID
+EXhalbtc8723b2ant_PreLoadFirmware(
+	IN	PBTC_COEXIST		pBtCoexist
+	);
 VOID
 EXhalbtc8723b2ant_InitHwConfig(
 	IN	PBTC_COEXIST		pBtCoexist,
@@ -190,3 +198,4 @@ VOID
 EXhalbtc8723b2ant_DisplayCoexInfo(
 	IN	PBTC_COEXIST		pBtCoexist
 	);
+

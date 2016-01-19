@@ -124,3 +124,4 @@ rtl8188es_DeInitSwLeds(
 	DeInitLed( &(ledpriv->SwLed1) );
 #endif
 }
+

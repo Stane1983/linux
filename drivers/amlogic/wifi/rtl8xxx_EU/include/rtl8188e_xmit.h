@@ -116,7 +116,7 @@ typedef struct txdesc_88e
 
 	//Offset 4
 	u32 macid:6;
-	u32 rsvd0406:2;
+	u32 rsvd0406:2;	
 	u32 qsel:5;
 	u32 rd_nav_ext:1;
 	u32 lsig_txop_en:1;
@@ -166,7 +166,7 @@ typedef struct txdesc_88e
 	u32 cts2self:1;
 	u32 rtsen:1;
 	u32 hw_rts_en:1;
-	u32 port_id:1;
+	u32 port_id:1;	
 	u32 pwr_status:3;
 	u32 wait_dcts:1;
 	u32 cts2ap_en:1;
@@ -301,3 +301,4 @@ void handle_txrpt_ccx_88e(_adapter *adapter, u8 *buf);
 
 void _dbg_dump_tx_info(_adapter	*padapter,int frame_tag,struct tx_desc *ptxdesc);
 #endif //__RTL8188E_XMIT_H__
+

@@ -22,7 +22,7 @@
 #define __HAL_PHY_RF_8192E_H__
 
 /*--------------------------Define Parameters-------------------------------*/
-#define	IQK_DELAY_TIME_92E		10		//ms
+#define	IQK_DELAY_TIME_92E		15		//ms
 #define	index_mapping_NUM_92E	15
 #define AVG_THERMAL_NUM_92E	4
 
@@ -38,13 +38,13 @@ GetDeltaSwingTable_8192E(
 	OUT pu1Byte 			*TemperatureUP_A,
 	OUT pu1Byte 			*TemperatureDOWN_A,
 	OUT pu1Byte 			*TemperatureUP_B,
-	OUT pu1Byte 			*TemperatureDOWN_B
+	OUT pu1Byte 			*TemperatureDOWN_B	
 	);
 
 void DoIQK_8192E(
 	PDM_ODM_T	pDM_Odm,
 	u1Byte 		DeltaThermalIndex,
-	u1Byte		ThermalValue,
+	u1Byte		ThermalValue,	
 	u1Byte 		Threshold
 	);
 
@@ -58,8 +58,8 @@ ODM_TxPwrTrackSetPwr92E(
 
 //1 7.	IQK
 
-void
-PHY_IQCalibrate_8192E(
+void	
+PHY_IQCalibrate_8192E(	
 #if (DM_ODM_SUPPORT_TYPE & ODM_AP)
 	IN PDM_ODM_T		pDM_Odm,
 #else
@@ -71,7 +71,7 @@ PHY_IQCalibrate_8192E(
 //
 // LC calibrate
 //
-void
+void	
 PHY_LCCalibrate_8192E(
 	IN PDM_ODM_T		pDM_Odm
 );
@@ -79,15 +79,15 @@ PHY_LCCalibrate_8192E(
 //
 // AP calibrate
 //
-void
-PHY_APCalibrate_8192E(
+void	
+PHY_APCalibrate_8192E(		
 #if (DM_ODM_SUPPORT_TYPE & ODM_AP)
 	IN PDM_ODM_T		pDM_Odm,
 #else
 	IN	PADAPTER	pAdapter,
 #endif
 							IN 	s1Byte		delta);
-void
+void	
 PHY_DigitalPredistortion_8192E(		IN	PADAPTER	pAdapter);
 
 
@@ -123,9 +123,9 @@ _PHY_MACSettingCalibration_92E(
 	IN	PADAPTER	pAdapter,
 #endif
 	IN	pu4Byte		MACReg,
-	IN	pu4Byte		MACBackup
+	IN	pu4Byte		MACBackup	
 	);
 
-
-#endif	// #ifndef __HAL_PHY_RF_8188E_H__
+								
+#endif	// #ifndef __HAL_PHY_RF_8188E_H__								
 

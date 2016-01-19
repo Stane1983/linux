@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -91,4 +91,9 @@ extern sint rtw_endofpktfile (struct pkt_file *pfile);
 extern void rtw_os_pkt_complete(_adapter *padapter, _pkt *pkt);
 extern void rtw_os_xmit_complete(_adapter *padapter, struct xmit_frame *pxframe);
 
+void rtw_os_wake_queue_at_free_stainfo(_adapter *padapter, int *qcnt_freed);
+
+void dump_os_queue(void *sel, _adapter *padapter);
+
 #endif //__XMIT_OSDEP_H_
+

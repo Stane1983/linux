@@ -216,8 +216,8 @@ void BT_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
 
 void BT_WifiScanNotify(PADAPTER padapter, u8 scanType)
 {
-#if defined(CONFIG_CONCURRENT_MODE)
-	if (padapter->adapter_type != PRIMARY_ADAPTER)
+#if defined(CONFIG_CONCURRENT_MODE)	
+ 	if (padapter->adapter_type != PRIMARY_ADAPTER)
         {
                 RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE and padapter->adapter_type != PRIMARY_ADAPTER in %s!!\n", __FUNCTION__));
                 return;
@@ -231,13 +231,13 @@ void BT_WifiScanNotify(PADAPTER padapter, u8 scanType)
 
 void BT_WifiAssociateNotify(PADAPTER padapter, u8 action)
 {
-#if defined(CONFIG_CONCURRENT_MODE)
+#if defined(CONFIG_CONCURRENT_MODE)	
 	if (padapter->adapter_type != PRIMARY_ADAPTER)
         {
                 RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE and padapter->adapter_type != PRIMARY_ADAPTER in %s!!\n", __FUNCTION__));
                 return;
         }
-#endif
+#endif	
 
 	// action :
 	// TRUE = associate start
@@ -250,26 +250,26 @@ void BT_WifiAssociateNotify(PADAPTER padapter, u8 action)
 
 void BT_WifiMediaStatusNotify(PADAPTER padapter, RT_MEDIA_STATUS mstatus)
 {
-#if defined(CONFIG_CONCURRENT_MODE)
+#if defined(CONFIG_CONCURRENT_MODE)	
 	if (padapter->adapter_type != PRIMARY_ADAPTER)
         {
                 RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE and padapter->adapter_type != PRIMARY_ADAPTER in %s!!\n", __FUNCTION__));
                 return;
         }
-#endif
+#endif	
 
 	BTDM_MediaStatusNotify(padapter, mstatus);
 }
 
 void BT_SpecialPacketNotify(PADAPTER padapter)
 {
-#if defined(CONFIG_CONCURRENT_MODE)
+#if defined(CONFIG_CONCURRENT_MODE)	
 	if (padapter->adapter_type != PRIMARY_ADAPTER)
         {
                 RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE and padapter->adapter_type != PRIMARY_ADAPTER in %s!!\n", __FUNCTION__));
                 return;
         }
-#endif
+#endif	
 
 	BTDM_ForDhcp(padapter);
 }
@@ -806,11 +806,11 @@ void bthci_DecideBTChannel(PADAPTER padapter, u8 EntryNum)
 		{
 			//if any preferred channel triplet exists
 			RTPRINT(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_LOGO), ("There are %d sub band triplet exists, ", subbandTripletCnt));
-			if (firstRemoteLegalChnlInTriplet == 0)
-			{
-				//no legal channel is found, reject the connection.
+		 	if (firstRemoteLegalChnlInTriplet == 0)
+		 	{
+		 		//no legal channel is found, reject the connection.
 				RTPRINT(FIOCTL, (IOCTL_BT_HCICMD|IOCTL_BT_LOGO), ("no legal channel is found!!\n"));
-			}
+		 	}
 			else
 			{
 				// Remote Legal channel is found but not match to local
@@ -2772,7 +2772,7 @@ bthci_StartBeaconAndConnect(
 			else if (pBTInfo->BtAsocEntry[CurrentAssocNum].AMPRole == AMP_BTAP_JOINER)
 			{
 				bthci_ResponderStartToScan(padapter);
-			}
+ 			}
 		}
 		RT_PRINT_STR(_module_rtl871x_mlme_c_, _drv_notice_, "StartBeaconAndConnect, SSID:\n", pBTInfo->BtAsocEntry[pBtMgnt->CurrentConnectEntryNum].BTSsid.Octet, pBTInfo->BtAsocEntry[pBtMgnt->CurrentConnectEntryNum].BTSsid.Length);
 	}
@@ -3323,7 +3323,7 @@ bthci_CmdEnhancedFlush(
 	{
 		status = HCI_STATUS_INVALID_HCI_CMD_PARA_VALUE;
 	}
-	else
+ 	else
 		pBtHciInfo->enFlush_LLH = logicHandle;
 
 	if (bthci_DiscardTxPackets(padapter, pBtHciInfo->enFlush_LLH))
@@ -5889,7 +5889,7 @@ bthci_HandleOGFSetEventMaskCMD(
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("HCI_HOST_BUFFER_SIZE\n"));
 		status = bthci_CmdHostBufferSize(padapter,pHciCmd);
 		break;
-	default:
+ 	default:
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("bthci_HandleOGFSetEventMaskCMD(), Unknown case = 0x%x\n", pHciCmd->OCF));
 		RTPRINT(FIOCTL, IOCTL_BT_HCICMD, ("HCI_UNKNOWN_COMMAND\n"));
 		status = bthci_UnknownCMD(padapter, pHciCmd);
@@ -6171,7 +6171,7 @@ bthci_StateStarting(
 			RTPRINT(FIOCTL, IOCTL_STATE, ("STATE_CMD_MAC_START_COMPLETE\n"));
 			if (pBTInfo->BtAsocEntry[EntryNum].AMPRole == AMP_BTAP_JOINER)
 			{
-			}
+	 		}
 			else if (pBTInfo->BtAsocEntry[EntryNum].AMPRole == AMP_BTAP_CREATOR)
 			{
 				bthci_EventChannelSelected(padapter,EntryNum);
@@ -9529,7 +9529,7 @@ void BTDM_1AntWifiAssociateNotify(PADAPTER padapter, u8 type)
 				btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _FALSE, 8);
 			}
 			else if ((BtState == BT_INFO_STATE_ACL_ONLY_BUSY) ||
-					(BtState == BT_INFO_STATE_ACL_INQ_OR_PAG))
+				 	(BtState == BT_INFO_STATE_ACL_INQ_OR_PAG))
 			{
 				if (pBtCoex->c2hBtProfile == BT_INFO_HID)
 					btdm_1AntSetPSTDMA(padapter, _FALSE, 0, _TRUE, 35);
@@ -10490,7 +10490,7 @@ void btdm_2AntSetTable(PADAPTER	padapter,u8		byte){
 	u8 value;
 	u32	val0x6c0,val0x6c4;
 	value =(byte&(BIT4|BIT3))>>3;
-
+	
 	switch(value){
 	case 0:
 		val0x6c0=0x55555555;
@@ -10500,11 +10500,11 @@ void btdm_2AntSetTable(PADAPTER	padapter,u8		byte){
 		val0x6c0=0x55555555;
 		val0x6c4=0x5afa5afa;
 		break;
-	case 2:
+	case 2:	
 		val0x6c0=0x55ff55ff;
 		val0x6c4=0x5a5a5a5a;
 		break;
-	case 3:
+	case 3:	
 		val0x6c0=0x55ff55ff;
 		val0x6c4=0x5afa5afa;
 		break;
@@ -10543,7 +10543,7 @@ void btdm_2AntSetFw3a(PADAPTER	padapter,u8	byte1,u8	byte2,u8		byte3,u8		byte4,u8
 		H2C_Parameter[1]<<24|H2C_Parameter[2]<<16|H2C_Parameter[3]<<8|H2C_Parameter[4]));
 
 	FillH2CCmd(padapter, 0x3a, 5, H2C_Parameter);
-	btdm_2AntSetTable(padapter,byte5);   // Driver need to set the Coex Table value after FW version 35.
+	btdm_2AntSetTable(padapter,byte5);   // Driver need to set the Coex Table value after FW version 35. 
 	}
 
 void btdm_2AntPsTdma(PADAPTER	padapter,u8	bTurnOn,u8	type)
@@ -14066,7 +14066,7 @@ void BTDM_FwC2hBtInfo8723A(PADAPTER padapter, u8 *tmpBuf, u8 length)
 				break;
 			case 5:
 				pBtCoex->AclTp |=(tmpBuf[i]<<8);
-				break;
+				break;	
 		}
 
 		if (i == length-1)
@@ -19164,7 +19164,7 @@ void BTDM_SignalCompensation(PADAPTER padapter, u8 *rssi_wifi, u8 *rssi_bt)
 /*
 0. write 0xa3 = 0x05
 
-1. 0xa0 == 0x04
+1. 0xa0 == 0x04 
 	write 0xF6?1:0] = 0x01
 	write 0x3A[7:0] = 0x31
 
@@ -19192,19 +19192,19 @@ void dm_CheckBTState(_adapter *pAdapter)
 
 //	if (pAdapter->drv_in_test == CMCC_TEST)
 //		return;
-
+	
 	rtw_write8(pAdapter, 0xa3, 5);
 
 	//DBG_871X("------>%s,get 0xa3=%0x\n",__func__,rtw_read8(pAdapter, 0xa3));
 
 	regValue8 = rtw_read8(pAdapter, 0xa0);
 	//DBG_871X("Get 0xa0 = 0x%x\n",regValue8);
-	if(regValue8 == 0x4){
+	if(regValue8 == 0x4){		
 		value = rtw_read8(pAdapter, 0xf6);
 		value &= ~3;
 		value |= 1;
 		rtw_write8(pAdapter, 0xf6, value);
-		rtw_write8(pAdapter, 0x3A, 0x31);
+		rtw_write8(pAdapter, 0x3A, 0x31);		
 	}
 	else{
 		return;
@@ -19223,7 +19223,7 @@ void dm_CheckBTState(_adapter *pAdapter)
 
 	regValue8 = rtw_read8(pAdapter, 0x6b); //0x6b[28]
 	//DBG_871X("Get 0x6b = 0x%x\n",regValue8);
-
+	
 	if((regValue8 & 0x10) == 0x10){
 		regValue8 &= 0xEF;
 		rtw_write8(pAdapter, 0x6b, regValue8);
@@ -19267,8 +19267,8 @@ void BTDM_Coexist(PADAPTER padapter)
 
 #if defined(CONFIG_CONCURRENT_MODE)
 	if (padapter->adapter_type != PRIMARY_ADAPTER)
-	{
-		RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE  !!\n"));
+	{    
+		RTPRINT(FBT, BT_TRACE, ("[DM][BT], CONFIG_CONCURRENT_MODE  !!\n")); 
 		RTPRINT(FBT, BT_TRACE, ("[DM][BT], padapter->adapter_type != PRIMARY_ADAPTER  !!\n"));
 		return;
 	}
@@ -19475,7 +19475,7 @@ u8 BTDM_IsWifiBusy(PADAPTER padapter)
 	{
 		pbuddy_mlmepriv = &(padapter->pbuddy_adapter->mlmepriv);
 
-#if 1
+#if 1	
 		if ((btdm_BtWifiAntNum(padapter) == Ant_x1) && ((BT_IsBtDisabled(padapter) == _TRUE) || ((BT_IsBtDisabled(padapter) == _FALSE && (BT_GetBtState(padapter) <= BT_INFO_STATE_CONNECT_IDLE)))))
 		{
 			if (((padapter->iface_type == IFACE_PORT0) && (check_fwstate(pbuddy_mlmepriv, _FW_LINKED) == _TRUE)) ||
@@ -19483,7 +19483,7 @@ u8 BTDM_IsWifiBusy(PADAPTER padapter)
 				return _TRUE;
 		}
 #endif
-
+	
 		if (pmlmepriv->LinkDetectInfo.NumRxOkInPeriod > WIFI_BUSY_TRAFFIC_TH ||pmlmepriv->LinkDetectInfo.NumTxOkInPeriod > WIFI_BUSY_TRAFFIC_TH ||
 			pbuddy_mlmepriv->LinkDetectInfo.NumRxOkInPeriod > WIFI_BUSY_TRAFFIC_TH || pbuddy_mlmepriv->LinkDetectInfo.NumTxOkInPeriod > WIFI_BUSY_TRAFFIC_TH ||
 			pBtTraffic->Bt30TrafficStatistics.bTxBusyTraffic ||
@@ -20282,3 +20282,4 @@ void HALBT_SwitchWirelessMode(PADAPTER padapter, u8 targetWirelessMode)
 
 // ===== End of sync from SD7 driver HAL/HalBT.c =====
 #endif
+

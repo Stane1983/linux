@@ -110,7 +110,7 @@ static u8 gspi_alloc_irq(struct dvobj_priv *dvobj)
 
 	err = request_irq(oob_irq, spi_interrupt_thread,
 			IRQF_TRIGGER_FALLING,//IRQF_TRIGGER_HIGH;//|IRQF_ONESHOT,
-			DRV_NAME, dvobj);
+		       	DRV_NAME, dvobj);
 	//err = request_threaded_irq(oob_irq, NULL, spi_interrupt_thread,
 	//		IRQF_TRIGGER_FALLING,
 	//		DRV_NAME, dvobj);
@@ -652,7 +652,7 @@ _func_enter_;
 	RT_TRACE(_module_hci_intfs_c_, _drv_notice_, ("+rtw_dev_remove\n"));
 
 	dvobj->processing_dev_remove = _TRUE;
-	rtw_unregister_netdevs(dvobj);
+	rtw_unregister_netdevs(dvobj);	
 
 #if defined(CONFIG_HAS_EARLYSUSPEND) || defined(CONFIG_ANDROID_POWER)
 	rtw_unregister_early_suspend(dvobj_to_pwrctl(dvobj));
@@ -868,7 +868,7 @@ static int rtw_gspi_resume(struct spi_device *spi)
 	DBG_871X("==> %s (%s:%d)\n",__FUNCTION__, current->comm, current->pid);
 
 	if(pwrpriv->bInternalAutoSuspend ){
-		ret = rtw_resume_process(padapter);
+ 		ret = rtw_resume_process(padapter);
 	} else {
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 		rtw_resume_in_workqueue(pwrpriv);
@@ -926,7 +926,7 @@ static void __exit rtw_drv_halt(void)
 {
 	RT_TRACE(_module_hci_intfs_c_, _drv_notice_, ("+rtw_drv_halt\n"));
 	DBG_8192C("RTW: rtw_drv_halt enter\n");
-
+	
 	drvpriv.drv_registered = _FALSE;
 
 	spi_unregister_driver(&rtw_spi_drv);

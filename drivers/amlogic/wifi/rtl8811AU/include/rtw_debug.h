@@ -420,3 +420,4 @@ ssize_t proc_set_odm_adaptivity(struct file *file, const char __user *buffer, si
 #endif /* CONFIG_PROC_DEBUG */
 
 #endif	//__RTW_DEBUG_H__
+

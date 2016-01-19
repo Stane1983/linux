@@ -114,7 +114,7 @@ _BlockWrite(
 #ifdef CONFIG_USB_HCI
 		for (i = 0; i < blockCount_p2; i++) {
 			ret = rtw_writeN(padapter, (FW_8723A_START_ADDRESS + offset + i*blockSize_p2), blockSize_p2, (bufferPtr + offset + i*blockSize_p2));
-
+			
 			if(ret == _FAIL)
 				goto exit;
 		}
@@ -134,7 +134,7 @@ _BlockWrite(
 
 		for(i = 0 ; i < blockCount_p3 ; i++){
 			ret = rtw_write8(padapter, (FW_8723A_START_ADDRESS + offset + i), *(bufferPtr + offset + i));
-
+			
 			if(ret == _FAIL)
 				goto exit;
 		}
@@ -216,7 +216,7 @@ _WriteFW(
 		offset = pageNums * MAX_PAGE_SIZE;
 		page = pageNums;
 		ret = _PageWrite(padapter, page, bufferPtr+offset, remainSize);
-
+		
 		if(ret == _FAIL)
 			goto exit;
 	}
@@ -229,23 +229,23 @@ exit:
 void _8051Reset8723A(PADAPTER padapter)
 {
 	u8 tmp;
-
+	
 	// Reset 8051
 	tmp = rtw_read8(padapter, REG_SYS_FUNC_EN + 1);
 	rtw_write8(padapter, REG_SYS_FUNC_EN + 1, tmp & (~BIT2));
-
+	
 	// Reset wrapper
 	tmp = rtw_read8(padapter, REG_RSV_CTRL + 1);
 	rtw_write8(padapter, REG_RSV_CTRL + 1, tmp & (~BIT0));
 
 	// Enable wrapper
 	tmp = rtw_read8(padapter, REG_RSV_CTRL + 1);
-	rtw_write8(padapter, REG_RSV_CTRL + 1, tmp | BIT0);
-
+	rtw_write8(padapter, REG_RSV_CTRL + 1, tmp | BIT0);		
+	
 	// 8051 enable
 	tmp = rtw_read8(padapter, REG_SYS_FUNC_EN+1);
 	rtw_write8(padapter, REG_SYS_FUNC_EN+1, tmp|BIT2);
-
+	
 	DBG_871X("=====> _8051Reset8723A(): 8051 reset success .\n");
 }
 
@@ -484,8 +484,8 @@ int _WriteBTFWtoTxPktBuf8723A(
 			//_rtw_memcpy( (u8*) (pmgntframe->buf_addr + TXDESC_OFFSET), ReservedPagePacket, FwBufLen);
 			_rtw_memcpy( (u8*) (pmgntframe->buf_addr + TXDESC_OFFSET), FwbufferPtr, FwBufLen);
 			DBG_871X("===>TotalPktLen + TXDESC_OFFSET TotalPacketLen:%d ", (FwBufLen + TXDESC_OFFSET));
-
-			dump_mgntframe(Adapter, pmgntframe);
+		
+		     	dump_mgntframe(Adapter, pmgntframe);
 
 #endif
 #if 1
@@ -563,7 +563,7 @@ SetFwBTFwPatchCmd(
 	SET_H2CCMD_BT_FW_PATCH_SIZE(u1BTFwPatchParm, FwSize);
 
 	u1BTFwPatchParm[0]  |= BIT1;
-
+	
 	FillH2CCmd(Adapter, H2C_BT_FW_PATCH, H2C_BT_FW_PATCH_LEN, u1BTFwPatchParm);
 
 	RT_TRACE(_module_mp_, _drv_notice_,("<----SetFwBTFwPatchCmd(): FwSize = %d \n", FwSize));
@@ -605,9 +605,9 @@ _CheckWLANFwPatchBTFwReady(
 	//---------------------------------------------------------
 	do{
 		u1bTmp = PlatformEFIORead1Byte(Adapter, REG_MCUFWDL+1);
-		if(u1bTmp&BIT(7))
+		if(u1bTmp&BIT(7)) 
 			break;
-
+		
 		count++;
 		RT_TRACE(_module_mp_, _drv_info_,("0x81=%x, wait for 50 ms (%d) times.\n",
 					u1bTmp, count));
@@ -821,12 +821,12 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 		}
 		else if (IS_8723A_B_CUT(pHalData->VersionID))
 		{
-		 if(padapter->registrypriv.mp_mode == 1)
-		 {
+         	 if(padapter->registrypriv.mp_mode == 1)
+         	 {
 				FwImage = (u8*)Rtl8723_FwUMCBCutMPImageArray;
 				FwImageLen = Rtl8723_UMCBCutMPImgArrayLength;
 				DBG_871X(" Rtl8723_FwUMCBCutMPImageArray for RTL8723A B CUT  length:%d\n",FwImageLen);
-			}
+			}	
 			else
 			{
 			// WLAN Fw.
@@ -849,7 +849,7 @@ s32 rtl8723a_FirmwareDownload(PADAPTER padapter)
 #endif
 				}
 			}
-			pFwImageFileName = R8723FwImageFileName_UMC_B;
+	      		pFwImageFileName = R8723FwImageFileName_UMC_B;
 		}
 		else
 		{
@@ -2658,7 +2658,7 @@ s32 c2h_id_filter_ccx_8723a(u8 id)
 	s32 ret = _FALSE;
 	if (id == C2H_CCX_TX_RPT)
 		ret = _TRUE;
-
+	
 	return ret;
 }
 
@@ -2795,7 +2795,7 @@ void rtl8723a_set_hal_ops(struct hal_ops *pHalFunc)
 	pHalFunc->hal_free_checkbthang_workqueue = &rtl8723a_free_checkbthang_workqueue;
 	pHalFunc->hal_cancel_checkbthang_workqueue = &rtl8723a_cancel_checkbthang_workqueue;
 	pHalFunc->hal_checke_bt_hang = &rtl8723a_hal_check_bt_hang;
-#endif
+#endif	
 }
 
 void rtl8723a_InitAntenna_Selection(PADAPTER padapter)
@@ -3051,7 +3051,7 @@ n. LEDCFG 0x4C[15:0] = 0x8080
 		//
 		//2. Disable GPIO[8] and GPIO[12]
 		rtw_write16(padapter, REG_GPIO_IO_SEL_2, 0x0000); // Configure all pins as input mode.
-		value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
+	    	value32 = rtw_read32(padapter, REG_GPIO_PIN_CTRL_2) & 0xFFFF001F;
 		u4bTmp = value32 & 0x0000001F;
 //		if( IS_MULTI_FUNC_CHIP(padapter) )
 //			value32 |= ((u4bTmp<<8) | 0x00110000); // Set pin 8 and pin 12 to output mode.
@@ -3090,7 +3090,7 @@ c. 	APSD_CTRL 0x600[7:0] = 0x40
 d.	SYS_FUNC_EN 0x02[7:0] = 0x16		//reset BB state machine
 e.	SYS_FUNC_EN 0x02[7:0] = 0x14		//reset BB state machine
 ***************************************/
-	u8 eRFPath = 0, value8 = 0;
+    	u8 eRFPath = 0, value8 = 0;
 
 	rtw_write8(padapter, REG_TXPAUSE, 0xFF);
 
@@ -3640,7 +3640,7 @@ Hal_EfuseParseTxPowerInfo_8723A(
 	if(!AutoLoadFail)
 	{
 		struct registry_priv  *registry_par = &padapter->registrypriv;
-		if( registry_par->regulatory_tid == 0xff){
+		if( registry_par->regulatory_tid == 0xff){	
 			if( PROMContent[RF_OPTION1_8723A] == 0xff)
 				pHalData->EEPROMRegulatory = 0 ;
 			else
@@ -3768,11 +3768,11 @@ Hal_EfuseParseAntennaDiversity(
 #ifdef CONFIG_ANTENNA_DIVERSITY
 	HAL_DATA_TYPE	*pHalData = GET_HAL_DATA(padapter);
 	struct registry_priv	*registry_par = &padapter->registrypriv;
-
+	
 
 	if(!AutoLoadFail)
 	{
-		// Antenna Diversity setting.
+		// Antenna Diversity setting. 
 		if(registry_par->antdiv_cfg == 2) // 2: From Efuse
 			pHalData->AntDivCfg = (hwinfo[RF_OPTION1_8723A]&0x18)>>3;
 		else
@@ -3782,7 +3782,7 @@ Hal_EfuseParseAntennaDiversity(
 			pHalData->AntDivCfg = 0;
 
 		DBG_8192C("### AntDivCfg(%x) EEPROMBluetoothCoexist(%x) EEPROMBluetoothAntNum(%x)\n"
-			,pHalData->AntDivCfg,pHalData->EEPROMBluetoothCoexist,pHalData->EEPROMBluetoothAntNum);
+			,pHalData->AntDivCfg,pHalData->EEPROMBluetoothCoexist,pHalData->EEPROMBluetoothAntNum);	
 	}
 	else
 	{
@@ -3853,7 +3853,7 @@ Hal_EfuseParseXtal_8723A(
 	if (!AutoLoadFail){
 		pHalData->CrystalCap = hwinfo[EEPROM_XTAL_K_8723A];
 		if(pHalData->CrystalCap == 0xFF)
-			pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;
+			pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;	
 	}
 	else{
 		pHalData->CrystalCap = EEPROM_Default_CrystalCap_8723A;
@@ -5008,7 +5008,7 @@ _func_enter_;
                         rtw_write32(padapter, REG_RCR, rtw_read32(padapter, REG_RCR)|RCR_AM);
                         DBG_871X("%s, %d, RCR= %x \n", __FUNCTION__,__LINE__, rtw_read32(padapter, REG_RCR));
                         break;
-
+						
               case HW_VAR_OFF_RCR_AM:
                         rtw_write32(padapter, REG_RCR, rtw_read32(padapter, REG_RCR)& (~RCR_AM));
                         DBG_871X("%s, %d, RCR= %x \n", __FUNCTION__,__LINE__, rtw_read32(padapter, REG_RCR));
@@ -5515,7 +5515,7 @@ void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val)
 
 				cmd = CAM_POLLINIG | CAM_READ | cam_val[1];
 				rtw_write32(padapter, RWCAM, cmd);
-
+				
 				cam_val[0]=rtw_read32(padapter,  RCAMO);
 			}
 			break;
@@ -5577,13 +5577,13 @@ void GetHwReg8723A(PADAPTER padapter, u8 variable, u8 *val)
 			break;
 		case HW_VAR_CHK_HI_QUEUE_EMPTY:
 			*val = ((rtw_read32(padapter, REG_HGQ_INFORMATION)&0x0000ff00)==0) ? _TRUE:_FALSE;
-			break;
+			break;	
 		case HW_VAR_C2HEVT_CLEAR:
 			*val =  rtw_read8(padapter, REG_C2HEVT_CLEAR);
 			break;
 		case HW_VAR_C2HEVT_MSG_NORMAL:
 			*val =  rtw_read8(padapter, REG_C2HEVT_MSG_NORMAL);
-			break;
+			break;	
 	}
 }
 
@@ -5685,7 +5685,7 @@ void rtl8723a_free_checkbthang_workqueue(_adapter * adapter)
 		flush_workqueue(adapter->priv_checkbt_wq);
 		destroy_workqueue(adapter->priv_checkbt_wq);
 		adapter->priv_checkbt_wq = NULL;
-	}
+	} 
 }
 
 void rtl8723a_cancel_checkbthang_workqueue(_adapter * adapter)

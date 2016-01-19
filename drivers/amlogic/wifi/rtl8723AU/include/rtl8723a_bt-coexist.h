@@ -1813,3 +1813,4 @@ extern u32 BTCoexDbgLevel;
 
 
 #endif // __RTL8723A_BT_COEXIST_H__
+

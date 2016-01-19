@@ -204,6 +204,8 @@ endif
 
 _HAL_INTFS_FILES += $(CHIP_FILES)
 
+EXTRA_CFLAGS += -I$(src)/platform
+_PLATFORM_FILES := platform/platform_ops.o
 
 ifeq ($(CONFIG_AUTOCFG_CP), y)
 $(shell cp $(TopDIR)/autoconf_$(RTL871X)_$(HCI_NAME)_linux.h $(TopDIR)/include/autoconf.h)
@@ -388,6 +390,9 @@ endif
 
 ifeq ($(CONFIG_PLATFORM_RTK_DMP), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DRTK_DMP_PLATFORM
+ifeq ($(CONFIG_USB_HCI), y)
+_PLATFORM_FILES += platform/platform_RTK_DMP_usb.o
+endif
 ARCH:=mips
 CROSS_COMPILE:=mipsel-linux-
 KVER:=
@@ -411,7 +416,7 @@ KSRC ?= /lib/modules/2.6.31-770-g0e46b52/source
 endif
 
 ifeq ($(CONFIG_PLATFORM_FS_MX61), y)
-EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN 
 ARCH := arm
 CROSS_COMPILE := /home/share/CusEnv/FreeScale/arm-eabi-4.4.3/bin/arm-eabi-
 KSRC ?= /home/share/CusEnv/FreeScale/FS_kernel_env
@@ -525,33 +530,37 @@ INSTALL_PREFIX :=
 endif
 
 ifeq ($(CONFIG_PLATFORM_ARM_SUNxI), y)
-EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN -DCONFIG_PLATFORM_ARM_SUNxI
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUNxI
+# default setting for Android 4.1, 4.2
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+EXTRA_CFLAGS += -DDCONFIG_P2P_IPS
+
+EXTRA_CFLAGS += -DCONFIG_PLATFORM_OPS
+ifeq ($(CONFIG_USB_HCI), y)
+EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
+_PLATFORM_FILES += platform/platform_ARM_SUNxI_usb.o
+endif
+ifeq ($(CONFIG_SDIO_HCI), y)
+# default setting for A10-EVB mmc0
+#EXTRA_CFLAGS += -DCONFIG_WITS_EVB_V13
+_PLATFORM_FILES += platform/platform_ARM_SUNxI_sdio.o
+endif
+
 ARCH := arm
-CROSS_COMPILE := arm-none-linux-gnueabi-
+#CROSS_COMPILE := arm-none-linux-gnueabi-
+CROSS_COMPILE=/home/android_sdk/Allwinner/a10/android-jb42/lichee-jb42/buildroot/output/external-toolchain/bin/arm-none-linux-gnueabi-
 KVER  := 3.0.8
 #KSRC:= ../lichee/linux-3.0/
+KSRC=/home/android_sdk/Allwinner/a10/android-jb42/lichee-jb42/linux-3.0
 endif
 
 ifeq ($(CONFIG_PLATFORM_ARM_SUN6I), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
 EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN6I
-EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
 EXTRA_CFLAGS += -DCONFIG_TRAFFIC_PROTECT
-# default setting for Android 4.1, 4.2
-EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
-EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
-EXTRA_CFLAGS += -DCONFIG_P2P_IPS
-ARCH := arm
-CROSS_COMPILE := arm-none-linux-gnueabi-
-KVER  := 3.3.0
-#KSRC:= ../lichee/linux-3.3/
-endif
-
-ifeq ($(CONFIG_PLATFORM_ARM_SUN7I), y)
-EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
-EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN7I
-EXTRA_CFLAGS += -DCONFIG_TRAFFIC_PROTECT
-# default setting for Android 4.1, 4.2
+# default setting for Android 4.1, 4.2, 4.3, 4.4
 EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
 EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
 EXTRA_CFLAGS += -DCONFIG_P2P_IPS -DCONFIG_QOS_OPTIMIZATION
@@ -561,23 +570,52 @@ ifeq ($(CONFIG_USB_HCI), y)
 EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
 _PLATFORM_FILES += platform/platform_ARM_SUNxI_usb.o
 endif
+ifeq ($(CONFIG_SDIO_HCI), y)
+# default setting for A31-EVB mmc0
+EXTRA_CFLAGS += -DCONFIG_A31_EVB
+_PLATFORM_FILES += platform/platform_ARM_SUNnI_sdio.o
+endif
+
+ARCH := arm
+#Android-JB42
+#CROSS_COMPILE := /home/android_sdk/Allwinner/a31/android-jb42/lichee/buildroot/output/external-toolchain/bin/arm-linux-gnueabi-
+#KSRC :=/home/android_sdk/Allwinner/a31/android-jb42/lichee/linux-3.3
+#ifeq ($(CONFIG_USB_HCI), y)
+#MODULE_NAME := 8188eu_sw
+#endif
+# ==== Cross compile setting for kitkat-a3x_v4.5 =====
+CROSS_COMPILE := /home/android_sdk/Allwinner/a31/kitkat-a3x_v4.5/lichee/buildroot/output/external-toolchain/bin/arm-linux-gnueabi-
+KSRC :=/home/android_sdk/Allwinner/a31/kitkat-a3x_v4.5/lichee/linux-3.3
+endif
+
+ifeq ($(CONFIG_PLATFORM_ARM_SUN7I), y)
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+EXTRA_CFLAGS += -DCONFIG_PLATFORM_ARM_SUN7I
+EXTRA_CFLAGS += -DCONFIG_TRAFFIC_PROTECT
+# default setting for Android 4.1, 4.2, 4.3, 4.4
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+EXTRA_CFLAGS += -DCONFIG_IOCTL_CFG80211 -DRTW_USE_CFG80211_STA_EVENT
+EXTRA_CFLAGS += -DCONFIG_P2P_IPS -DCONFIG_QOS_OPTIMIZATION
+
+EXTRA_CFLAGS += -DCONFIG_PLATFORM_OPS
+ifeq ($(CONFIG_USB_HCI), y)
+EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
+_PLATFORM_FILES += platform/platform_ARM_SUNxI_usb.o
+endif
+ifeq ($(CONFIG_SDIO_HCI), y)
+_PLATFORM_FILES += platform/platform_ARM_SUNnI_sdio.o
+endif
 
 ARCH := arm
 # ===Cross compile setting for Android 4.2 SDK ===
-#CROSS_COMPILE :=/home/android_sdk/Allwinner/a20_evb/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
-#KVER  := 3.3.0
+#CROSS_COMPILE := /home/android_sdk/Allwinner/a20_evb/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
 #KSRC := /home/android_sdk/Allwinner/a20_evb/lichee/linux-3.3
-
 # ==== Cross compile setting for Android 4.3 SDK =====
 #CROSS_COMPILE := /home/android_sdk/Allwinner/a20/android-jb43/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
-#KVER  := 3.4.39
-#KSRC :=/home/android_sdk/Allwinner/a20/android-jb43/lichee/linux-3.4
-
-# ==== Cross compile setting for Android 4.4 SDK =====
-CROSS_COMPILE := /home/android_sdk/Allwinner/a20/android-kitkat44/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
-KVER  := 3.4.39
-KSRC :=/home/android_sdk/Allwinner/a20/android-kitkat44/lichee/linux-3.4
-
+#KSRC := /home/android_sdk/Allwinner/a20/android-jb43/lichee/linux-3.4
+# ==== Cross compile setting for kitkat-a20_v4.4 =====
+CROSS_COMPILE := /home/android_sdk/Allwinner/a20/kitkat-a20_v4.4/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
+KSRC := /home/android_sdk/Allwinner/a20/kitkat-a20_v4.4/lichee/linux-3.4
 endif
 
 ifeq ($(CONFIG_PLATFORM_ARM_SUN8I), y)
@@ -594,11 +632,17 @@ ifeq ($(CONFIG_USB_HCI), y)
 EXTRA_CFLAGS += -DCONFIG_USE_USB_BUFFER_ALLOC_TX
 _PLATFORM_FILES += platform/platform_ARM_SUNxI_usb.o
 endif
+ifeq ($(CONFIG_SDIO_HCI), y)
+_PLATFORM_FILES += platform/platform_ARM_SUNnI_sdio.o
+endif
 
 ARCH := arm
-CROSS_COMPILE := /home/android_sdk/Allwinner/a23/android-jb42/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
-KVER  := 3.4.39
-KSRC :=/home/android_sdk/Allwinner/a23/android-jb42/lichee/linux-3.4
+# ===Cross compile setting for Android 4.2 SDK ===
+#CROSS_COMPILE := /home/android_sdk/Allwinner/a23/android-jb42/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
+#KSRC :=/home/android_sdk/Allwinner/a23/android-jb42/lichee/linux-3.4
+# ===Cross compile setting for Android 4.4 SDK ===
+CROSS_COMPILE := /home/android_sdk/Allwinner/a23/android-kk44/lichee/out/android/common/buildroot/external-toolchain/bin/arm-linux-gnueabi-
+KSRC :=/home/android_sdk/Allwinner/a23/android-kk44/lichee/linux-3.4
 endif
 
 ifeq ($(CONFIG_PLATFORM_ARM_RTD299X), y)
@@ -616,7 +660,8 @@ endif
 ifeq ($(CONFIG_PLATFORM_AML), y)
 EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
 ARCH := arm
-CROSS_COMPILE := arm-none-linux-gnueabi-
+CROSS_COMPILE := arm-linux-gnueabihf-
+KSRC := ../../../../../../common
 KVER  := 3.10
 endif
 
@@ -665,6 +710,8 @@ $(MODULE_NAME)-y += $(_HAL_INTFS_FILES)
 
 $(MODULE_NAME)-y += $(_OS_INTFS_FILES)
 
+$(MODULE_NAME)-y += $(_PLATFORM_FILES)
+
 $(MODULE_NAME)-$(CONFIG_MP_INCLUDED) += core/rtw_mp.o \
 					core/rtw_mp_ioctl.o
 
@@ -708,4 +755,6 @@ clean:
 	cd hal ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep/linux ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 	cd os_dep ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
+	cd platform ; rm -fr *.mod.c *.mod *.o .*.cmd *.ko
 endif
+

@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
+ *                                        
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -43,23 +43,23 @@ ODM_EdcaTurboInit(
 	Adapter=pDM_Odm->Adapter;
 	pHalData=GET_HAL_DATA(Adapter);
 
-	pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = FALSE;
+	pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = FALSE;	
 	pDM_Odm->DM_EDCA_Table.bIsCurRDLState = FALSE;
 	pHalData->bIsAnyNonBEPkts = FALSE;
-
+	
 #elif(DM_ODM_SUPPORT_TYPE==ODM_CE)
-	PADAPTER	Adapter = pDM_Odm->Adapter;
-	pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = FALSE;
+	PADAPTER	Adapter = pDM_Odm->Adapter;	
+	pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = FALSE;	
 	pDM_Odm->DM_EDCA_Table.bIsCurRDLState = FALSE;
 	Adapter->recvpriv.bIsAnyNonBEPkts =FALSE;
 
-#endif
+#endif	
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("Orginial VO PARAM: 0x%x\n",ODM_Read4Byte(pDM_Odm,ODM_EDCA_VO_PARAM)));
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("Orginial VI PARAM: 0x%x\n",ODM_Read4Byte(pDM_Odm,ODM_EDCA_VI_PARAM)));
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("Orginial BE PARAM: 0x%x\n",ODM_Read4Byte(pDM_Odm,ODM_EDCA_BE_PARAM)));
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("Orginial BK PARAM: 0x%x\n",ODM_Read4Byte(pDM_Odm,ODM_EDCA_BK_PARAM)));
 
-
+	
 }	// ODM_InitEdcaTurbo
 
 VOID
@@ -67,7 +67,7 @@ odm_EdcaTurboCheck(
 	IN 	PVOID	 	pDM_VOID
 	)
 {
-	//
+	// 
 	// For AP/ADSL use prtl8192cd_priv
 	// For CE/NIC use PADAPTER
 	//
@@ -79,7 +79,7 @@ odm_EdcaTurboCheck(
 	//
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("odm_EdcaTurboCheck========================>\n"));
-
+	
 	if(!(pDM_Odm->SupportAbility& ODM_MAC_EDCA_TURBO ))
 		return;
 
@@ -104,7 +104,7 @@ odm_EdcaTurboCheck(
 #if ((DM_ODM_SUPPORT_TYPE == ODM_AP)||(DM_ODM_SUPPORT_TYPE==ODM_ADSL))
 		odm_IotEngine(pDM_Odm);
 #endif
-			break;
+			break;	
 	}
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("<========================odm_EdcaTurboCheck\n"));
 
@@ -176,7 +176,7 @@ odm_EdcaTurboCheckCE(
 		{
 			if (cur_tx_bytes > (cur_rx_bytes << 2))
 			{ // Uplink TP is present.
-				trafficIndex = UP_LINK;
+				trafficIndex = UP_LINK; 
 			}
 			else
 			{ // Balance TP is present.
@@ -198,7 +198,7 @@ odm_EdcaTurboCheckCE(
 		//if ((pDM_Odm->DM_EDCA_Table.prv_traffic_idx != trafficIndex) || (!pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA))
 		{
 			if(ICType==ODM_RTL8192D)
-			{
+			{      
 				// Single PHY
 				if(pDM_Odm->RFType==ODM_2T2R)
 				{
@@ -225,14 +225,14 @@ odm_EdcaTurboCheckCE(
 					}
 				}
 			}
-
+		
 			//92D txop can't be set to 0x3e for cisco1250
 			if((ICType!=ODM_RTL8192D) && (IOTPeer== HT_IOT_PEER_CISCO) &&(WirelessMode==ODM_WM_N24G))
 			{
 				EDCA_BE_DL = edca_setting_DL[IOTPeer];
 				EDCA_BE_UL = edca_setting_UL[IOTPeer];
 			}
-			//merge from 92s_92c_merge temp brunch v2445    20120215
+			//merge from 92s_92c_merge temp brunch v2445    20120215 
 			else if((IOTPeer == HT_IOT_PEER_CISCO) &&((WirelessMode==ODM_WM_G)||(WirelessMode==(ODM_WM_B|ODM_WM_G))||(WirelessMode==ODM_WM_A)||(WirelessMode==ODM_WM_B)))
 			{
 				EDCA_BE_DL = edca_setting_DL_GMode[IOTPeer];
@@ -248,7 +248,7 @@ odm_EdcaTurboCheckCE(
 			}
 			else if(IOTPeer == HT_IOT_PEER_ATHEROS)
 			{
-				// Set DL EDCA for Atheros peer to 0x3ea42b. Suggested by SD3 Wilson for ASUS TP issue.
+				// Set DL EDCA for Atheros peer to 0x3ea42b. Suggested by SD3 Wilson for ASUS TP issue. 
 				EDCA_BE_DL = edca_setting_DL[IOTPeer];
 			}
 
@@ -269,7 +269,7 @@ odm_EdcaTurboCheckCE(
 
 			pDM_Odm->DM_EDCA_Table.prv_traffic_idx = trafficIndex;
 		}
-
+		
 		pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = _TRUE;
 	}
 	else
@@ -309,13 +309,13 @@ odm_EdcaTurboCheckMP(
 	PSTA_QOS			pStaQos = Adapter->MgntInfo.pStaQos;
 	//[Win7 Count Tx/Rx statistic for Extension Port] odm_CheckEdcaTurbo's Adapter is always Default. 2009.08.20, by Bohn
 	u8Byte				Ext_curTxOkCnt = 0;
-	u8Byte				Ext_curRxOkCnt = 0;
-	//For future Win7  Enable Default Port to modify AMPDU size dynamically, 2009.08.20, Bohn.
+	u8Byte				Ext_curRxOkCnt = 0;	
+	//For future Win7  Enable Default Port to modify AMPDU size dynamically, 2009.08.20, Bohn.	
 	u1Byte TwoPortStatus = (u1Byte)TWO_PORT_STATUS__WITHOUT_ANY_ASSOCIATE;
 
 	// Keep past Tx/Rx packet count for RT-to-RT EDCA turbo.
 	u8Byte				curTxOkCnt = 0;
-	u8Byte				curRxOkCnt = 0;
+	u8Byte				curRxOkCnt = 0;	
 	u4Byte				EDCA_BE_UL = 0x5ea42b;//Parameter suggested by Scott  //edca_setting_UL[pMgntInfo->IOTPeer];
 	u4Byte				EDCA_BE_DL = 0x5ea42b;//Parameter suggested by Scott  //edca_setting_DL[pMgntInfo->IOTPeer];
 	u4Byte                         EDCA_BE = 0x5ea42b;
@@ -325,7 +325,7 @@ odm_EdcaTurboCheckMP(
 	BOOLEAN				 bBiasOnRx=FALSE;
 	BOOLEAN				bEdcaTurboOn=FALSE;
 	u1Byte				TxRate = 0xFF;
-	u8Byte				value64;
+	u8Byte				value64;	
 
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("odm_EdcaTurboCheckMP========================>"));
 	ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("Orginial BE PARAM: 0x%x\n",ODM_Read4Byte(pDM_Odm,ODM_EDCA_BE_PARAM)));
@@ -334,9 +334,9 @@ odm_EdcaTurboCheckMP(
 ////list paramter for different platform
 ////===============================
 	bLastIsCurRDLState=pDM_Odm->DM_EDCA_Table.bIsCurRDLState;
-	pbIsCurRDLState=&(pDM_Odm->DM_EDCA_Table.bIsCurRDLState);
+	pbIsCurRDLState=&(pDM_Odm->DM_EDCA_Table.bIsCurRDLState);	
 
-	//2012/09/14 MH Add
+	//2012/09/14 MH Add 
 	if (pMgntInfo->NumNonBePkt > pMgntInfo->RegEdcaThresh && !Adapter->MgntInfo.bWiFiConfg)
 		pHalData->bIsAnyNonBEPkts = TRUE;
 
@@ -350,7 +350,7 @@ odm_EdcaTurboCheckMP(
 	pDM_Odm->lastTxOkCnt = Adapter->TxStats.NumTxBytesUnicast;
 	pDM_Odm->lastRxOkCnt = Adapter->RxStats.NumRxBytesUnicast;
 
-	if(pExtAdapter == NULL)
+	if(pExtAdapter == NULL) 
 		pExtAdapter = pDefaultAdapter;
 
 	Ext_curTxOkCnt = pExtAdapter->TxStats.NumTxBytesUnicast - pMgntInfo->Ext_lastTxOkCnt;
@@ -405,7 +405,7 @@ odm_EdcaTurboCheckMP(
 					if(!pMgntInfo->ForcedDataRate) //auto rate
 					{
 						if(pDM_Odm->TxRate != 0xFF)
-							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate);
+							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate); 
 					}
 					else //force rate
 					{
@@ -464,7 +464,7 @@ odm_EdcaTurboCheckMP(
 								break;
 							}
 						}
-					}
+					}				
 				}
 				else
 				{
@@ -480,7 +480,7 @@ odm_EdcaTurboCheckMP(
 					if(!pMgntInfo->ForcedDataRate) //auto rate
 					{
 						if(pDM_Odm->TxRate != 0xFF)
-							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate);
+							TxRate = Adapter->HalFunc.GetHwRateFromMRateHandler(pDM_Odm->TxRate); 
 					}
 					else //force rate
 					{
@@ -501,16 +501,16 @@ odm_EdcaTurboCheckMP(
 							switch (TxRate)
 							{
 								case MGN_VHT2SS_MCS9:
-								case MGN_VHT1SS_MCS9:
+								case MGN_VHT1SS_MCS9:									
 								case MGN_VHT1SS_MCS8:
 								case MGN_MCS15:
-								case MGN_MCS7:
-									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0x1ea44f);
+								case MGN_MCS7:									
+									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0x1ea44f);							
 								case MGN_VHT2SS_MCS8:
 								case MGN_VHT1SS_MCS7:
 								case MGN_MCS14:
 								case MGN_MCS6:
-								case MGN_54M:
+								case MGN_54M:									
 									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa44f);
 								case MGN_VHT2SS_MCS7:
 								case MGN_VHT2SS_MCS6:
@@ -524,33 +524,33 @@ odm_EdcaTurboCheckMP(
 								case MGN_VHT2SS_MCS5:
 								case MGN_VHT2SS_MCS4:
 								case MGN_VHT1SS_MCS4:
-								case MGN_VHT1SS_MCS3:
+								case MGN_VHT1SS_MCS3:	
 								case MGN_MCS12:
-								case MGN_MCS4:
-								case MGN_MCS3:
+								case MGN_MCS4:	
+								case MGN_MCS3:	
 								case MGN_36M:
-								case MGN_24M:
+								case MGN_24M:	
 									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa730);
 								break;
 								case MGN_VHT2SS_MCS3:
 								case MGN_VHT2SS_MCS2:
 								case MGN_VHT2SS_MCS1:
 								case MGN_VHT1SS_MCS2:
-								case MGN_VHT1SS_MCS1:
-								case MGN_MCS11:
-								case MGN_MCS10:
-								case MGN_MCS9:
-								case MGN_MCS2:
+								case MGN_VHT1SS_MCS1:	
+								case MGN_MCS11:	
+								case MGN_MCS10:	
+								case MGN_MCS9:		
+								case MGN_MCS2:	
 								case MGN_MCS1:
-								case MGN_18M:
+								case MGN_18M:	
 								case MGN_12M:
 									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa830);
 								break;
 								case MGN_VHT2SS_MCS0:
 								case MGN_VHT1SS_MCS0:
-								case MGN_MCS0:
+								case MGN_MCS0:	
 								case MGN_MCS8:
-								case MGN_9M:
+								case MGN_9M:	
 								case MGN_6M:
 									ODM_Write4Byte(pDM_Odm,ODM_EDCA_BE_PARAM,0xa87f);
 								break;
@@ -559,7 +559,7 @@ odm_EdcaTurboCheckMP(
 								break;
 							}
 						}
-					}
+					}				
 				}
 				else
 				{
@@ -572,7 +572,7 @@ odm_EdcaTurboCheckMP(
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("EDCA Turbo on: EDCA_BE:0x%lx\n",EDCA_BE));
 
 		pDM_Odm->DM_EDCA_Table.bCurrentTurboEDCA = TRUE;
-
+		
 		ODM_RT_TRACE(pDM_Odm,ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD,("EDCA_BE_DL : 0x%lx  EDCA_BE_UL : 0x%lx  EDCA_BE : 0x%lx  \n",EDCA_BE_DL,EDCA_BE_UL,EDCA_BE));
 
 	}
@@ -636,14 +636,14 @@ odm_IsEdcaTurboDisable(
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_EDCA_TURBO,ODM_DBG_LOUD, ("IOTAction:EdcaTurboDisable\n"));
 		return	TRUE;
 		}
-
+		
 	return	FALSE;
-
+	
 
 }
 
 //add iot case here: for MP/CE
-VOID
+VOID 
 ODM_EdcaParaSelByIot(
 	IN 	PVOID	 	pDM_VOID,
 	OUT	u4Byte		*EDCA_BE_UL,
@@ -664,7 +664,7 @@ ODM_EdcaParaSelByIot(
 
 	if(pDM_Odm->pWirelessMode!=NULL)
 		WirelessMode=*(pDM_Odm->pWirelessMode);
-
+		
 ///////////////////////////////////////////////////////////
 ////list paramter for different platform
 
@@ -674,7 +674,7 @@ ODM_EdcaParaSelByIot(
 
 
 	if(ICType==ODM_RTL8192D)
-	{
+	{      
 		// Single PHY
 		if(pDM_Odm->RFType==ODM_2T2R)
 		{
@@ -691,7 +691,7 @@ ODM_EdcaParaSelByIot(
 	}
 ////============================
 /// IOT case for MP
-////============================
+////============================	
 
 	else
 	{
@@ -708,20 +708,20 @@ ODM_EdcaParaSelByIot(
 			}
 		}
 	}
-
+ 
 	if(TwoPortStatus == TWO_PORT_STATUS__EXTENSION_ONLY)
 	{
 		(*EDCA_BE_UL) = 0x5ea42b;//Parameter suggested by Scott  //edca_setting_UL[ExtAdapter->MgntInfo.IOTPeer];
 		(*EDCA_BE_DL) = 0x5ea42b;//Parameter suggested by Scott  //edca_setting_DL[ExtAdapter->MgntInfo.IOTPeer];
 	}
-
+     
 	#if (INTEL_PROXIMITY_SUPPORT == 1)
 	if(pMgntInfo->IntelClassModeInfo.bEnableCA == TRUE)
 	{
 		(*EDCA_BE_UL) = (*EDCA_BE_DL) = 0xa44f;
 	}
 	else
-	#endif
+	#endif		
 	{
 		if((pMgntInfo->IOTAction & (HT_IOT_ACT_FORCED_ENABLE_BE_TXOP|HT_IOT_ACT_AMSDU_ENABLE)))
 		{// To check whether we shall force turn on TXOP configuration.
@@ -730,14 +730,14 @@ ODM_EdcaParaSelByIot(
 			if(!((*EDCA_BE_DL) & 0xffff0000))
 				(*EDCA_BE_DL) |= 0x005e0000; // Force TxOP limit to 0x005e for DL.
 		}
-
+		
 		//92D txop can't be set to 0x3e for cisco1250
 		if((ICType!=ODM_RTL8192D) && (IOTPeer== HT_IOT_PEER_CISCO) &&(WirelessMode==ODM_WM_N24G))
 		{
 			(*EDCA_BE_DL) = edca_setting_DL[IOTPeer];
 			(*EDCA_BE_UL) = edca_setting_UL[IOTPeer];
 		}
-		//merge from 92s_92c_merge temp brunch v2445    20120215
+		//merge from 92s_92c_merge temp brunch v2445    20120215 
 		else if((IOTPeer == HT_IOT_PEER_CISCO) &&((WirelessMode==ODM_WM_G)||(WirelessMode==(ODM_WM_B|ODM_WM_G))||(WirelessMode==ODM_WM_A)||(WirelessMode==ODM_WM_B)))
 		{
 			(*EDCA_BE_DL) = edca_setting_DL_GMode[IOTPeer];
@@ -754,23 +754,23 @@ ODM_EdcaParaSelByIot(
 		}
 		else if(IOTPeer == HT_IOT_PEER_ATHEROS)
 		{
-			// Set DL EDCA for Atheros peer to 0x3ea42b. Suggested by SD3 Wilson for ASUS TP issue.
+			// Set DL EDCA for Atheros peer to 0x3ea42b. Suggested by SD3 Wilson for ASUS TP issue. 
 			if(WirelessMode==ODM_WM_G)
 				(*EDCA_BE_DL) = edca_setting_DL_GMode[IOTPeer];
 			else
 			(*EDCA_BE_DL) = edca_setting_DL[IOTPeer];
-
+			
 			if(ICType == ODM_RTL8821)
 				 (*EDCA_BE_DL) = 0x5ea630;
-
+			
 		}
 	}
 
-	if((ICType == ODM_RTL8192D)&&(IOTPeerSubType == HT_IOT_PEER_LINKSYS_E4200_V1)&&((WirelessMode==ODM_WM_N5G)))
+    	if((ICType == ODM_RTL8192D)&&(IOTPeerSubType == HT_IOT_PEER_LINKSYS_E4200_V1)&&((WirelessMode==ODM_WM_N5G)))
 	{
 		(*EDCA_BE_DL) = 0x432b;
 		(*EDCA_BE_UL) = 0x432b;
-	}
+	}		
 
 
 
@@ -783,7 +783,7 @@ ODM_EdcaParaSelByIot(
 	}
 
 	// Revised for Atheros DIR-655 IOT issue to improve down link TP, added by Roger, 2013.03.22.
-	if((ICType == ODM_RTL8723A) && (IOTPeerSubType== HT_IOT_PEER_ATHEROS_DIR655) &&
+	if((ICType == ODM_RTL8723A) && (IOTPeerSubType== HT_IOT_PEER_ATHEROS_DIR655) && 
 		(pMgntInfo->dot11CurrentChannelNumber == 6))
 	{
 		(*EDCA_BE_DL) = 0xa92b;
@@ -795,19 +795,19 @@ ODM_EdcaParaSelByIot(
 
 
 VOID
-odm_EdcaChooseTrafficIdx(
+odm_EdcaChooseTrafficIdx( 
 	IN 	PVOID	 	pDM_VOID,
-	IN	u8Byte  			cur_tx_bytes,
-	IN	u8Byte  			cur_rx_bytes,
+	IN	u8Byte  			cur_tx_bytes,  
+	IN	u8Byte  			cur_rx_bytes, 
 	IN	BOOLEAN 		bBiasOnRx,
 	OUT BOOLEAN 		*pbIsCurRDLState
 	)
-{
+{	
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
-
+	
 	if(bBiasOnRx)
 	{
-
+	  
 		if(cur_tx_bytes>(cur_rx_bytes*4))
 		{
 			*pbIsCurRDLState=FALSE;
@@ -850,7 +850,7 @@ void odm_EdcaParaInit(
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	prtl8192cd_priv	priv		= pDM_Odm->priv;
 	int   mode=priv->pmib->dot11BssType.net_work_type;
-
+	
 	static unsigned int slot_time, VO_TXOP, VI_TXOP, sifs_time;
 	struct ParaRecord EDCA[4];
 
@@ -886,7 +886,7 @@ void odm_EdcaParaInit(
 
 		 if(OPMODE & WIFI_AP_STATE)
 		 {
-			memcpy(EDCA, rtl_ap_EDCA, 2*sizeof(struct ParaRecord));
+		 	memcpy(EDCA, rtl_ap_EDCA, 2*sizeof(struct ParaRecord));
 
 			if(mode & (ODM_WM_A|ODM_WM_G|ODM_WM_N24G|ODM_WM_N5G))
 				memcpy(&EDCA[VI], &rtl_ap_EDCA[VI_AG], 2*sizeof(struct ParaRecord));
@@ -895,14 +895,14 @@ void odm_EdcaParaInit(
 		 }
 		 else
 		 {
-			memcpy(EDCA, rtl_sta_EDCA, 2*sizeof(struct ParaRecord));
+		 	memcpy(EDCA, rtl_sta_EDCA, 2*sizeof(struct ParaRecord));
 
 			if(mode & (ODM_WM_A|ODM_WM_G|ODM_WM_N24G|ODM_WM_N5G))
 				memcpy(&EDCA[VI], &rtl_sta_EDCA[VI_AG], 2*sizeof(struct ParaRecord));
 			else
 				memcpy(&EDCA[VI], &rtl_sta_EDCA[VI], 2*sizeof(struct ParaRecord));
 		 }
-
+		 
 	#ifdef WIFI_WMM
 		if (QOS_ENABLE)
 			ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM, (EDCA[VI].TXOPlimit<< 16) | (EDCA[VI].ECWmax<< 12) | (EDCA[VI].ECWmin<< 8) | (sifs_time + EDCA[VI].AIFSN* slot_time));
@@ -914,7 +914,7 @@ void odm_EdcaParaInit(
 #elif(DM_ODM_SUPPORT_TYPE==ODM_ADSL)
 			ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM,  (EDCA[BK].ECWmax<< 12) | (EDCA[BK].ECWmin<< 8) | (sifs_time + 2* slot_time));
 #endif
-
+			
 
 	}
 
@@ -927,17 +927,17 @@ void odm_EdcaParaInit(
 #if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 	if (priv->pshare->rf_ft_var.wifi_beq_iot)
 		priv->pshare->iot_mode_VI_exist = 0;
-
+	
 	#ifdef WMM_VIBE_PRI
 	priv->pshare->iot_mode_BE_exist = 0;
 	#endif
-
+	
 	#ifdef LOW_TP_TXOP
 	priv->pshare->BE_cwmax_enhance = 0;
 	#endif
 
 #elif (DM_ODM_SUPPORT_TYPE==ODM_ADSL)
-      priv->pshare->iot_mode_BE_exist = 0;
+      priv->pshare->iot_mode_BE_exist = 0;   
 #endif
 	priv->pshare->iot_mode_VO_exist = 0;
 }
@@ -951,7 +951,7 @@ ODM_ChooseIotMainSTA(
 	PDM_ODM_T		pDM_Odm = (PDM_ODM_T)pDM_VOID;
 	prtl8192cd_priv	priv = pDM_Odm->priv;
 	BOOLEAN		bhighTP_found_pstat=FALSE;
-
+	
 	if ((GET_ROOT(priv)->up_time % 2) == 0) {
 		unsigned int tx_2s_avg = 0;
 		unsigned int rx_2s_avg = 0;
@@ -978,27 +978,27 @@ ODM_ChooseIotMainSTA(
 
 					priv->pshare->highTP_found_pstat = pstat;
 					bhighTP_found_pstat=TRUE;
-				}
+   				}
 			}
 #elif(DM_ODM_SUPPORT_TYPE==ODM_AP)
 		for(i=0; i<8; i++)
 			aggReady += (pstat->ADDBA_ready[i]);
-		if (pstat->ht_cap_len && aggReady)
+		if (pstat->ht_cap_len && aggReady) 
 		{
 			if ((tx_2s_avg + rx_2s_avg >= 25)) {
 				priv->pshare->highTP_found_pstat = pstat;
 			}
-
+			
 		#ifdef CLIENT_MODE
 			if (OPMODE & WIFI_STATION_STATE) {
 #if (DM_ODM_SUPPORT_TYPE &ODM_AP) && defined(USE_OUT_SRC)
 				if ((pstat->IOTPeer==HT_IOT_PEER_RALINK) && ((tx_2s_avg + rx_2s_avg) >= 45))
 #else
 				if(pstat->is_ralink_sta && ((tx_2s_avg + rx_2s_avg) >= 45))
-#endif
+#endif					
 					priv->pshare->highTP_found_pstat = pstat;
 		}
-		#endif
+		#endif				
 	}
 #endif
 	} else {
@@ -1042,7 +1042,7 @@ ODM_IotEdcaSwitch(
 
 	if (mode & (ODM_WM_N24G|ODM_WM_N5G|ODM_WM_G|ODM_WM_A)) {
 		slot_time = 9;
-	}
+	} 
 	else
 	{
 		BE_TXOP = 94;
@@ -1064,25 +1064,25 @@ ODM_IotEdcaSwitch(
 
 	ODM_Write4Byte(pDM_Odm, ODM_EDCA_VI_PARAM, ((VI_TXOP*(1-priv->pshare->iot_mode_VO_exist)) << 16)| (vi_cw_max << 12) | (vi_cw_min << 8) | vi_aifs);
 
-
+	
 #elif (DM_ODM_SUPPORT_TYPE==ODM_AP)
 	if ((OPMODE & WIFI_AP_STATE) && priv->pmib->dot11OperationEntry.wifi_specific) {
 		if (priv->pshare->iot_mode_VO_exist) {
 	#ifdef WMM_VIBE_PRI
-			if (priv->pshare->iot_mode_BE_exist)
+			if (priv->pshare->iot_mode_BE_exist) 
 			{
 				vi_cw_max = 5;
 				vi_cw_min = 3;
 				vi_aifs = (sifs_time + ((OPMODE & WIFI_AP_STATE)?1:2) * slot_time);
 			}
-			else
+			else 
 	#endif
 			{
 			vi_cw_max = 6;
 			vi_cw_min = 4;
 			vi_aifs = 0x2b;
 			}
-		}
+		} 
 		else {
 			vi_aifs = (sifs_time + ((OPMODE & WIFI_AP_STATE)?1:2) * slot_time);
 		}
@@ -1095,10 +1095,10 @@ ODM_IotEdcaSwitch(
 
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_AP)
-	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist)
-		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (4 << 8) | 0x4f);
+ 	if (priv->pshare->rf_ft_var.wifi_beq_iot && priv->pshare->iot_mode_VI_exist) 
+	  	ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (10 << 12) | (4 << 8) | 0x4f);
 	else if(!enable)
-#elif(DM_ODM_SUPPORT_TYPE==ODM_ADSL)
+#elif(DM_ODM_SUPPORT_TYPE==ODM_ADSL)      
 	if(!enable)                                 //if iot is disable ,maintain original BEQ PARAM
 #endif
 		ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (((OPMODE & WIFI_AP_STATE)?6:10) << 12) | (4 << 8)
@@ -1109,7 +1109,7 @@ ODM_IotEdcaSwitch(
 		int txop;
 		unsigned int cw_max;
 		unsigned int txop_close;
-
+		
 	#if((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP))
 			cw_max = ((priv->pshare->BE_cwmax_enhance) ? 10 : 6);
 			txop_close = ((priv->pshare->rf_ft_var.low_tp_txop && priv->pshare->rf_ft_var.low_tp_txop_close) ? 1 : 0);
@@ -1126,30 +1126,30 @@ ODM_IotEdcaSwitch(
 				txop=BE_TXOP*priv->pshare->txop_enlarge;
 
 	#endif
-
+                           
 		if (priv->pshare->ht_sta_num
 	#ifdef WDS
 			|| ((OPMODE & WIFI_AP_STATE) && (mode & (ODM_WM_N24G|ODM_WM_N5G)) &&
 			priv->pmib->dot11WdsInfo.wdsEnabled && priv->pmib->dot11WdsInfo.wdsNum)
 	#endif
-			)
+			) 
 			{
 
 			if (priv->pshare->txop_enlarge == 0xe) {
 				// is intel client, use a different edca value
 				ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop<< 16) | (cw_max<< 12) | (4 << 8) | 0x1f);
 				priv->pshare->txop_enlarge = 2;
-			}
+			} 
 #if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 	#ifndef LOW_TP_TXOP
 			 else if (priv->pshare->txop_enlarge == 0xd) {
 				// is intel ralink, use a different edca value
 				ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) | (4 << 12) | (3 << 8) | 0x19);
 				priv->pshare->txop_enlarge = 2;
-			}
+			} 
 	#endif
 #endif
-			else
+			else 
 			{
 				if (pDM_Odm->RFType==ODM_2T2R)
 					ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (txop << 16) |
@@ -1165,17 +1165,17 @@ ODM_IotEdcaSwitch(
 				#endif
 			}
 		}
-              else
+              else 
               {
  #if((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined LOW_TP_TXOP))
 			 ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM, (BE_TXOP << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
  #else
-		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
+ 		#if defined(CONFIG_RTL_8196D) || defined(CONFIG_RTL_8196E) || (defined(CONFIG_RTL_8197D) && !defined(CONFIG_PORT0_EXT_GIGA))
 			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (5 << 8) | (sifs_time + 3 * slot_time));
 		#else
 			ODM_Write4Byte(pDM_Odm, ODM_EDCA_BE_PARAM,  (BE_TXOP*2 << 16) | (cw_max << 12) | (4 << 8) | (sifs_time + 3 * slot_time));
 		#endif
-
+		
  #endif
               }
 
@@ -1183,7 +1183,7 @@ ODM_IotEdcaSwitch(
 }
 #endif
 
-VOID
+VOID 
 odm_IotEngine(
 	IN 	PVOID	 	pDM_VOID
 	)
@@ -1192,10 +1192,10 @@ odm_IotEngine(
 	struct rtl8192cd_priv *priv=pDM_Odm->priv;
 	PSTA_INFO_T pstat = NULL;
 	u4Byte i;
-
+	
 #ifdef WIFI_WMM
 	unsigned int switch_turbo = 0;
-#endif
+#endif	
 ////////////////////////////////////////////////////////
 //  if EDCA Turbo function is not supported or Manual EDCA Setting
 //  then return
@@ -1204,19 +1204,19 @@ odm_IotEngine(
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_EDCA_TURBO, ODM_DBG_LOUD, ("ODM_MAC_EDCA_TURBO NOT SUPPORTED\n"));
 		return;
 	}
-
+	
 #if((DM_ODM_SUPPORT_TYPE==ODM_AP)&& defined(RTL_MANUAL_EDCA) && defined(WIFI_WMM))
 	if(priv->pmib->dot11QosEntry.ManualEDCA){
 		ODM_RT_TRACE(pDM_Odm, ODM_COMP_EDCA_TURBO, ODM_DBG_LOUD, ("ODM_MAC_EDCA_TURBO OFF: MANUAL SETTING\n"));
 		return ;
 	}
-#endif
+#endif 
 
 #if !(DM_ODM_SUPPORT_TYPE &ODM_AP)
  //////////////////////////////////////////////////////
  //find high TP STA every 2s
 //////////////////////////////////////////////////////
-	if ((GET_ROOT(priv)->up_time % 2) == 0)
+	if ((GET_ROOT(priv)->up_time % 2) == 0) 
 		priv->pshare->highTP_found_pstat==NULL;
 
 #if 0
@@ -1227,7 +1227,7 @@ odm_IotEngine(
 
 		if(ODM_ChooseIotMainSTA(pDM_Odm, pstat));              //find the correct station
 			break;
-		if (plist == plist->next)                                          //the last plist
+		if (plist == plist->next)                                          //the last plist 
 			break;
 		plist = plist->next;
 	};
@@ -1254,7 +1254,7 @@ odm_IotEngine(
 
 #ifdef WIFI_WMM
 	if (QOS_ENABLE) {
-		if (!priv->pmib->dot11OperationEntry.wifi_specific
+		if (!priv->pmib->dot11OperationEntry.wifi_specific 
 		#if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 			||((OPMODE & WIFI_AP_STATE) && (priv->pmib->dot11OperationEntry.wifi_specific == 2))
 		#elif(DM_ODM_SUPPORT_TYPE==ODM_ADSL)
@@ -1280,7 +1280,7 @@ odm_IotEngine(
 		#if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 		if ((OPMODE & WIFI_AP_STATE) && priv->pmib->dot11OperationEntry.wifi_specific)
 		#elif (DM_ODM_SUPPORT_TYPE==ODM_ADSL)
-		if (priv->pmib->dot11OperationEntry.wifi_specific)
+		if (priv->pmib->dot11OperationEntry.wifi_specific) 
 		#endif
 		{
 			if (!priv->pshare->iot_mode_VO_exist && (priv->pshare->phw->VO_pkt_count > 50)) {
@@ -1304,7 +1304,7 @@ odm_IotEngine(
 #endif
 
 #if (DM_ODM_SUPPORT_TYPE==ODM_AP)
-			if (priv->pshare->rf_ft_var.wifi_beq_iot)
+			if (priv->pshare->rf_ft_var.wifi_beq_iot) 
 			{
 				if (!priv->pshare->iot_mode_VI_exist && (priv->pshare->phw->VI_rx_pkt_count > 50)) {
 					priv->pshare->iot_mode_VI_exist++;
@@ -1323,7 +1323,7 @@ odm_IotEngine(
 			   if (priv->pshare->iot_mode_enable)
 					switch_turbo++;
 				}
-		}
+         	}
 
 #if(defined(CLIENT_MODE) && (DM_ODM_SUPPORT_TYPE==ODM_AP))
         if ((OPMODE & WIFI_STATION_STATE) && (priv->pmib->dot11OperationEntry.wifi_specific == 2))
@@ -1356,7 +1356,7 @@ odm_IotEngine(
 	#if((DM_ODM_SUPPORT_TYPE==ODM_ADSL)||((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined WMM_VIBE_PRI)))
 		priv->pshare->phw->BE_pkt_count = 0;
 	#endif
-
+		
 	#if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 		if (priv->pshare->rf_ft_var.wifi_beq_iot)
 			priv->pshare->phw->VI_rx_pkt_count = 0;
@@ -1372,16 +1372,16 @@ odm_IotEngine(
 #ifdef WIFI_WMM
 	#if(DM_ODM_SUPPORT_TYPE==ODM_ADSL)
 		if (QOS_ENABLE && (!priv->pmib->dot11OperationEntry.wifi_specific || (priv->pmib->dot11OperationEntry.wifi_specific == 2)
-
+	
 	#elif(DM_ODM_SUPPORT_TYPE==ODM_AP)
-		if (QOS_ENABLE && (!priv->pmib->dot11OperationEntry.wifi_specific ||
+		if (QOS_ENABLE && (!priv->pmib->dot11OperationEntry.wifi_specific || 
 			((OPMODE & WIFI_AP_STATE) && (priv->pmib->dot11OperationEntry.wifi_specific == 2))
 		#ifdef CLIENT_MODE
             || ((OPMODE & WIFI_STATION_STATE) && (priv->pmib->dot11OperationEntry.wifi_specific == 2))
 		#endif
 	#endif
 		))
-
+	
 		{
 
 			if (pstat && pstat->rssi >= priv->pshare->rf_ft_var.txop_enlarge_upper) {
@@ -1390,7 +1390,7 @@ odm_IotEngine(
 				if (pstat->IOTPeer==HT_IOT_PEER_INTEL)
 #else
 				if (pstat->is_intel_sta)
-#endif
+#endif					
 				{
 					if (priv->pshare->txop_enlarge != 0xe)
 					{
@@ -1399,8 +1399,8 @@ odm_IotEngine(
 						if (priv->pshare->iot_mode_enable)
 							switch_turbo++;
 					}
-				}
-				else if (priv->pshare->txop_enlarge != 2)
+				} 
+				else if (priv->pshare->txop_enlarge != 2) 
 				{
 					priv->pshare->txop_enlarge = 2;
 					if (priv->pshare->iot_mode_enable)
@@ -1411,16 +1411,16 @@ odm_IotEngine(
 				{
 #if (DM_ODM_SUPPORT_TYPE &ODM_AP) && defined(USE_OUT_SRC)
 					if (pstat->IOTPeer==HT_IOT_PEER_INTEL)
-#else
+#else				
 					if (pstat->is_intel_sta)
-#endif
-						priv->pshare->txop_enlarge = 0xe;
+#endif						
+						priv->pshare->txop_enlarge = 0xe;						
 #if (DM_ODM_SUPPORT_TYPE &ODM_AP) && defined(USE_OUT_SRC)
 					else if (pstat->IOTPeer==HT_IOT_PEER_RALINK)
 #else
 					else if (pstat->is_ralink_sta)
-#endif
-						priv->pshare->txop_enlarge = 0xd;
+#endif						
+						priv->pshare->txop_enlarge = 0xd;						
 					else
 						priv->pshare->txop_enlarge = 2;
 
@@ -1429,17 +1429,17 @@ odm_IotEngine(
 				}
 #endif
 #if 0
-				if (priv->pshare->txop_enlarge != 2)
+				if (priv->pshare->txop_enlarge != 2) 
 				{
 				#if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 					if (pstat->IOTPeer==HT_IOT_PEER_INTEL)
 				#else
 					if (pstat->is_intel_sta)
-				#endif
+				#endif					
 						priv->pshare->txop_enlarge = 0xe;
 				#if(DM_ODM_SUPPORT_TYPE==ODM_AP)
 					else if (pstat->IOTPeer==HT_IOT_PEER_RALINK)
-						priv->pshare->txop_enlarge = 0xd;
+						priv->pshare->txop_enlarge = 0xd;						
 				#endif
 					else
 						priv->pshare->txop_enlarge = 2;
@@ -1448,7 +1448,7 @@ odm_IotEngine(
 				}
 #endif
 			}
-			else if (!pstat || pstat->rssi < priv->pshare->rf_ft_var.txop_enlarge_lower)
+			else if (!pstat || pstat->rssi < priv->pshare->rf_ft_var.txop_enlarge_lower) 
 			{
 				if (priv->pshare->txop_enlarge) {
 					priv->pshare->txop_enlarge = 0;
@@ -1459,8 +1459,8 @@ odm_IotEngine(
 
 #if((DM_ODM_SUPPORT_TYPE==ODM_AP)&&( defined LOW_TP_TXOP))
 			// for Intel IOT, need to enlarge CW MAX from 6 to 10
-			if (pstat && pstat->is_intel_sta && (((pstat->tx_avarage+pstat->rx_avarage)>>10) <
-					priv->pshare->rf_ft_var.cwmax_enhance_thd))
+			if (pstat && pstat->is_intel_sta && (((pstat->tx_avarage+pstat->rx_avarage)>>10) < 
+					priv->pshare->rf_ft_var.cwmax_enhance_thd)) 
 			{
 				if (!priv->pshare->BE_cwmax_enhance && priv->pshare->iot_mode_enable)
 				{
@@ -1479,11 +1479,11 @@ odm_IotEngine(
 		priv->pshare->current_tx_bytes = 0;
 		priv->pshare->current_rx_bytes = 0;
 	}
-
+	
 #if((DM_ODM_SUPPORT_TYPE==ODM_AP)&& defined( SW_TX_QUEUE))
 	if ((priv->assoc_num > 1) && (AMPDU_ENABLE))
-	{
-	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
+   	{
+       	if (priv->swq_txmac_chg >= priv->pshare->rf_ft_var.swq_en_highthd){
 			if ((priv->swq_en == 0)){
 				switch_turbo++;
 				if (priv->pshare->txop_enlarge == 0)
@@ -1508,7 +1508,7 @@ odm_IotEngine(
 		}
     }
 #if ((DM_ODM_SUPPORT_TYPE==ODM_AP)&&(defined CONFIG_RTL_819XD))
-    else if( (priv->assoc_num == 1) && (AMPDU_ENABLE)) {
+    else if( (priv->assoc_num == 1) && (AMPDU_ENABLE)) {		
         if (pstat) {
 			int en_thd = 14417920>>(priv->up_time % 2);
             if ((priv->swq_en == 0) && (pstat->current_tx_bytes > en_thd) && (pstat->current_rx_bytes > en_thd) )  { //50Mbps
@@ -1561,7 +1561,7 @@ odm_IotEngine(
 				under_thd = 0;
 			}
 
-			if (switch_turbo)
+			if (switch_turbo) 
 			{
 				priv->pshare->rf_ft_var.low_tp_txop_close = under_thd;
 				priv->pshare->rf_ft_var.low_tp_txop_count = 0;
@@ -1571,24 +1571,26 @@ odm_IotEngine(
 				if (priv->pshare->rf_ft_var.low_tp_txop_close) {
 					priv->pshare->rf_ft_var.low_tp_txop_count = priv->pshare->rf_ft_var.low_tp_txop_delay;
 				}
-				if (priv->pshare->rf_ft_var.low_tp_txop_count ==priv->pshare->rf_ft_var.low_tp_txop_delay)
+				if (priv->pshare->rf_ft_var.low_tp_txop_count ==priv->pshare->rf_ft_var.low_tp_txop_delay) 
 
-				{
+				{					
 					priv->pshare->rf_ft_var.low_tp_txop_count = 0;
 					priv->pshare->rf_ft_var.low_tp_txop_close = under_thd;
 					switch_turbo++;
 				}
-			}
-			else
+			} 
+			else 
 			{
 				priv->pshare->rf_ft_var.low_tp_txop_count = 0;
 			}
 		}
 	}
-#endif
+#endif		
 
 	if (switch_turbo)
 		ODM_IotEdcaSwitch( pDM_Odm, priv->pshare->iot_mode_enable );
 #endif
 }
 #endif
+
+
