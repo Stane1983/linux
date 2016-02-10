@@ -1673,7 +1673,8 @@ static void config_mac_addr(struct net_device *dev, void *mac)
 	if(g_mac_addr_setup)
 		memcpy(dev->dev_addr, mac, 6);
 	else
-		random_ether_addr(dev->dev_addr);
+		memcpy(dev->dev_addr, &DEFMAC, 6);
+		// random_ether_addr(dev->dev_addr);
 
 	write_mac_addr(dev, dev->dev_addr);
 }
