@@ -63,9 +63,7 @@ typedef enum led_mode_e {
 	LED_OFF,
 }led_mode_t;
 
-#ifdef CONFIG_HAS_EARLYSUSPEND
 static struct aml_sysled *Myamlsysled = NULL;
-#endif
 static int sleep = 0;
 
 static int led_control(unsigned int led_mode )

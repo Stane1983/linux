@@ -487,7 +487,9 @@ int meson_cpufreq_boost(unsigned int freq)
     int ret = 0;
 	struct cpufreq_policy * policy = NULL;
 
+#if (defined CONFIG_HAS_EARLYSUSPEND)
     if (!early_suspend_flag) {
+#endif
         // only allow freq boost when not in early suspend
         //check last_cpu_rate. inaccurate but no lock
         //printk("%u %u\n", last_cpu_rate, freq);
@@ -503,7 +505,9 @@ int meson_cpufreq_boost(unsigned int freq)
             mutex_unlock(&meson_cpufreq_mutex);
         }
         //}
+#if (defined CONFIG_HAS_EARLYSUSPEND)
     }
+#endif
     return ret;
 }
 #endif
