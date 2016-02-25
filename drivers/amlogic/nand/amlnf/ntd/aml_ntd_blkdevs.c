@@ -459,7 +459,9 @@ int add_ntd_blktrans_dev(struct ntd_blktrans_dev *new)
     //if (tr->discard) {
 		printk("Enable QUEUE_FLAG_DISCARD for NFTL\n");
         queue_flag_set_unlocked(QUEUE_FLAG_DISCARD, new->rq);
-        new->rq->limits.max_discard_sectors = UINT_MAX;
+        //Hard code discard granularity and max for Vero 2 nand
+        new->rq->limits.max_discard_sectors = 4194240;
+        new->rq->limits.discard_granularity = 32768;
     //}
 
     gd->queue = new->rq;

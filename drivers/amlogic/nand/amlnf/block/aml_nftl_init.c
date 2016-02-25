@@ -285,6 +285,8 @@ uint32 _nand_discard(struct aml_nftl_dev *nftl_dev,unsigned long start_sector,un
 	#endif
     ret = __nand_discard(nftl_dev->aml_nftl_part,start_sector,len,nftl_dev->sync_flag);
     amlnf_ktime_get_ts(&nftl_dev->ts_write_start);
+    //Log discard requests
+    printk(KERN_DEBUG "nftl _nand_discard, start sector=%lu, length=%u\n",start_sector,len);
     return ret;
 }
 
