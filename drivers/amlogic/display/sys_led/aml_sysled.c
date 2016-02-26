@@ -155,7 +155,11 @@ static void aml_sysled_late_resume(struct early_suspend *dev)
 static int aml_sysled_suspend(struct platform_device *pdev,pm_message_t state)
 {
 	printk(KERN_INFO "enter aml_sysled_suspend\n");
+#ifdef CONFIG_HAS_EARLYSUSPEND
 	sleep = 2;
+#else
+	led_control(LED_RED);
+#endif
 	return 0;
 }
 
@@ -267,9 +271,8 @@ static int aml_sysled_probe(struct platform_device *pdev)
 	early_suspend.suspend = aml_sysled_early_suspend;
 	early_suspend.resume = aml_sysled_late_resume;
 	register_early_suspend(&early_suspend);
-  
-	Myamlsysled = amlsysled;
 #endif
+	Myamlsysled = amlsysled;
 	ret = device_create_file(&pdev->dev, &dev_attr_io_val);
 	if (ret < 0)
 		printk(KERN_WARNING "asoc: failed to add io_val sysfs files\n");
