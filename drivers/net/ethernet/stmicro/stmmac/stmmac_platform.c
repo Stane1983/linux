@@ -144,6 +144,7 @@ static int dwmac1000_validate_ucast_entries(int ucast_entries)
 extern int get_aml_key_kernel(const char* key_name, unsigned char* data, int ascii_flag);
 extern int extenal_api_key_set_version(char *devvesion);
 static char print_buff[1025];
+static char addr_from_nand[ETH_ALEN];
 #endif
 static int stmmac_probe_config_dt(struct platform_device *pdev,
 				  struct plat_stmmacenet_data *plat,
@@ -153,8 +154,8 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 	struct stmmac_dma_cfg *dma_cfg;
 	const struct of_device_id *device;
 #if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
+	int i;
 	int ret;
-	char *addr =NULL;
 #endif
 	if (!np)
 		return -ENODEV;
@@ -181,21 +182,23 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 	}
 
 #if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
-	ret = get_aml_key_kernel("mac", print_buff, 0);
-	extenal_api_key_set_version("auto");
-	printk("ret = %d\nprint_buff=%s\n", ret, print_buff);
+	for (i=0; i < 2; i++)
+	{
+		ret = get_aml_key_kernel("mac", print_buff, 0);
+		extenal_api_key_set_version("auto3");
+		printk("ret = %d\nprint_buff=%s\n", ret, print_buff);
+		if (ret >= 0) break;
+	}
 	if (ret >= 0) {
-		strcpy(addr, print_buff);
-		*mac = addr;
+		for(i=0; i < ETH_ALEN; i++)
+		{
+			addr_from_nand[i] = simple_strtol(&print_buff[3 * i], NULL, 16);
+		}
+		*mac = addr_from_nand;
 	}
 	else
 	{
-		if(g_mac_addr_setup){
-			*mac = DEFMAC;
-		}
-		else{
-			*mac = of_get_mac_address(np);
-		}
+		*mac = DEFMAC;
 	}
 
 #else
