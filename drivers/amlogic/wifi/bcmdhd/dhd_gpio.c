@@ -67,7 +67,7 @@ int bcm_wlan_set_power(bool on)
 #ifdef CONFIG_MACH_ODROID_4210
 		err = gpio_set_value(EXYNOS4_GPK1(0), 1);
 #endif
-#ifdef CUSTOMER_HW_AMLOGIC
+#if defined(CUSTOMER_HW_AMLOGIC) && !defined(CONFIG_AM_WIFI_DUMMY)
 		extern_wifi_set_enable(0);
 		mdelay(200);
 		extern_wifi_set_enable(1);
@@ -99,7 +99,7 @@ int bcm_wlan_set_carddetect(bool present)
 #ifdef CONFIG_MACH_ODROID_4210
 		err = sdhci_s3c_force_presence_change(&sdmmc_channel, 1);
 #endif
-#ifdef CUSTOMER_HW_AMLOGIC
+#if defined(CUSTOMER_HW_AMLOGIC) && !defined(CONFIG_AM_WIFI_DUMMY)
 		sdio_reinit();
 #endif
 	} else {
@@ -107,7 +107,7 @@ int bcm_wlan_set_carddetect(bool present)
 #ifdef CONFIG_MACH_ODROID_4210
 		err = sdhci_s3c_force_presence_change(&sdmmc_channel, 0);
 #endif
-#ifdef CUSTOMER_HW_AMLOGIC
+#if defined(CUSTOMER_HW_AMLOGIC) && !defined(CONFIG_AM_WIFI_DUMMY)
 		extern_wifi_set_enable(0);
 		mdelay(200);
 #endif

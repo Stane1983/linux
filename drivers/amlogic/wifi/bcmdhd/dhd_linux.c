@@ -7625,7 +7625,7 @@ dhd_module_init(void)
 	int retry = POWERUP_MAX_RETRY;
 
 	printf("%s: in\n", __FUNCTION__);
-#ifdef CUSTOMER_HW_AMLOGIC
+#if defined(CUSTOMER_HW_AMLOGIC) && !defined(CONFIG_AM_WIFI_DUMMY)
 	if (wifi_setup_dt()) {
 		printf("wifi_dt : fail to setup dt\n");
 	}

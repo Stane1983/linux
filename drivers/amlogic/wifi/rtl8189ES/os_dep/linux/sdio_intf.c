@@ -967,6 +967,7 @@ static int __init rtw_drv_entry(void)
 	DBG_871X_LEVEL(_drv_always_, DRV_NAME" BT-Coex version = %s\n", BTCOEXVERSION);
 #endif // BTCOEXVERSION
 
+#ifndef CONFIG_AM_WIFI_DUMMY
 	ret =wifi_setup_dt();
 	if(ret)
 	{
@@ -981,6 +982,7 @@ static int __init rtw_drv_entry(void)
 		ret = -1;
 		goto resource;
 	}
+#endif
 
 	sdio_drvpriv.drv_registered = _TRUE;
 	rtw_suspend_lock_init();
