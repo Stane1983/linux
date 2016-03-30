@@ -173,6 +173,12 @@ static int aml_sysled_resume(struct platform_device *pdev)
 	return 0;
 }
 
+static void aml_sysled_shutdown(struct platform_device *pdev,pm_message_t state)
+{
+	printk(KERN_INFO "enter aml_sysled_shutdown\n");
+	led_control(LED_RED);
+}
+
 static int aml_sysled_probe(struct platform_device *pdev)
 {
 	struct aml_sysled_platform_data *pdata;
@@ -309,6 +315,7 @@ static struct platform_driver aml_sysled_driver = {
 	.remove = __exit_p(aml_sysled_remove),
 	.suspend = aml_sysled_suspend,
 	.resume  = aml_sysled_resume,
+	.shutdown = aml_sysled_shutdown,
 };
 
 static int __init aml_sysled_init(void)
