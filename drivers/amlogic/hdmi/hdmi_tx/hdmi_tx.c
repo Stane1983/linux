@@ -1769,6 +1769,18 @@ static int amhdmitx_probe(struct platform_device *pdev)
 
 static int amhdmitx_remove(struct platform_device *pdev)
 {
+    const vinfo_t *info = hdmi_get_current_vinfo();
+    if (info && (strncmp(info->name, "panel", 5) == 0 || strncmp(info->name, "null", 4) == 0))
+        return;
+    hdmitx_device.hpd_lock = 1;
+    hdmitx_device.HWOp.Cntl(&hdmitx_device, HDMITX_EARLY_SUSPEND_RESUME_CNTL, HDMITX_EARLY_SUSPEND);
+    hdmitx_device.cur_VIC = HDMI_Unkown;
+    hdmitx_device.output_blank_flag = 0;
+    hdmitx_device.HWOp.CntlDDC(&hdmitx_device, DDC_HDCP_OP, HDCP_OFF);
+    hdmitx_device.HWOp.CntlDDC(&hdmitx_device, DDC_HDCP_OP, DDC_RESET_HDCP);
+    hdmitx_device.HWOp.CntlConfig(&hdmitx_device, CONF_CLR_AVI_PACKET, 0);
+    hdmitx_device.HWOp.CntlConfig(&hdmitx_device, CONF_CLR_VSDB_PACKET, 0);
+
     switch_dev_unregister(&sdev);
 
     if(hdmitx_device.HWOp.UnInit){
