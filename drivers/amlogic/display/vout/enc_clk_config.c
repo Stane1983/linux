@@ -84,6 +84,7 @@ static void set_hpll_clk_out(unsigned clk)
     aml_write_reg32(P_HHI_VID_PLL_CNTL4, 0x40238100);
     aml_write_reg32(P_HHI_VID_PLL_CNTL5, 0x00012286);
     aml_write_reg32(P_HHI_VID2_PLL_CNTL2, 0x430a800);       // internal LDO share with HPLL & VIID PLL
+    aml_set_reg32_bits(P_HHI_VID_PLL_CNTL, 0x21ef, 0, 15);
     switch(clk){
         case 2971:      // only for 4k mode
 #ifdef CONFIG_AML_VOUT_FRAMERATE_AUTOMATION
