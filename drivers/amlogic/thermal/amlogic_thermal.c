@@ -573,7 +573,7 @@ static unsigned long aml_cal_virtual_temp(void)
 {
     static unsigned int cpu_freq_level_cnt  = 0, gpu_freq_level_cnt  = 0;
     static unsigned int last_cpu_freq_level = 0, last_gpu_freq_level = 0;
-    static unsigned int cpu_temp = 40, gpu_temp = 40;                   // default set to 40 when at homescreen
+    static unsigned int cpu_temp = 55, gpu_temp = 55;                   // default set to 40 when at homescreen
     unsigned int curr_cpu_avg_freq,   curr_gpu_avg_freq;
     int curr_cpu_freq_level, curr_gpu_freq_level;
     int cnt_level, level_diff;
