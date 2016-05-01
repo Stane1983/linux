@@ -11,15 +11,25 @@ extern void wifi_setup_dt(void);
 extern void extern_wifi_set_enable(int);
 extern void sdio_reinit(void);
 
+static int run_trigger(const char *val, struct kernel_param *kp)
+{
+	if (!strncmp(val, "1", 1))
+	{
+		printk(KERN_INFO "Triggered SDIO WiFi power on and bus rescan.\n");
+		extern_wifi_set_enable(1);
+		msleep(300);
+		sdio_reinit();
+	}
+	return 0;
+}
+
+module_param_call(trigger, run_trigger, NULL, NULL, 0200);
+
 static int __init wifi_dummy_init(void)
 {
-	printk(KERN_INFO "Triggered SDIO WiFi power on and bus rescan.\n");
 	wifi_setup_dt();
 	msleep(300);
 	extern_wifi_set_enable(0);
-	msleep(300);
-	extern_wifi_set_enable(1);
-	sdio_reinit();
 	return 0;
 }
 
