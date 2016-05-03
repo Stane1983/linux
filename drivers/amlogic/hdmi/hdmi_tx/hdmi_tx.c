@@ -1870,6 +1870,7 @@ static struct platform_driver amhdmitx_driver = {
     .suspend    = amhdmitx_suspend,
     .resume     = amhdmitx_resume,
 #endif
+    .shutdown	= amhdmitx_suspend,
     .driver     = {
         .name   = DEVICE_NAME,
             .owner    = THIS_MODULE,
