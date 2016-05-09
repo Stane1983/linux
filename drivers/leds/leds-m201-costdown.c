@@ -68,6 +68,7 @@ static struct notifier_block m201_costdown_led_reboot_nb = {
 static int __init m201_costdown_led_init(void)
 {
 	toggle_led(LED_ON);
+	m201_costdown_led.brightness = LED_ON;
 	register_reboot_notifier(&m201_costdown_led_reboot_nb);
 	return led_classdev_register(NULL, &m201_costdown_led);
 }
@@ -76,6 +77,7 @@ static void __exit m201_costdown_led_exit(void)
 {
 	led_classdev_unregister(&m201_costdown_led);
 	toggle_led(LED_OFF);
+	m201_costdown_led.brightness = LED_OFF;
 }
 
 module_init(m201_costdown_led_init);
