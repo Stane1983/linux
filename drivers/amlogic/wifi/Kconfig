@@ -33,5 +33,6 @@ source "drivers/amlogic/wifi/rtl8xxx_DU/Kconfig"
 source "drivers/amlogic/wifi/rtl8xxx_EU/Kconfig"
 source "drivers/amlogic/wifi/rtl8xxx_EU_MP/Kconfig"
 source "drivers/amlogic/wifi/bcmdhd/Kconfig"
+source "drivers/amlogic/wifi/ssv6xxx/Kconfig"
 
 endif # AM_WIFI
