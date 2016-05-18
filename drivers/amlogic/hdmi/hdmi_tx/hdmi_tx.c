@@ -1853,6 +1853,23 @@ static int amhdmitx_resume(struct platform_device *pdev)
 }
 #endif
 
+static int amhdmitx_shutdown(struct platform_device *pdev,pm_message_t state)
+{
+    const vinfo_t *info = hdmi_get_current_vinfo();
+    if (info && (strncmp(info->name, "panel", 5) == 0 || strncmp(info->name, "null", 4) == 0))
+        return;
+    hdmitx_device.hpd_lock = 1;
+    hdmitx_device.HWOp.Cntl(&hdmitx_device, HDMITX_EARLY_SUSPEND_RESUME_CNTL, HDMITX_EARLY_SUSPEND);
+    hdmitx_device.cur_VIC = HDMI_Unkown;
+    hdmitx_device.output_blank_flag = 0;
+    hdmitx_device.HWOp.CntlDDC(&hdmitx_device, DDC_HDCP_OP, HDCP_OFF);
+    hdmitx_device.HWOp.CntlDDC(&hdmitx_device, DDC_HDCP_OP, DDC_RESET_HDCP);
+    hdmitx_device.HWOp.CntlConfig(&hdmitx_device, CONF_CLR_AVI_PACKET, 0);
+    hdmitx_device.HWOp.CntlConfig(&hdmitx_device, CONF_CLR_VSDB_PACKET, 0);
+    hdmi_print(IMP, SYS "HDMITX: shutdown\n");
+    return 0;
+}
+
 #ifdef CONFIG_OF
 static const struct of_device_id meson_amhdmitx_dt_match[]={
     {
@@ -1870,7 +1887,7 @@ static struct platform_driver amhdmitx_driver = {
     .suspend    = amhdmitx_suspend,
     .resume     = amhdmitx_resume,
 #endif
-    .shutdown	= amhdmitx_suspend,
+    .shutdown	= amhdmitx_shutdown,
     .driver     = {
         .name   = DEVICE_NAME,
             .owner    = THIS_MODULE,
