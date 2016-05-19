@@ -258,7 +258,7 @@ void remote_send_key(struct input_dev *dev, unsigned int scancode, unsigned int 
 			return;
 		}
 
-		if(type == 2 && scancode == 0x1a && key_map[gp_remote->map_num][scancode] == 0x0074) {
+		if(type == 2 && key_map[gp_remote->map_num][scancode] == 0x0074) {
 			return;
 		} else {
 			input_event(dev, EV_KEY, key_map[gp_remote->map_num][scancode], type);
@@ -277,7 +277,7 @@ void remote_send_key(struct input_dev *dev, unsigned int scancode, unsigned int 
 				break;
 		}
 		input_dbg("%s sleep:%d\n", __func__, gp_remote->sleep);
-		if(gp_remote->sleep && scancode == 0x1a && key_map[gp_remote->map_num][scancode] == 0x0074) {
+		if(gp_remote->sleep && key_map[gp_remote->map_num][scancode] == 0x0074) {
 			printk(" set AO_RTI_STATUS_REG2 0x4853ffff \n");
 			WRITE_AOBUS_REG(AO_RTI_STATUS_REG2, 0x4853ffff); // tell uboot don't suspend
 		}
