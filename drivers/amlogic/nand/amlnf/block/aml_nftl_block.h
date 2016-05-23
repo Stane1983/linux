@@ -57,9 +57,13 @@ struct aml_nftl_dev{
     uint32 (*discard_data)(struct aml_nftl_dev *nftl_dev, unsigned long block, unsigned nblk);
 	uint32 (*flush_write_cache)(struct aml_nftl_dev *nftl_dev);
     uint32 (*flush_discard_cache)(struct aml_nftl_dev *nftl_dev);
+	uint32 (*invalid_read_cache)(struct aml_nftl_dev *nftl_dev);	//fixme, yyh 0311
     uint32 (*write_pair_page)(struct aml_nftl_dev *nftl_dev);
     uint32 (*check_mapping)(struct aml_nftl_dev *nftl_dev,uint64_t offset, uint64_t size);
     uint32 (*discard_partition)(struct aml_nftl_dev *nftl_dev,uint64_t offset, uint64_t size);
+	//TODO: rebuild tables.
+	uint32 (*rebuild_tbls)(struct aml_nftl_dev *nftl_dev);
+	uint32  (*compose_tbls)(struct aml_nftl_dev *nftl_dev);
 };
 
 struct aml_nftl_blk{

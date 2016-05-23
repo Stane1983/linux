@@ -86,7 +86,11 @@ struct ntd_info {
     int (*flush) (struct ntd_info *ntd);
     int (*suspend) (struct ntd_info *ntd);
     void (*resume) (struct ntd_info *ntd);
-
+	/*-------fixme, yyh-------*/
+	int (*freeze) (struct ntd_info *ntd);
+	int (*thaw) (struct ntd_info *ntd);
+	int (*restore) (struct ntd_info *ntd);
+	/*-------end-------*/
     struct notifier_block reboot_notifier;
 	void *priv;
 	void *nftl_priv;

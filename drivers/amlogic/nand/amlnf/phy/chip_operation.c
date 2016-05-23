@@ -115,9 +115,10 @@ static int read_page(struct amlnand_chip *aml_chip)
 		ret = -NAND_ARGUMENT_FAILURE;
 		goto error_exit0;
 	}
-	if((flash->new_type == HYNIX_20NM_8GB) || (flash->new_type == HYNIX_20NM_4GB)|| (flash->new_type == HYNIX_1YNM_8GB))
+	if((flash->new_type == HYNIX_20NM_8GB) || (flash->new_type == HYNIX_20NM_4GB)|| (flash->new_type == HYNIX_1YNM))
 		 retry_op_cnt = retry_info->retry_cnt_lp * retry_info->retry_cnt_lp;
-
+	if((flash->new_type == SANDISK_A19NM) || (flash->new_type == SANDISK_A19NM_4G))
+		 retry_op_cnt = retry_info->retry_cnt_lp * 4;
 	user_byte_num = chipnr = 0;
 	plane0_page_addr = plane1_page_addr = 0;
 
@@ -225,6 +226,12 @@ static int read_page(struct amlnand_chip *aml_chip)
 		ret = controller->quene_rb(controller, chipnr);
 		if(ret){
 			aml_nand_msg("quene rb busy here");
+			if(retry_cnt && retry_info->exit){
+				ret = retry_info->exit(controller, chipnr);
+				if(ret < 0){
+					printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+				}
+			}
 			goto error_exit0;
 		}
 
@@ -324,6 +331,12 @@ RETRY_DMA:
 #endif
 		if(ret){
 			aml_nand_msg("quene rb busy here");
+			if(retry_cnt && retry_info->exit){
+				ret = retry_info->exit(controller, chipnr);
+				if(ret < 0){
+					printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+				}
+			}
 			goto error_exit0;
 		}
 
@@ -353,6 +366,12 @@ RETRY_DMA:
 							if(controller->zero_cnt < controller->ecc_max){
 								all_ff_flag = 1;
 								//aml_nand_dbg("found all 0xff page here");
+							if(retry_cnt && retry_info->exit){
+								ret = retry_info->exit(controller, chipnr);
+								if(ret < 0){
+									printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+								}
+							}
 								goto plane0_ff_m;
 							}
 	//
@@ -453,8 +472,15 @@ plane0_ff_m:
 
 					all_ff_flag = 0;
 				}
-				if(new_oob)
+				if(new_oob){
+				if(retry_cnt && retry_info->exit){
+					ret = retry_info->exit(controller, chipnr);
+					if(ret < 0){
+						printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+					}
+				}
 					goto new_oob_mod;
+				}
 				controller->cmd_ctrl(controller, NAND_CMD_PLANE2_READ_START, NAND_CTRL_CLE);
 				controller->cmd_ctrl(controller, column, NAND_CTRL_ALE);
 				controller->cmd_ctrl(controller, column>>8, NAND_CTRL_ALE);
@@ -481,6 +507,12 @@ plane0_ff_m:
 						if(controller->zero_cnt < controller->ecc_max){
 							all_ff_flag = 1;
 							//aml_nand_dbg("found all 0xff page here");
+					if(retry_cnt && retry_info->exit){
+						ret = retry_info->exit(controller, chipnr);
+						if(ret < 0){
+							printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+						}
+					}
 							goto page_ff;
 						}
 //
@@ -593,6 +625,12 @@ plane0_ff_m:
 							if(controller->zero_cnt < controller->ecc_max){
 								all_ff_flag = 1;
 								//aml_nand_dbg("found all 0xff page here");
+							if(retry_cnt && retry_info->exit){
+								ret = retry_info->exit(controller, chipnr);
+								if(ret < 0){
+									printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+								}
+							}
 								goto plane0_ff_h;
 							}
 	//
@@ -723,6 +761,12 @@ plane0_ff_h:
 						if(controller->zero_cnt < controller->ecc_max){
 							all_ff_flag = 1;
 							//aml_nand_dbg("found all 0xff page here");
+						if(retry_cnt && retry_info->exit){
+							ret = retry_info->exit(controller, chipnr);
+							if(ret < 0){
+								printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+							}
+						}
 							goto page_ff;
 						}
 //
@@ -826,6 +870,12 @@ plane0_ff_h:
 					if(controller->zero_cnt < controller->ecc_max){
 						all_ff_flag = 1;
 						//aml_nand_dbg("found all 0xff page here");
+                        if(retry_cnt && retry_info->exit){
+                            ret = retry_info->exit(controller, chipnr);
+                            if(ret < 0){
+                                printk("retry exit failed flash->new_type:%d, retry_cnt:%d", flash->new_type, retry_cnt);
+                            }
+                        }
 						goto page_ff;
 					}
 					need_retry = 0;

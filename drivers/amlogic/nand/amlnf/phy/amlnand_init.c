@@ -68,7 +68,7 @@ int amlnf_phy_init(unsigned char flag)
 		devm_pinctrl_put(aml_chip->nand_pinctrl);
 		return PTR_ERR(aml_chip->nand_norbstate);
 	}
-	aml_chip->nand_idlestate=pinctrl_lookup_state(aml_chip->nand_pinctrl,"dummy");
+	aml_chip->nand_idlestate=pinctrl_lookup_state(aml_chip->nand_pinctrl,"nand_cs_pins_only");
 	if (IS_ERR(aml_chip->nand_idlestate)) {
 		devm_pinctrl_put(aml_chip->nand_pinctrl);
 		return PTR_ERR(aml_chip->nand_idlestate);

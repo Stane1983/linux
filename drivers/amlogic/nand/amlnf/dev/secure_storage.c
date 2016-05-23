@@ -141,7 +141,7 @@ int aml_secure_init(struct amlnand_chip *aml_chip)
 	aml_chip_secure = aml_chip;
 
 exit_error0:
-	if(secure_ptr){
+	if(secure_ptr) {
 		aml_nand_free(secure_ptr);
 		secure_ptr =NULL;
 	}

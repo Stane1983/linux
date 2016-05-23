@@ -4,6 +4,7 @@
 
 extern  int block_markbad(struct amlnand_chip *aml_chip);
 
+#define CONFIG_NAND_ENV_DBG		(0)
 #ifdef AML_NAND_UBOOT
 //extern struct amlnf_partition amlnand_config;
 extern struct amlnf_partition * amlnand_config;
@@ -64,9 +65,11 @@ int  phrase_driver_version(unsigned int cp, unsigned int cmp)
 {
 	int ret=0;
 
-	if(cp != cmp){
+	if((((cp >> 24)&0xff) != ((cmp >> 24)&0xff)) || (((cp >> 16)&0xff) != ((cmp >> 16)&0xff)) \
+        || (((cp >> 8)&0xff) != ((cmp >> 8)&0xff)) || ((cp&0xff) != (cmp&0xff))){
 		ret = -1;
 	}
+
 	return ret;
 }
 
@@ -83,7 +86,7 @@ void reset_amlchip_member(struct amlnand_chip *aml_chip)
 
 #endif
 
-static unsigned int aml_info_checksum(unsigned char *data,int lenth)
+unsigned int aml_info_checksum(unsigned char *data,int lenth)
 {
 	unsigned int checksum;
 	 unsigned char *pdata;
@@ -126,7 +129,14 @@ static int aml_info_check_datasum(void *data,unsigned char *name)
 				ret = -NAND_READ_FAILED;
 			}
 		}
-
+	if(!memcmp(name,PHY_PARTITION_HEAD_MAGIC,4)){
+			struct phy_partition_info * phy_part = (struct phy_partition_info *)data;
+			crc = phy_part->crc;
+			if(aml_info_checksum((unsigned char *)(phy_part->partition),(MAX_DEVICE_NUM*sizeof(struct _phy_partition))) != crc){
+				aml_nand_msg("aml_info_check_datasum : nand check phy partition crc error");
+				ret = -NAND_READ_FAILED;
+			}
+		}
 	return ret;
 }
 
@@ -648,7 +658,14 @@ int amlnand_read_info_by_name(struct amlnand_chip *aml_chip,unsigned char * info
 	unsigned char  oob_buf[sizeof(struct _nand_arg_oobinfo)];
 	unsigned short start_blk, total_blk, tmp_blk;
 	int  ret = 0, len;
+#if (CONFIG_NAND_ENV_DBG)
+	int _env = 0;
 
+	if (!memcmp(ENV_INFO_HEAD_MAGIC, name, 4)) {
+		_env = 1;
+		//aml_nand_msg("%s() %d: blk %d\n", __FUNCTION__, __LINE__, blk_addr);
+	}
+#endif
 	nand_boot = 1;
 	/*if(boot_device_flag == 0){
 		nand_boot = 0;
@@ -705,7 +722,10 @@ int amlnand_read_info_by_name(struct amlnand_chip *aml_chip,unsigned char * info
 				if (flash->new_type == SANDISK_19NM)
 					ops_para->page_addr = (ops_para->page_addr & (~(pages_per_blk -1))) |((ops_para->page_addr % pages_per_blk) << 1);
 			}
-
+		#if	(CONFIG_NAND_ENV_DBG)
+			if (_env)
+				aml_nand_msg("%s() %d: page (0x%x)", __FUNCTION__, __LINE__, ops_para->page_addr);
+		#endif
 			ops_para->chipnr = arg_info->valid_blk_addr % controller->chip_num;
 			controller->select_chip(controller, ops_para->chipnr );
 #ifdef AML_NAND_UBOOT
@@ -759,7 +779,9 @@ int amlnand_save_info_by_name(struct amlnand_chip *aml_chip,unsigned char * info
 	unsigned tmp_addr, temp_option;
 	unsigned char temp_ran_mode;
 	int full_page_flag=0, ret = 0, i,test_cnt = 0,extra_page = 0,write_page_cnt=0,temp_page_num = 0;
-
+#if (CONFIG_NAND_ENV_DBG)
+	int _env = 0;
+#endif
 	nand_boot = 1;
 	/*if(boot_device_flag == 0){
 		nand_boot = 0;
@@ -841,13 +863,18 @@ get_free_blk:
 		}
 		aml_nand_dbg("nand get free blcok  at %d",blk_addr);
 	}
-
+#if (CONFIG_NAND_ENV_DBG)
+	if (!memcmp(ENV_INFO_HEAD_MAGIC, name, 4)) {
+		_env = 1;
+		aml_nand_msg("%s() %d: blk %d\n", __FUNCTION__, __LINE__, blk_addr);
+	}
+#endif
 //	show_data_buf(buf);
 	if(arg_info->arg_type == FULL_BLK){
 		for(i=0; i<pages_read;){
 					if((pages_read -i) < arg_pages){
 
-						if(flash->new_type == HYNIX_1YNM_8GB) {
+						if(flash->new_type == HYNIX_1YNM) {
 							aml_nand_msg("starting write dummy random data......");
 							if(i < pages_read) {
 								/*for slc mode, if not full block write, need write dummy random data to lock data*/
@@ -979,7 +1006,7 @@ get_free_blk:
 						goto get_free_blk;
 					}
 					/*for slc mode*/
-					if(flash->new_type == HYNIX_1YNM_8GB) {
+					if(flash->new_type == HYNIX_1YNM) {
 						temp_page_num = offset_tmp + i;
 						//if((temp_page_num == 1)||((temp_page_num>1)&&((temp_page_num%2) ==0))) {
 						if(temp_page_num >= 1) {
@@ -1045,7 +1072,7 @@ get_free_blk:
 
 
 			/*for slc mode*/
-			if(flash->new_type == HYNIX_1YNM_8GB){
+			if(flash->new_type == HYNIX_1YNM){
 					if(arg_info->arg_valid && (!full_page_flag)&&(!arg_info->update_flag))
 						ops_para->page_addr +=1;
 					temp_page_num = ops_para->page_addr % 256;
@@ -1058,7 +1085,10 @@ get_free_blk:
 				if (flash->new_type == SANDISK_19NM)
 					ops_para->page_addr = (ops_para->page_addr & (~(pages_per_blk -1))) |((ops_para->page_addr % pages_per_blk) << 1);
 			}
-
+		#if (CONFIG_NAND_ENV_DBG)
+			if (_env)
+				aml_nand_msg("%s() %d: page (0x%x)", __FUNCTION__, __LINE__, ops_para->page_addr);
+		#endif
 			ops_para->chipnr = blk_addr % controller->chip_num;
 			controller->select_chip(controller, ops_para->chipnr );
 
@@ -1094,16 +1124,16 @@ get_free_blk:
                     ret = operation->test_block_reserved(aml_chip,blk_addr);
                     test_cnt++;
                     if(ret){
-				ret = operation->block_markbad(aml_chip);
-				if(ret < 0){
-					aml_nand_msg("nand mark bad block failed at blk %d", blk_addr);
-				}
+					ret = operation->block_markbad(aml_chip);
+					if(ret < 0){
+						aml_nand_msg("nand mark bad block failed at blk %d", blk_addr);
+					}
                         }
 				goto get_free_blk;
 			}
 
 			/*for slc mode*/
-			if(flash->new_type == HYNIX_1YNM_8GB) {
+			if(flash->new_type == HYNIX_1YNM) {
 				//if((temp_page_num == 1)||((temp_page_num>1)&&((temp_page_num%2) ==0))) {
 				if(temp_page_num >= 1) {
 
@@ -1145,7 +1175,7 @@ get_free_blk:
 			offset_tmp += 1;
 			amount_saved += flash->pagesize;
 
-			if(flash->new_type == HYNIX_1YNM_8GB) {
+			if(flash->new_type == HYNIX_1YNM) {
 				if(amount_saved >= size+extra_page*flash->pagesize) {
 					/*for slc mode, if not full block write, need write dummy random data to lock data*/
 					//write dummy page
@@ -1247,7 +1277,7 @@ get_free_blk:
 				arg_info->valid_page_addr  = 0;
 			else{
 				arg_info->valid_page_addr += arg_pages;
-				if(flash->new_type == HYNIX_1YNM_8GB)
+				if(flash->new_type == HYNIX_1YNM)
 					arg_info->valid_page_addr += 1;
 			}
 		}else if((arg_info->arg_type == FULL_BLK) && (arg_info->arg_valid)){
@@ -1661,7 +1691,7 @@ int amlnand_check_info_by_name(struct amlnand_chip *aml_chip,unsigned char * inf
 					}
 					i +=(size >> phys_page_shift) + 1;
 					/*for hynix slc mode*/
-					if(flash->new_type == HYNIX_1YNM_8GB)
+					if(flash->new_type == HYNIX_1YNM)
 						i +=1;
 				}
 
@@ -1998,9 +2028,9 @@ int amlnand_configs_confirm(struct amlnand_chip *aml_chip)
 
 	ret = phrase_driver_version(((config_ptr->driver_version >> 24)&0xff),((DRV_PHY_VERSION >> 24)&0xff));
 	if(ret){
-		aml_nand_msg("nand driver version confirm failed :  driver_version in nand  %d.%02d.%03d.%04d ",(config_ptr->driver_version >> 24)&0xff,
+		aml_nand_msg("driver_version in nand  %d.%02d.%03d.%04d ",(config_ptr->driver_version >> 24)&0xff,
 		(config_ptr->driver_version >> 16)&0xff,(config_ptr->driver_version >> 8)&0xff,(config_ptr->driver_version)&0xff);
-		confirm_flag = 1;
+		//confirm_flag = 1;
 	}
 
 
@@ -2148,7 +2178,7 @@ get_free_blk:
 		ops_para->oob_buf = aml_chip->user_oob_buf;
 		ops_para->ooblen = sizeof(oob_buf);
 
-		if(flash->new_type == HYNIX_1YNM_8GB) {
+		if(flash->new_type == HYNIX_1YNM) {
 			if((i>1)&&((i%2) ==0)) {
 				tmp_addr =	ops_para->page_addr;
 				tmp_rand = controller->ran_mode;
@@ -2213,7 +2243,7 @@ get_free_blk:
 			ret = operation->block_markbad(aml_chip);
 			if(ret < 0){
 				aml_nand_dbg("nand mark bad block failed at blk %d", blk_addr);
-			}
+				}
                 }
 			goto get_free_blk;
 		}
@@ -2355,7 +2385,7 @@ int aml_nand_scan_hynix_info(struct amlnand_chip *aml_chip)
 						aml_nand_dbg(" REG(0x%x):	value:0x%x, for chip[%d]",retry_info->reg_addr_lp[j], retry_info->reg_def_val[k][j], k);
 				}
 
-				if((flash->new_type == HYNIX_20NM_8GB) || (flash->new_type == HYNIX_20NM_4GB)|| (flash->new_type == HYNIX_1YNM_8GB)){
+				if((flash->new_type == HYNIX_20NM_8GB) || (flash->new_type == HYNIX_20NM_4GB)|| (flash->new_type == HYNIX_1YNM)){
 					//memcpy(&retry_info->reg_offs_val_lp[0][0][0], (unsigned char *)(aml_chip->user_page_buf+MAX_CHIP_NUM*READ_RETRY_REG_NUM),
 					//						MAX_CHIP_NUM*READ_RETRY_CNT*READ_RETRY_REG_NUM);
 
@@ -2666,6 +2696,14 @@ static int amlnand_config_buf_malloc(struct amlnand_chip *aml_chip)
 	}
 	memset(aml_chip->config_ptr, 0x0, (sizeof(struct nand_config)));
 
+	aml_chip->phy_part_ptr = aml_nand_malloc(sizeof(struct phy_partition_info));
+	if(aml_chip->phy_part_ptr == NULL){
+		aml_nand_msg("malloc failed for phy_part_ptr ");
+		ret = -NAND_MALLOC_FAILURE;
+		goto exit_error0;
+	}
+	memset(aml_chip->phy_part_ptr, 0x0, (sizeof(struct phy_partition_info)));
+
 	return ret;
 
 exit_error0:
@@ -2681,6 +2719,10 @@ exit_error0:
 			kfree(aml_chip->config_ptr);
 			aml_chip->config_ptr = NULL;
 		}
+        if (aml_chip->phy_part_ptr) {
+		kfree(aml_chip->phy_part_ptr);
+		aml_chip->phy_part_ptr = NULL;
+	}
 		if (aml_chip->user_oob_buf) {
 			kfree(aml_chip->user_oob_buf);
 			aml_chip->user_oob_buf = NULL;
@@ -2700,6 +2742,7 @@ void amlnand_set_config_attribute(struct amlnand_chip *aml_chip)
 	aml_chip->nand_secure.arg_type = FULL_PAGE;
 	aml_chip->nand_key.arg_type = FULL_PAGE;
 	aml_chip->uboot_env.arg_type = FULL_PAGE;
+    aml_chip->nand_phy_partition.arg_type = FULL_PAGE;
 
 	return;
 }
@@ -2911,6 +2954,11 @@ int amlnand_get_dev_configs(struct amlnand_chip *aml_chip)
 #endif
 	}
 
+        //scan phy partition info here, if we can't find phy partition, we will calc and save it in phydev init stage.
+		ret = amlnand_info_init(aml_chip, (unsigned char *)&(aml_chip->nand_phy_partition),(unsigned char *)aml_chip->phy_part_ptr,PHY_PARTITION_HEAD_MAGIC, sizeof(struct phy_partition_info));
+		if(ret < 0){
+			aml_nand_msg("nand scan phy partition info failed and ret:%d, will calc and save in in phydev init stage.",ret);
+		}
 		ret = aml_sys_info_init(aml_chip); //key  and stoarge
 		if(ret < 0){
 			aml_nand_msg("nand init sys_info failed and ret:%d", ret);
@@ -2959,6 +3007,10 @@ exit_error0:
 	if (aml_chip->config_ptr) {
 		kfree(aml_chip->config_ptr);
 		aml_chip->config_ptr = NULL;
+	}
+    if (aml_chip->phy_part_ptr) {
+		kfree(aml_chip->phy_part_ptr);
+		aml_chip->phy_part_ptr = NULL;
 	}
 	if (aml_chip->user_oob_buf) {
 		kfree(aml_chip->user_oob_buf);

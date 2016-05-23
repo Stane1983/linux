@@ -67,4 +67,3 @@ config AML_NEXT_NAND
 	  Support NAND Flash OLD Translation Layer
 
 endmenu
-
