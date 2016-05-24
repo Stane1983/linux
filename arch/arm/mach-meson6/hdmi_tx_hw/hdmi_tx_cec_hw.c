@@ -136,7 +136,7 @@ int cec_ll_rx( unsigned char *msg, unsigned char *len)
         pos += sprintf(msg_log_buf + pos, "CEC: rx msg len: %d   dat: ", rx_msg_length);
         for (n = 0; n < rx_msg_length; n++)
         {
-            pos += sprintf(msg_log_buf + pos, "%02x ", msg_start[n]);
+            pos += sprintf(msg_log_buf + pos, "%02x:", msg_start[n]);
         }
         pos += sprintf(msg_log_buf + pos, "\n");
         msg_log_buf[pos] = '\0';
@@ -177,7 +177,7 @@ int cec_ll_tx_polling(const unsigned char *msg, unsigned char len)
         pos += sprintf(msg_log_buf + pos, "CEC: tx msg len: %d   dat: ", len);
         for (n = 0; n < len; n++)
         {
-            pos += sprintf(msg_log_buf + pos, "%02x ", msg[n]);
+            pos += sprintf(msg_log_buf + pos, "%02x:", msg[n]);
         }
         pos += sprintf(msg_log_buf + pos, "\nCEC: tx state: %d\n", ret);
         msg_log_buf[pos] = '\0';
@@ -290,7 +290,7 @@ static int cec_ll_tx_once(const unsigned char *msg, unsigned char len)
         pos += sprintf(msg_log_buf + pos, "CEC: tx msg len: %d   dat: ", len);
         for (n = 0; n < len; n++)
         {
-            pos += sprintf(msg_log_buf + pos, "%02x ", msg[n]);
+            pos += sprintf(msg_log_buf + pos, "%02x:", msg[n]);
         }
         pos += sprintf(msg_log_buf + pos, "\nCEC: tx state: %d\n", ret);
         msg_log_buf[pos] = '\0';
