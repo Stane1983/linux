@@ -82,17 +82,15 @@ config BT_HCIUART_LL
 
 	  Say Y here to compile support for HCILL protocol.
 
-config BT_HCIUART_3WIRE
-	bool "Three-wire UART (H5) protocol support"
-	depends on BT_HCIUART
-	help
-	  The HCI Three-wire UART Transport Layer makes it possible to
-	  user the Bluetooth HCI over a serial port interface. The HCI
-	  Three-wire UART Transport Layer assumes that the UART
-	  communication may have bit errors, overrun errors or burst
-	  errors and thereby making CTS/RTS lines unnecessary.
+config BT_HCIUART_RTKH5
+        bool "Realtek H5 protocol support"
+        depends on BT_HCIUART
+        help
+          Realtek H5 is serial protocol for communication
+          between Realtek Bluetooth device and host. This protocol is required for
+          Realtek uart h5 bluetooth controller
 
-	  Say Y here to compile support for Three-wire UART protocol.
+          Say Y here to compile support for Realtek HCI H5 protocol.
 
 config BT_HCIBCM203X
 	tristate "HCI BCM203x USB driver"
