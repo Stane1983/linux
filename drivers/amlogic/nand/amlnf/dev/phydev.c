@@ -12,10 +12,8 @@
 **
 *****************************************************************/
 #include "../include/phynand.h"
-
-int test_flag = 0;
-EXPORT_SYMBOL(test_flag);
-
+//int test_flag = 0;
+//EXPORT_SYMBOL(test_flag);
 #ifdef AML_NAND_UBOOT
 	//extern struct amlnf_partition amlnand_config;
 	extern struct amlnf_partition * amlnand_config;
@@ -779,7 +777,7 @@ void amlchip_resume(struct amlnand_phydev *phydev)
 	struct chip_operation *operation = &(aml_chip->operation);
 	unsigned char onfi_features[4] = {0};
 	int i=0,ret = 0;
-	/* only resume once */
+
 	if (!strncmp((char*)phydev->name, NAND_CODE_NAME, strlen((const char*)NAND_CODE_NAME)) ){
 
 	nand_get_chip(aml_chip);
@@ -805,7 +803,8 @@ void amlchip_resume(struct amlnand_phydev *phydev)
 	}
 
 	//if (aml_chip->state == CHIP_PM_SUSPENDED)
-	amlnand_release_device(aml_chip);
+		amlnand_release_device(aml_chip);
+
 	aml_nand_dbg("nand resume entered\n");
     }
 
@@ -1007,18 +1006,12 @@ ssize_t show_bbt_table(struct class *class, struct class_attribute *attr, const 
 
 	return count;
 }
-ssize_t nand_ioctl(struct class *class, struct class_attribute *attr, const char *buf, size_t count)
+ssize_t change_test_sync_flag(struct class *class, struct class_attribute *attr, const char *buf, size_t count)
 {
-    uint32_t num;
-
-    sscanf(buf, "%x", &num);
-    printk("---------------------------------------------test_flag=%d\n",num);
-    test_flag = num;
-    //test_flag bit layout
-    //bit0: 0 means media don't sync, 1 means all partition don't sync
-    //bit1: 0 means close blk request print, 1 means open blk request print
-    //bit2: 0 means do nothing, 1 means check if block is already in free list before add it to free list.
-    //the rest bit is undefined now.
+    int num;
+	sscanf(buf, "%x", &num);
+//    printk("---------------------------------------------test_flag=%d\n",num);
+//    test_flag = num;
 	return count;
 }
 
@@ -1067,63 +1060,20 @@ static void show_phydev_info(void)
 */
 
 extern struct list_head nphy_dev_list;
-// this function alloc phydev and init it.
-int aml_alloc_phydev(struct amlnand_phydev **phydev_pp, struct amlnand_chip *aml_chip, struct dev_para **dev_para, int dev_idx)
-{
-    int ret = 0;
-    struct hw_controller *controller = &(aml_chip->controller);
-    //struct nand_config *config = aml_chip->config_ptr;
-    struct nand_flash *flash = &(aml_chip->flash);
-    struct amlnand_phydev* phydev_p = NULL;
-
-    *phydev_pp = aml_nand_malloc(sizeof(struct amlnand_phydev));
-    if(*phydev_pp == NULL){
-        aml_nand_msg("malloc failed need %x here", (sizeof(struct amlnand_phydev)));
-        ret = -NAND_MALLOC_FAILURE;
-        return ret;
-    }
-    phydev_p = *phydev_pp;
-    memset(phydev_p, 0, sizeof(struct amlnand_phydev));
-    phydev_p->priv = aml_chip;
-
-    *dev_para = &aml_chip->config_ptr->dev_para[dev_idx];
-    memcpy(&phydev_p->name, &(*dev_para)->name, MAX_DEVICE_NAME_LEN*sizeof(char));
-    //set default parameter
-    phydev_p->writesize = flash->pagesize;
-    phydev_p->erasesize = flash->blocksize;
-    phydev_p->oobavail = controller->oobavail;
-	phydev_p->writesize_shift = ffs(phydev_p->writesize) - 1;
-	phydev_p->erasesize_shift = ffs(phydev_p->erasesize) - 1;
-    phydev_p->write = nand_write;
-    phydev_p->read = nand_read;
-    phydev_p->erase = nand_erase;
-    phydev_p->block_isbad = nand_block_isbad;
-    phydev_p->block_markbad = nand_block_markbad;
-    phydev_p->block_modifybbt = block_modifybbt;
-    phydev_p->update_bbt = update_bbt;
-    phydev_p->phydev_test_block = nand_test_block;
-#ifndef AML_NAND_UBOOT
-	phydev_p->suspend = phydev_suspend;
-	phydev_p->resume = phydev_resume;
-#endif
-    return ret;
-
-}
-
 int amlnand_phydev_init(struct amlnand_chip *aml_chip)
 {
 	struct amlnand_phydev *phydev = NULL, *phydev_pre = NULL;
+    struct phydev_ops *devops = &(phydev->ops);
 	struct nand_flash *flash = &(aml_chip->flash);
 	struct hw_controller *controller = &(aml_chip->controller);
 	struct chip_operation *operation = &(aml_chip->operation);
 	struct chip_ops_para *ops_para = &(aml_chip->ops_para);
 	struct nand_config *config = aml_chip->config_ptr;
-    nand_arg_info phy_part = aml_chip->nand_phy_partition;
 	struct dev_para *dev_para = NULL;
 	struct amlnf_partition *partition = NULL;
 
-	uint64_t  offset = 0, dev_size = 0, chip_size =0, phydev_pre_size =0;
-	unsigned start_blk, total_blk, tmp_write_shift, tmp_erase_shift, tmp_offset=0, tmp_blk = 0, pages_per_blk;
+	uint64_t  offset = 0,relative_offset = 0, dev_size = 0, chip_size =0, phydev_pre_size =0;
+	unsigned start_blk, total_blk, tmp_write_shift, tmp_erase_shift, tmp_offset=0, tmp_blk = 0, pages_per_blk,bad_blk_cnt =0;
 	unsigned char boot_flag = 0, plane_num = 1;
 	int i, j, k, ret = 0;
     uint64_t *bad_blk = NULL;
@@ -1150,42 +1100,40 @@ int amlnand_phydev_init(struct amlnand_chip *aml_chip)
 		ret = -NAND_FAILED;
 		goto exit_error0;
 	}
-    //if phy partition valid then no need to calc and no need to care about driver version
-    if(phy_part.arg_valid == 1){
 	for(i=0; i<config->dev_num; i++){
-            ret = aml_alloc_phydev(&phydev, aml_chip,&dev_para,i);
-            phydev->offset = aml_chip->phy_part_ptr->partition[i].phy_off;
-            phydev->size = aml_chip->phy_part_ptr->partition[i].phy_len;
-			phydev->nr_partitions = dev_para->nr_partitions;
-			phydev->partitions = dev_para->partitions;
-			if((dev_para->option & DEV_MULTI_CHIP_MODE) && (controller->chip_num > 1)){
-				phydev->option |= DEV_MULTI_CHIP_MODE;
-				phydev->writesize *= controller->chip_num;
-				phydev->erasesize *= controller->chip_num;
-				phydev->oobavail *= controller->chip_num;
-			}
+		phydev = aml_nand_malloc(sizeof(struct amlnand_phydev));
+		if(phydev == NULL){
+			aml_nand_msg("malloc failed need %x here", (sizeof(struct amlnand_phydev)));
+			ret = -NAND_MALLOC_FAILURE;
+			goto exit_error0;
+		}
+		memset(phydev, 0, sizeof(struct amlnand_phydev));
+		phydev->priv= aml_chip;
 
-			if((dev_para->option & DEV_MULTI_PLANE_MODE) && (flash->option & NAND_MULTI_PLANE_MODE)){
-				phydev->option |= DEV_MULTI_PLANE_MODE;
+		dev_para = &(config->dev_para[i]);
+		memcpy(&phydev->name, &dev_para->name, MAX_DEVICE_NAME_LEN*sizeof(char));
 
-				phydev->writesize <<= 1;
-				phydev->erasesize <<= 1;
-				phydev->oobavail <<= 1;
-			}
-		phydev->writesize_shift = ffs(phydev->writesize) - 1;
-		phydev->erasesize_shift = ffs(phydev->erasesize) - 1;
-            printk("%s,%d,phydev->offset=%llx,phydev->size=%llx\n",__func__,__LINE__,phydev->offset,phydev->size);
-            list_add_tail(&phydev->list, &nphy_dev_list);
-	}
-    }else{
-    if(NAND_COMPATIBLE_REGION <= 2){// use the old method to calc, should never change here
-	for(i=0; i<config->dev_num; i++){
-            ret = aml_alloc_phydev(&phydev, aml_chip,&dev_para,i);
-            //printk("%s,%d,phydev->name:%s\n",__func__,__LINE__,phydev->name);
+		//set default parameter
+		phydev->writesize = flash->pagesize;
+		phydev->erasesize = flash->blocksize;
+		phydev->oobavail = controller->oobavail;
 		dev_size = 0;
+
 		tmp_write_shift = ffs(flash->pagesize) -1;
 		tmp_erase_shift = ffs(flash->blocksize) -1;
 		pages_per_blk = (1 << (tmp_erase_shift -tmp_write_shift));
+
+		phydev->write = nand_write;
+		phydev->read = nand_read;
+
+		phydev->erase = nand_erase;
+
+		phydev->block_isbad = nand_block_isbad;
+		phydev->block_markbad = nand_block_markbad;
+
+		phydev->block_modifybbt = block_modifybbt;
+		phydev->update_bbt = update_bbt;
+        phydev->phydev_test_block = nand_test_block;
 
 		//set partitions and caulate dev size
 		if(dev_para->nr_partitions){
@@ -1391,9 +1339,9 @@ int amlnand_phydev_init(struct amlnand_chip *aml_chip)
 							start_blk++;
 							offset += phydev->erasesize;
 						}while(start_blk < total_blk);
+
 						total_blk = ((((unsigned) ((offset -tmp_offset) >> phydev->erasesize_shift)) - 1)/(controller->chip_num*plane_num) + 1)* (controller->chip_num*plane_num);
 						phydev->size = ((uint64_t)total_blk*(uint64_t)phydev->erasesize);
-						printk("offset:%llx,tmp_offset:%x,total_blk:%d,phydev->size:%llx\n",offset,tmp_offset,total_blk,phydev->size);
 				}
 			}
 			else{
@@ -1422,19 +1370,7 @@ int amlnand_phydev_init(struct amlnand_chip *aml_chip)
 			phydev->size >>=1;
 			aml_nand_msg(" DEV %s enable SLC mode",phydev->name);
 		}
-	        aml_chip->phy_part_ptr->partition[i].phy_off = phydev->offset;
-            aml_chip->phy_part_ptr->partition[i].phy_len = phydev->size;
-            //printk("%s,%d,phydev->offset=%llx,phydev->size=%llx\n",__func__,__LINE__,phydev->offset,phydev->size);
-            if(dev_para->nr_partitions){
-			for(k=0; k<dev_para->nr_partitions; k++){
-				partition = &(dev_para->partitions[k]);
-				aml_chip->phy_part_ptr->partition[i].logic_len += partition->size;
-			}
-                //printk("%s,%d,logic size:%llx\n",__func__,__LINE__,aml_chip->phy_part_ptr->partition[i].logic_len);
-            }else{
-                aml_chip->phy_part_ptr->partition[i].logic_len = dev_para->size;
-                //printk("%s,%d,logic size:%llx\n",__func__,__LINE__,aml_chip->phy_part_ptr->partition[i].logic_len);
-            }
+
 		list_add_tail(&phydev->list, &nphy_dev_list);
 
 
@@ -1447,300 +1383,15 @@ int amlnand_phydev_init(struct amlnand_chip *aml_chip)
 		aml_nand_dbg("####: %s :phydev->erasesize = %x",phydev_pre->name,phydev_pre->erasesize);
 
 	}
-        aml_chip->phy_part_ptr->dev_num = config->dev_num;
-        aml_chip->phy_part_ptr->crc = aml_info_checksum((unsigned char *)aml_chip->phy_part_ptr->partition,(MAX_DEVICE_NUM*sizeof(struct _phy_partition)));
-        ret = amlnand_save_info_by_name(aml_chip, (unsigned char *)&(aml_chip->nand_phy_partition),(unsigned char *)aml_chip->phy_part_ptr,PHY_PARTITION_HEAD_MAGIC, sizeof(struct phy_partition_info));
-        if(ret < 0){
-            aml_nand_msg("save nand phy partition failed and ret:%d",ret);
-            goto exit_error0;
-        }
 
-    }else{// if  we want to change the method of calc, change it here and must make sure NAND_COMPATIBLE_REGION greater than 3
-        for(i=0; i<config->dev_num; i++){
-                ret = aml_alloc_phydev(&phydev, aml_chip,&dev_para,i);
-                //printk("%s,%d,phydev->name:%s\n",__func__,__LINE__,phydev->name);
-			dev_size = 0;
-			tmp_write_shift = ffs(flash->pagesize) -1;
-			tmp_erase_shift = ffs(flash->blocksize) -1;
-			pages_per_blk = (1 << (tmp_erase_shift -tmp_write_shift));
-
-			//set partitions and caulate dev size
-			if(dev_para->nr_partitions){
-				phydev->nr_partitions = dev_para->nr_partitions;
-				phydev->partitions = dev_para->partitions;
-				for(k=0; k<dev_para->nr_partitions; k++){
-					partition = &(dev_para->partitions[k]);
-					aml_nand_dbg("partition[%d]->name:%s, size %llx",k, partition->name, partition->size);
-				}
-
-				if(i != (config->dev_num -1)){
-					for(j=0; j<dev_para->nr_partitions; j++){
-						partition = &(dev_para->partitions[j]);
-						dev_size += partition->size;
-					}
-					if(!is_phydev_off_adjust()){
-						int adjust_shift =  ffs(ADJUST_SIZE_NFTL) -1;
-						//aml_nand_msg("not adjust, adjust_shift : %d",adjust_shift);
-						dev_size = dev_size + (dev_size >> adjust_shift);
-					}
-					//dev_size = dev_size + ((uint64_t)(dev_size)/(uint64_t)(ADJUST_SIZE_NFTL));   //adjust dev_size for nftl
-				}
-				else{
-					if((phydev_pre->option & DEV_SLC_MODE) && (flash->option & NAND_CHIP_SLC_MODE) && (!(phydev->option & DEV_MULTI_PLANE_MODE ))){
-						phydev_pre_size =  phydev_pre->size << 1;
-					}else{
-						phydev_pre_size = phydev_pre->size;
-					}
-					dev_size = chip_size -phydev_pre->offset -phydev_pre_size;
-				}
-			}
-			else{
-				dev_size = dev_para->size;
-			}
-			if((dev_para->option & DEV_SLC_MODE) && (flash->option & NAND_CHIP_SLC_MODE) && (!(dev_para->option & DEV_MULTI_PLANE_MODE ))){
-				dev_size <<= 1;
-				aml_nand_msg("DEV enable SLC mode");
-			}
-
-			if (!strncmp((char*)phydev->name, NAND_BOOT_NAME, strlen((const char*)NAND_BOOT_NAME))){
-				boot_flag = 1;
-
-				phydev->offset = 0;
-				phydev->size = (BOOT_COPY_NUM*BOOT_PAGES_PER_COPY);
-				phydev->size *= flash->pagesize;
-				//phydev->size *= controller->chip_num;
-
-				phydev->writesize_shift = ffs(phydev->writesize) - 1;
-				phydev->erasesize_shift = ffs(phydev->erasesize) -1;
-				phydev->writesize_mask =  (phydev->size>>phydev->writesize_shift) - 1;
-
-				tmp_blk = phydev->size >> phydev->erasesize_shift;
-			}
-			else{
-				if((dev_para->option & DEV_MULTI_CHIP_MODE) && (controller->chip_num > 1)){
-					phydev->option |= DEV_MULTI_CHIP_MODE;
-					phydev->writesize *= controller->chip_num;
-					phydev->erasesize *= controller->chip_num;
-					phydev->oobavail *= controller->chip_num;
-				}
-
-				if((dev_para->option & DEV_MULTI_PLANE_MODE) && (flash->option & NAND_MULTI_PLANE_MODE)){
-					phydev->option |= DEV_MULTI_PLANE_MODE;
-
-					phydev->writesize <<= 1;
-					phydev->erasesize <<= 1;
-					phydev->oobavail <<= 1;
-				}
-
-				phydev->writesize_shift = ffs(phydev->writesize) - 1;
-				phydev->erasesize_shift = ffs(phydev->erasesize) -1;
-
-				if(boot_flag == 1){
-					if(i == 1){
-						offset =start_blk = 0;
-						total_blk = RESERVED_BLOCK_CNT;
-						memset(ops_para, 0, sizeof(struct chip_ops_para));
-						do{
-							ops_para->page_addr =((((unsigned)(((unsigned)(offset>>tmp_erase_shift)+ tmp_blk) - ((unsigned)(offset>>tmp_erase_shift)+ tmp_blk) \
-								% controller->chip_num) /controller->chip_num) + tmp_blk -tmp_blk/controller->chip_num) * pages_per_blk);
-							ops_para->chipnr = ((unsigned) (offset >> tmp_erase_shift)) % controller->chip_num;
-							ret = operation->block_isbad(aml_chip);
-							if (ret == NAND_BLOCK_FACTORY_BAD){
-								offset += flash->blocksize;
-								continue;
-							}
-							start_blk++;
-							offset += flash->blocksize;
-						} while (start_blk < total_blk);
-						total_blk = ((((unsigned) (offset>>tmp_erase_shift)) - 1)/(controller->chip_num*plane_num)+ 1)* (controller->chip_num*plane_num);
-						aml_nand_dbg("total_blk =%d",total_blk);
-						aml_nand_dbg(" phydev_pre->size =%llx", phydev_pre->size);
-						phydev->offset = total_blk * flash->blocksize + phydev_pre->size;
-						aml_nand_dbg("phydev->offset =%llx",phydev->offset);
-					}
-					else{
-						if((phydev_pre->option & DEV_SLC_MODE) && (flash->option & NAND_CHIP_SLC_MODE) && (!(phydev->option & DEV_MULTI_PLANE_MODE ))){
-							phydev_pre_size =  phydev_pre->size << 1;
-						}else{
-							phydev_pre_size = phydev_pre->size;
-						}
-						phydev->offset = phydev_pre->offset + phydev_pre_size;
-					}
-				}
-				else{
-					if(phydev_pre == NULL){
-						offset =start_blk = 0;
-						total_blk = RESERVED_BLOCK_CNT;
-						memset(ops_para, 0, sizeof(struct chip_ops_para));
-						do{
-							ops_para->page_addr =((((unsigned)(((unsigned)(offset>>tmp_erase_shift)+ tmp_blk) - ((unsigned)(offset>>tmp_erase_shift)+ tmp_blk) \
-								% controller->chip_num) /controller->chip_num) + tmp_blk -tmp_blk/controller->chip_num) * pages_per_blk);
-							ops_para->chipnr = ((unsigned) (offset >> tmp_erase_shift)) % controller->chip_num;
-							ret = operation->block_isbad(aml_chip);
-							if (ret == NAND_BLOCK_FACTORY_BAD){
-								offset += flash->blocksize;
-								continue;
-							}
-							start_blk++;
-							offset += flash->blocksize;
-						} while (start_blk < total_blk);
-						total_blk = ((((unsigned) (offset>>tmp_erase_shift)) - 1)/(controller->chip_num*plane_num)+ 1)* (controller->chip_num*plane_num);
-						aml_nand_dbg("total_blk =%d",total_blk);
-						phydev->offset = total_blk * flash->blocksize;
-						aml_nand_dbg("phydev->offset =%llx",phydev->offset);
-					}
-					else{
-						if((phydev_pre->option & DEV_SLC_MODE) && (flash->option & NAND_CHIP_SLC_MODE) && (!(phydev->option & DEV_MULTI_PLANE_MODE ))){
-							phydev_pre_size =  phydev_pre->size << 1;
-						}else{
-							phydev_pre_size = phydev_pre->size;
-						}
-						phydev->offset = phydev_pre->offset + phydev_pre_size;
-					}
-				}
-
-				if(i != (config->dev_num -1)){
-						start_blk = 0;
-						if(boot_flag == 1){
-							if(i==1){
-									tmp_offset = offset = phydev->offset;
-								}
-								else{
-									tmp_offset = offset = phydev_pre->offset + phydev_pre->size;
-								}
-						}else if(boot_flag == 0){
-							if(i==0){
-								tmp_offset = offset	= phydev->offset;
-							}else{
-								tmp_offset = offset = phydev_pre->offset + phydev_pre->size;
-							}
-						}
-						aml_nand_dbg("offset = %llx, %llx",offset,tmp_erase_shift);
-						if(!is_phydev_off_adjust()){
-							total_blk = dev_size  >> tmp_erase_shift;
-						}else{
-							aml_nand_msg("nand adjust phy offset : block %d",ADJUST_BLOCK_NUM);
-							total_blk = dev_size  >> phydev->erasesize_shift;
-							#ifdef CONFIG_NAND_AML_M8B
-							total_blk = total_blk + (total_blk + ADJUST_PART_SIZE - 1) /ADJUST_PART_SIZE + ADJUST_BLOCK_NUM;
-							#else
-							if(IS_MESON_M8_CPU) //M8
-							{
-								if(phydev->erasesize >= 0x400000){
-								total_blk = total_blk + (total_blk + ADJUST_PART_SIZE - 1) /ADJUST_PART_SIZE + ADJUST_BLOCK_NUM;
-								}
-								else{
-								total_blk = total_blk + total_blk /ADJUST_PART_SIZE + ADJUST_BLOCK_NUM;
-								}
-							}else{//M8M2
-								total_blk = total_blk + (total_blk + ADJUST_PART_SIZE - 1) /ADJUST_PART_SIZE + ADJUST_BLOCK_NUM;
-							}
-							#endif
-						}
-						memset(ops_para, 0, sizeof(struct chip_ops_para));
-						ops_para->option = phydev->option;
-						if(!is_phydev_off_adjust()){
-						do{
-							ops_para->page_addr = ((((unsigned)((((unsigned)(offset >> tmp_erase_shift))) - (((unsigned)(offset >> tmp_erase_shift))) \
-								% controller->chip_num) /controller->chip_num) + tmp_blk -tmp_blk /controller->chip_num ) * pages_per_blk);
-							ops_para->chipnr =((unsigned) (offset >>tmp_erase_shift)) % controller->chip_num;
-							ret = operation->block_isbad(aml_chip);
-							if (ret == NAND_BLOCK_FACTORY_BAD){
-								offset += flash->blocksize;
-								continue;
-							}
-							start_blk++;
-							offset += flash->blocksize;
-						} while (start_blk < total_blk);
-						total_blk = ((((unsigned) (offset >> phydev->erasesize_shift)) - 1)/(controller->chip_num*plane_num) + 1)* (controller->chip_num*plane_num);
-						aml_nand_dbg("total_blk =%d",total_blk);
-						phydev->size = ((uint64_t)total_blk*(uint64_t)phydev->erasesize);
-						}else{
-							do{
-								ops_para->page_addr = ((unsigned)(offset >> phydev->writesize_shift)) ;
-								//ops_para->chipnr =((unsigned) (offset>>phydev->erasesize_shift)) % controller->chip_num;
-								ret = operation->block_isbad(aml_chip);
-								if (ret == NAND_BLOCK_FACTORY_BAD){
-									offset += phydev->erasesize;
-									//aml_nand_msg("#### : offset %llx",offset);
-									continue;
-								}
-								start_blk++;
-								offset += phydev->erasesize;
-							}while(start_blk < total_blk);
-							total_blk = ((((unsigned) ((offset -tmp_offset) >> phydev->erasesize_shift)) - 1)/(controller->chip_num*plane_num) + 1)* (controller->chip_num*plane_num);
-							phydev->size = ((uint64_t)total_blk*(uint64_t)phydev->erasesize);
-							printk("offset:%llx,tmp_offset:%x,total_blk:%d,phydev->size:%llx\n",offset,tmp_offset,total_blk,phydev->size);
-					}
-				}
-				else{
-					phydev->size = dev_size;
-				}
-
-				if((phydev->offset + phydev->size) > chip_size){
-					aml_nand_msg("nand dev size is out of space");
-					ret = -NAND_FAILED;
-					goto exit_error0;
-				}
-
-#ifndef AML_NAND_UBOOT
-				phydev->suspend = phydev_suspend;
-				phydev->resume = phydev_resume;
-#endif
-			}
-
-			phydev_pre = phydev;
-
-			if((dev_para->option & DEV_SLC_MODE) && (flash->option & NAND_CHIP_SLC_MODE) && (!(phydev->option & DEV_MULTI_PLANE_MODE ))){
-				phydev->option |= DEV_SLC_MODE;
-
-				phydev->erasesize >>= 1;
-				phydev->erasesize_shift = ffs(phydev->erasesize) -1;
-				phydev->size >>=1;
-				aml_nand_msg(" DEV %s enable SLC mode",phydev->name);
-			}
-	        aml_chip->phy_part_ptr->partition[i].phy_off = phydev->offset;
-                aml_chip->phy_part_ptr->partition[i].phy_len = phydev->size;
-                printk("%s,%d,phydev->offset=%llx,phydev->size=%llx\n",__func__,__LINE__,phydev->offset,phydev->size);
-                if(dev_para->nr_partitions){
-				for(k=0; k<dev_para->nr_partitions; k++){
-					partition = &(dev_para->partitions[k]);
-					aml_chip->phy_part_ptr->partition[i].logic_len += partition->size;
-				}
-                    printk("%s,%d,logic size:%llx\n",__func__,__LINE__,aml_chip->phy_part_ptr->partition[i].logic_len);
-                }else{
-                    aml_chip->phy_part_ptr->partition[i].logic_len = dev_para->size;
-                    printk("%s,%d,logic size:%llx\n",__func__,__LINE__,aml_chip->phy_part_ptr->partition[i].logic_len);
-                }
-			list_add_tail(&phydev->list, &nphy_dev_list);
-
-
-#ifdef AML_NAND_DBG
-			amldev_dumpinfo(phydev);
-#endif
-			aml_nand_dbg("####: %s :phydev->offset  = %llx",phydev_pre->name,phydev_pre->offset);
-			aml_nand_dbg("####: %s :phydev->size = %llx",phydev_pre->name,phydev_pre->size);
-			aml_nand_dbg("####: %s :phydev->writesize = %x",phydev_pre->name,phydev_pre->writesize);
-			aml_nand_dbg("####: %s :phydev->erasesize = %x",phydev_pre->name,phydev_pre->erasesize);
-
-		}
-            aml_chip->phy_part_ptr->dev_num = config->dev_num;
-            aml_chip->phy_part_ptr->crc = aml_info_checksum((unsigned char *)aml_chip->phy_part_ptr->partition,(MAX_DEVICE_NUM*sizeof(struct _phy_partition)));
-            ret = amlnand_save_info_by_name(aml_chip, (unsigned char *)&(aml_chip->nand_phy_partition),(unsigned char *)aml_chip->phy_part_ptr,PHY_PARTITION_HEAD_MAGIC, sizeof(struct phy_partition_info));
-            if(ret < 0){
-                aml_nand_msg("save nand phy partition failed and ret:%d",ret);
-                goto exit_error0;
-            }
-        }
-    }
 	show_phydev_info();
 
-#if 0
-	phydev = NULL;
+#if 1
+    phydev = NULL;
 	list_for_each_entry(phydev,&nphy_dev_list,list){
 		if(phydev!=NULL){
             aml_nand_dbg("----------------------------------------------------------------------------------------------------\n");
-		aml_nand_dbg("name:%s, offset:%llx, size:%llx, option:%x", \
+	aml_nand_dbg("name:%s, offset:%llx, size:%llx, option:%x", \
 		phydev->name, phydev->offset, phydev->size, phydev->option);
             aml_nand_dbg("erasesize:%x, writesize:%x, oobavail:%x, erasesize_shift:%x, writesize_shift:%d", \
 		phydev->erasesize, phydev->writesize, phydev->oobavail, phydev->erasesize_shift, phydev->writesize_shift);
@@ -1768,10 +1419,10 @@ int amlnand_phydev_init(struct amlnand_chip *aml_chip)
                 relative_offset += phydev->erasesize;
             }while(relative_offset < phydev->size);
             aml_nand_msg("bad block count = %d\n",bad_blk_cnt);
-		if((bad_blk_cnt *32 > (phydev->size >> phydev->erasesize_shift))||(bad_blk_cnt>10)){
+	if((bad_blk_cnt *32 > (phydev->size >> phydev->erasesize_shift))||(bad_blk_cnt>10)){
                 aml_nand_dbg("Too many new bad blocks,try to repair...\n");
-			//ret = aml_repair_bbt(phydev,bad_blk,bad_blk_cnt);
-		}
+		//ret = aml_repair_bbt(phydev,bad_blk,bad_blk_cnt);
+	}
 	}
 	}
 
@@ -1833,3 +1484,4 @@ void amlnf_phy_exit()
 
 }
 #endif
+

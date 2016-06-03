@@ -73,11 +73,11 @@ extern int aml_nftl_set_status(struct aml_nftl_part_t *part,unsigned char status
 //static int ntd_blktrans_thread_blk(void *arg);
 //static void blktrans_dev_release_blk(struct kref *kref);
 
-#define CFG_M2M_TRANSFER_TBL		(0)
+
 //static struct mutex aml_nftl_lock;
 static int nftl_num;
 static int dev_num;
-extern int test_flag;
+//extern int test_flag;
 
 int aml_ntd_nftl_flush(struct ntd_info *ntd);
 
@@ -197,10 +197,10 @@ static int aml_nftl_calculate_sg(struct aml_nftl_blk *nftl_blk, size_t buflen, u
 uint32 write_sync_flag(struct aml_nftl_blk *aml_nftl_blk)
 {
 	struct aml_nftl_dev *nftl_dev = aml_nftl_blk->nftl_dev;
-    if(test_flag)
-    {
-        return 0;
-    }
+//    if(test_flag)
+//    {
+//        return 0;
+//    }
 #if NFTL_CACHE_FLUSH_SYNC
 #ifdef CONFIG_SUPPORT_USB_BURNING
         return 0;
@@ -568,42 +568,6 @@ static int aml_nftl_wipe_part(struct ntd_blktrans_dev *dev)
 	return error;
 }
 
-int aml_nftl_reinit(struct aml_nftl_dev * nftl_dev)
-{
-	int ret =0;
-	struct aml_nftl_part_t *part = NULL;
-
-	part = nftl_dev->aml_nftl_part;
-
-	printk("%s() %d, enter\n", __FUNCTION__, __LINE__);
-	aml_nftl_set_status(part, 0);
-	if(nftl_dev->nftl_thread != NULL) {
-		kthread_stop(nftl_dev->nftl_thread); //add stop thread to ensure nftl quit safely
-	}
-
-	mutex_lock(nftl_dev->aml_nftl_lock);
-	//invalid cache.
-	nftl_dev->invalid_read_cache(nftl_dev);
-#if	(CFG_M2M_TRANSFER_TBL)
-	//reinit, using memory 1st
-	nftl_dev->init_flag = 2;
-	if(aml_nftl_initialize(nftl_dev, part->part_no)){
-#else
-	if(aml_nftl_initialize(nftl_dev, -1)) {
-#endif //
-		PRINT("%s() %d: aml_nftl_initialize failed\n", __FUNCTION__, __LINE__);
-		ret = -1;
-	}
-	mutex_unlock(nftl_dev->aml_nftl_lock);
-
-	if(nftl_dev->nftl_thread!=NULL){
-		wake_up_process(nftl_dev->nftl_thread);
-	}
-
-	printk("%s() %d, exit\n", __FUNCTION__, __LINE__);
-	return ret ;
-}
-
 /*****************************************************************************
 *Name         :
 *Description  :
@@ -645,7 +609,7 @@ static void aml_nftl_add_ntd(struct ntd_blktrans_ops *tr, struct ntd_info *ntd)
     nftl_dev->reboot_flag = 0;
     ntd->nftl_priv = (void*)nftl_dev;
 
-    nftl_dev->nftl_thread = kthread_run(aml_nftl_thread, nftl_dev, "%s_%s", "aml_nftl", ntd->name);
+    nftl_dev->nftl_thread = kthread_run(aml_nftl_thread, nftl_dev, "%sd", "aml_nftl");
     if (IS_ERR(nftl_dev->nftl_thread))
         return;
 

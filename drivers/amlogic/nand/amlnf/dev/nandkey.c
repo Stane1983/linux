@@ -159,7 +159,7 @@ int aml_key_init(struct amlnand_chip *aml_chip)
 
 	aml_chip_key = aml_chip;
 	nand_provider.priv=aml_chip_key;
-	/* fixme, will this cause error? if not, we will not change it! */
+
 	provider = aml_keybox_provider_get(nand_provider.name);
 	if(provider){
 		return ret;
@@ -168,34 +168,6 @@ int aml_key_init(struct amlnand_chip *aml_chip)
 	ret = aml_keybox_provider_register(&nand_provider);
 	if(ret){
 		BUG();
-	}
-
-exit_error0:
-	if(key_ptr){
-		aml_nand_free(key_ptr);
-		key_ptr =NULL;
-	}
-	return ret;
-}
-
-
-int aml_key_reinit(struct amlnand_chip *aml_chip)
-{
-	int ret = 0;
-	meson_key *key_ptr = NULL;
-
-	key_ptr = aml_nand_malloc(CONFIG_KEYSIZE);
-	if (key_ptr == NULL){
-		aml_nand_msg("nand malloc for key_ptr failed");
-		ret = -1;
-		goto exit_error0;
-	}
-	memset(key_ptr,0x0,CONFIG_KEYSIZE);
-	aml_nand_dbg("nand key: nand_key_probe. ");
-
-	ret = amlnand_info_init(aml_chip, (unsigned char *)&(aml_chip->nand_key),(unsigned char *)key_ptr,KEY_INFO_HEAD_MAGIC, CONFIG_KEYSIZE);
-	if(ret < 0){
-		aml_nand_msg("invalid nand key\n");
 	}
 
 exit_error0:

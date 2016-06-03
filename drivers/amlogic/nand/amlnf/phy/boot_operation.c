@@ -351,7 +351,7 @@ static int write_uboot(struct amlnand_phydev *phydev)
 					ops_para->page_addr = (ops_para->page_addr & (~(pages_per_blk -1))) |((ops_para->page_addr % pages_per_blk) << 1);
 			}
 #if 1
-			if(flash->new_type ==HYNIX_1YNM) {
+			if(flash->new_type ==HYNIX_1YNM_8GB) {
 				if((ops_tem % 256)>1) {
 					priv_lsb =  (ops_tem & (~(pages_per_blk -1))) |(slc_info->pagelist[(ops_tem % 256)-1]);
 				ops_tem = ops_para->page_addr ;
@@ -570,52 +570,7 @@ static int uboot_open(struct inode * inode, struct file * filp)
 static ssize_t uboot_read(struct file *file, char __user *buf,
 			size_t count, loff_t *ppos)
 {
-	struct amlnand_phydev * phydev = uboot_phydev;
-	struct amlnand_chip *aml_chip = phydev->priv;
-	//struct nand_flash *flash = &(aml_chip->flash);
-	struct phydev_ops *devops = &(phydev->ops);
-	//struct hw_controller *controller = &(aml_chip->controller);
-	//struct chip_operation *operation = &(aml_chip->operation);
-	//struct chip_ops_para *ops_para = &(aml_chip->ops_para);
-
-	unsigned char *data_buf;
-	int  ret;
-	size_t align_count = 0;
-	//data_buf = aml_nand_malloc(UBOOT_WRITE_SIZE);
-	align_count = ((((unsigned)count +phydev->writesize)-1)/phydev->writesize)*phydev->writesize;
-	data_buf = aml_nand_malloc(align_count);
-	if(!data_buf){
-		aml_nand_dbg("malloc buf for rom_write failed");
-		goto err_exit0;
-	}
-	//memset(data_buf,0x0,UBOOT_WRITE_SIZE);
-	//ret=copy_from_user(data_buf, buf, UBOOT_WRITE_SIZE);
-	memset(data_buf,0x0,align_count);
-
-
-	memset(devops, 0x0, sizeof(struct phydev_ops));
-	devops->addr = 0x0;
-	//devops->len = UBOOT_WRITE_SIZE;
-	devops->len = align_count;
-	devops->mode = NAND_HW_ECC;
-	devops->datbuf = data_buf;
-	amlnand_get_device(aml_chip, CHIP_WRITING);
-
-	ret = roomboot_nand_read(phydev);
-	if (ret < 0){
-		aml_nand_dbg("uboot_write failed");
-		count = 0;
-	}
-	amlnand_release_device(aml_chip);
-	ret=copy_to_user(buf, data_buf, count);
-err_exit0:
-
-	if (data_buf) {
-		aml_nand_free(data_buf);
-		data_buf = NULL;
-	}
-
-	return count;
+		return 0;
 }
 
 static ssize_t uboot_write(struct file *file, const char __user *buf,

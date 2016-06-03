@@ -31,34 +31,6 @@
 
 #include "aml_ntd.h"
 
-//fixme,
-struct _aml_nftl_dev_t {
-	uint64_t                size;
-	struct ntd_info*        ntd;
-	struct aml_nftl_part_t* aml_nftl_part;
-	struct mutex*           aml_nftl_lock;
-	struct task_struct*		nftl_thread;
-	struct timespec      	ts_write_start;
-	struct notifier_block   nb;
-	struct class            debug;
-	struct _nftl_cfg        nftl_cfg;
-	int 				  sync_flag;
-    int                   init_flag;
-    int                   reboot_flag;
-	uint32 (*read_data)(struct _aml_nftl_dev_t *nftl_dev, unsigned long block, unsigned nblk, unsigned char *buf);
-	uint32 (*write_data)(struct _aml_nftl_dev_t *nftl_dev, unsigned long block, unsigned nblk, unsigned char *buf);
-    uint32 (*discard_data)(struct _aml_nftl_dev_t *nftl_dev, unsigned long block, unsigned nblk);
-	uint32 (*flush_write_cache)(struct _aml_nftl_dev_t *nftl_dev);
-    uint32 (*flush_discard_cache)(struct _aml_nftl_dev_t *nftl_dev);
-	uint32 (*invalid_read_cache)(struct _aml_nftl_dev_t *nftl_dev);	//fixme, yyh 0311
-    uint32 (*write_pair_page)(struct _aml_nftl_dev_t *nftl_dev);
-    uint32 (*check_mapping)(struct _aml_nftl_dev_t *nftl_dev,uint64_t offset, uint64_t size);
-    uint32 (*discard_partition)(struct _aml_nftl_dev_t *nftl_dev,uint64_t offset, uint64_t size);
-	//TODO: rebuild tables.
-	uint32 (*rebuild_tbls)(struct _aml_nftl_dev_t *nftl_dev);
-	uint32 (*compose_tbls)(struct _aml_nftl_dev_t *nftl_dev);
-};
-
 int add_ntd_partitions(struct amlnand_phydev* master);
 
 extern int aml_ntd_nftl_flush(struct ntd_info *ntd);
@@ -268,21 +240,15 @@ static int part_block_markbad(struct ntd_info *ntd, uint32_t block)
 *****************************************************************************/
 static int part_suspend(struct ntd_info *ntd)
 {
-	struct amlnand_phydev * phy;
-	struct _aml_nftl_dev_t * nftl_dev;
+	struct amlnand_phydev* phy;
 	int ret = 0;
-
 	phy = ntd->priv;
-	nftl_dev = (struct _aml_nftl_dev_t *) ntd->nftl_priv;
+
 
 	if(phy == NULL){
-		printk("%s : get phy/nftl dev failed\n", __func__);
+		printk("%s : get phy dev failed\n",__func__);
 		return 0;
 	}
-
-	//fixme, compose info avoiding rebuild tables twice.
-	nftl_dev->compose_tbls(nftl_dev);
-
 	ret = phy->suspend(phy);
 	if(ret){
 		printk("part_suspend %s  failed!!!\n",phy->name);
@@ -308,7 +274,7 @@ static void part_resume(struct ntd_info *ntd)
 		printk("%s : get phy dev failed\n",__func__);
 		return ;
 	}
-	phy->resume(phy);
+	 phy->resume(phy);
 
 	printk("part_resume %s\n",phy->name);
 
@@ -322,97 +288,9 @@ static void part_resume(struct ntd_info *ntd)
 *Return       :
 *Note         :
 *****************************************************************************/
-static int part_freeze(struct ntd_info *ntd)
-{
-	struct amlnand_phydev * phy;
-	struct _aml_nftl_dev_t * nftl_dev;
-	int ret = 0;
-	phy = ntd->priv;
-	nftl_dev = (struct _aml_nftl_dev_t *) ntd->nftl_priv;
-
-	if(phy == NULL || nftl_dev == NULL){
-		printk("%s : get phy/nftl dev failed\n", __func__);
-		return 0;
-	}
-
-	mutex_lock(nftl_dev->aml_nftl_lock);
-
-	nftl_dev->flush_write_cache(nftl_dev);
-	nftl_dev->flush_discard_cache(nftl_dev);
-	nftl_dev->invalid_read_cache(nftl_dev);
-
-	mutex_unlock(nftl_dev->aml_nftl_lock);
-
-	printk("%s() %s\n", __FUNCTION__, phy->name);
-
-    return ret;
-}
-/*****************************************************************************
-*Name         :
-*Description  :
-*Parameter    :
-*Return       :
-*Note         :
-*****************************************************************************/
-static int part_thaw(struct ntd_info *ntd)
-{
-	struct amlnand_phydev * phy;
-	struct _aml_nftl_dev_t * nftl_dev;
-	int ret = 0;
-	phy = ntd->priv;
-	nftl_dev = (struct _aml_nftl_dev_t *) ntd->nftl_priv;
-
-	if(phy == NULL || nftl_dev == NULL){
-		printk("%s : get phy/nftl dev failed\n", __func__);
-		return 0;
-	}
-
-
-	printk("%s() %s\n", __FUNCTION__, phy->name);
-
-    return ret;
-}
-
-/*****************************************************************************
-*Name         :
-*Description  :
-*Parameter    :
-*Return       :
-*Note         :
-*****************************************************************************/
-static int part_restore(struct ntd_info *ntd)
-{
-	struct amlnand_phydev * phy;
-	struct _aml_nftl_dev_t * nftl_dev;
-	int ret = 0;
-	phy = ntd->priv;
-	nftl_dev = (struct _aml_nftl_dev_t *) ntd->nftl_priv;
-
-	if(phy == NULL || nftl_dev == NULL){
-		printk("%s : get phy/nftl dev failed\n", __func__);
-		return 0;
-	}
-
-	phy->resume(phy);
-
-	nftl_dev->rebuild_tbls(nftl_dev);
-
-	printk("%s() %s\n", __FUNCTION__, phy->name);
-
-    return ret;
-}
-/*****************************************************************************
-*Name         :
-*Description  :
-*Parameter    :
-*Return       :
-*Note         :
-*****************************************************************************/
 static int part_flush(struct ntd_info *ntd)
 {
     printk("part_flush\n");
-	//TODO: do nothing...
-
     return 0;
 }
 
@@ -534,11 +412,6 @@ static struct ntd_info *allocate_partition(struct amlnand_phydev* master)
 
     slave->suspend = part_suspend;
     slave->resume = part_resume;
-	//fixme, add pm operation here.
-	slave->freeze = part_freeze;
-	slave->thaw = part_thaw;
-	slave->restore = part_restore;
-
     slave->flush = part_flush;
     slave->get_device = NULL;
     slave->put_device = NULL;

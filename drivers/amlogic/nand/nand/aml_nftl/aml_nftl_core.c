@@ -123,7 +123,7 @@ RETRY:
 			if(retry_cnt_copy++ < 3)
 				goto RETRY;
 			else
-		return -ENOENT;
+	return -ENOENT;
         }
     }
     aml_nftl_info->blk_mark_bad(aml_nftl_info, phy_blk_addr);

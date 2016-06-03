@@ -31,7 +31,6 @@ extern uint32 __nand_read(struct aml_nftl_part_t* part,uint32 start_sector,uint3
 extern uint32 __nand_write(struct aml_nftl_part_t* part,uint32 start_sector,uint32 len,unsigned char *buf,int sync_flag);
 extern uint32 __nand_discard(struct aml_nftl_part_t* part,uint32 start_sector,uint32 len,int sync_flag);
 extern uint32 __nand_flush_write_cache(struct aml_nftl_part_t* part);
-extern uint32 __nand_invalid_read_cache(struct aml_nftl_part_t* part);
 extern uint32 __nand_flush_discard_cache(struct aml_nftl_part_t* part);
 extern uint32 __nand_write_pair_page(struct aml_nftl_part_t* part);
 extern uint32 __check_mapping(struct aml_nftl_part_t* part,uint64_t offset,uint64_t size);
@@ -42,12 +41,10 @@ extern int nand_discard_logic_page(struct aml_nftl_part_t* part,uint32 page_no);
 extern  int get_adjust_block_num(void);
 extern int aml_nftl_erase_part(struct aml_nftl_part_t *part);
 extern int aml_nftl_set_status(struct aml_nftl_part_t *part,unsigned char status);
-extern int aml_nftl_reinit(struct aml_nftl_dev * nftl_dev);
 uint32 _nand_read(struct aml_nftl_dev *nftl_dev,unsigned long start_sector,unsigned len,unsigned char *buf);
 uint32 _nand_write(struct aml_nftl_dev *nftl_dev,unsigned long  start_sector,unsigned len,unsigned char *buf);
 uint32 _nand_discard(struct aml_nftl_dev *nftl_dev,unsigned long start_sector,unsigned len);
 uint32 _nand_flush_write_cache(struct aml_nftl_dev *nftl_dev);
-uint32 _nand_invalid_read_cache(struct aml_nftl_dev *nftl_dev);
 uint32 _nand_flush_discard_cache(struct aml_nftl_dev *nftl_dev);
 uint32 _nand_write_pair_page(struct aml_nftl_dev *nftl_dev);
 uint32 _check_mapping(struct aml_nftl_dev *nftl_dev,uint64_t offset,uint64_t size);
@@ -56,15 +53,13 @@ uint32 _blk_nand_flush_write_cache(struct aml_nftl_blk *nftl_blk);
 uint32 _blk_nand_write(struct aml_nftl_blk *nftl_blk,unsigned long start_sector,unsigned  len,unsigned char *buf);
 uint32 _blk_nand_discard(struct aml_nftl_blk *nftl_blk,unsigned long start_sector,unsigned len);
 uint32 _blk_nand_read(struct aml_nftl_blk *nftl_blk,unsigned long start_sector,unsigned len,unsigned char *buf);
-uint32 _rebuild_tbls(struct aml_nftl_dev *nftl_dev);
-uint32 _compose_tbls(struct aml_nftl_dev *nftl_dev);
 
 void *aml_nftl_malloc(uint32 size);
 void aml_nftl_free(const void *ptr);
 //int aml_nftl_dbg(const char * fmt,args...);
 
 static ssize_t show_part_struct(struct class *class,struct class_attribute *attr, char *buf);
-static ssize_t show_list(struct class *class, struct class_attribute *attr,	const char *buf, size_t count);
+static ssize_t show_list(struct class *class, struct class_attribute *attr,  char *buf);
 //static ssize_t discard_page(struct class *class, struct class_attribute *attr, const char *buf);
 static ssize_t do_gc_all(struct class *class, struct class_attribute *attr,	const char *buf, size_t count);
 static ssize_t do_gc_one(struct class *class, struct class_attribute *attr,	const char *buf, size_t count);
@@ -73,7 +68,7 @@ static ssize_t do_test(struct class *class, struct class_attribute *attr,	const 
 static struct class_attribute nftl_class_attrs[] = {
 //    __ATTR(part_struct,  S_IRUGO | S_IWUSR, show_logic_block_table,    show_address_map_table),
     __ATTR(part,  S_IRUGO , show_part_struct,    NULL),
-    __ATTR(list,  S_IRUGO | S_IWUSR, show_part_struct,  show_list),
+    __ATTR(list,  S_IRUGO , show_list,    NULL),
 //    __ATTR(discard,  S_IRUGO | S_IWUSR , NULL,    discard_page),
     __ATTR(gcall,  S_IRUGO , NULL,    do_gc_all),
     __ATTR(gcone,  S_IRUGO , NULL,    do_gc_one),
@@ -166,15 +161,10 @@ int aml_nftl_initialize(struct aml_nftl_dev *nftl_dev,int no)
     nftl_dev->discard_data = _nand_discard;
 	nftl_dev->flush_write_cache = _nand_flush_write_cache;
     nftl_dev->flush_discard_cache = _nand_flush_discard_cache;
-	nftl_dev->invalid_read_cache = _nand_invalid_read_cache;
     nftl_dev->write_pair_page = _nand_write_pair_page;
     nftl_dev->check_mapping = _check_mapping;
     nftl_dev->discard_partition = _discard_partition;
-	nftl_dev->rebuild_tbls = _rebuild_tbls;
-	nftl_dev->compose_tbls = _compose_tbls;
-
-	//if(no < 0){
-	if (nftl_dev->init_flag) {
+	if(no < 0){
 		return ret; // for erase init FTL part
 	}
 
@@ -314,8 +304,6 @@ uint32 _blk_nand_discard(struct aml_nftl_blk *nftl_blk,unsigned long start_secto
 
     return ret;
 }
-//#define blk_dbg(x...)	printk(x)
-#define blk_dbg(x...)
 /*****************************************************************************
 *Name         :
 *Description  :
@@ -325,17 +313,10 @@ uint32 _blk_nand_discard(struct aml_nftl_blk *nftl_blk,unsigned long start_secto
 *****************************************************************************/
 uint32 _nand_flush_write_cache(struct aml_nftl_dev *nftl_dev)
 {
-	blk_dbg("%s()\n", __func__);
     return __nand_flush_write_cache(nftl_dev->aml_nftl_part);
-}
-uint32 _nand_invalid_read_cache(struct aml_nftl_dev *nftl_dev)
-{
-	blk_dbg("%s()\n", __func__);
-    return __nand_invalid_read_cache(nftl_dev->aml_nftl_part);
 }
 uint32 _nand_flush_discard_cache(struct aml_nftl_dev *nftl_dev)
 {
-	blk_dbg("%s()\n", __func__);
     return __nand_flush_discard_cache(nftl_dev->aml_nftl_part);
 }
 uint32 _nand_write_pair_page(struct aml_nftl_dev *nftl_dev)
@@ -349,16 +330,6 @@ uint32 _check_mapping(struct aml_nftl_dev *nftl_dev,uint64_t offset,uint64_t siz
 uint32 _discard_partition(struct aml_nftl_dev *nftl_dev,uint64_t offset,uint64_t size)
 {
     return __discard_partition(nftl_dev->aml_nftl_part,offset,size);
-}
-uint32 _rebuild_tbls(struct aml_nftl_dev *nftl_dev)
-{
-	return aml_nftl_reinit(nftl_dev);
-}
-extern int compose_part_list_info(struct aml_nftl_part_t *part);
-uint32 _compose_tbls(struct aml_nftl_dev *nftl_dev)
-{
-	//fixme, may need lock!!
-	return compose_part_list_info(nftl_dev->aml_nftl_part);
 }
 
 uint32 _blk_nand_flush_write_cache(struct aml_nftl_blk *nftl_blk)
@@ -394,11 +365,10 @@ static ssize_t show_part_struct(struct class *class,struct class_attribute *attr
 *Return       :
 *Note         :
 *****************************************************************************/
-static ssize_t show_list(struct class *class, struct class_attribute *attr,	const char *buf, size_t count)
+static ssize_t show_list(struct class *class, struct class_attribute *attr,  char *buf)
 {
     struct aml_nftl_dev *nftl_dev = container_of(class, struct aml_nftl_dev, debug);
 
-    PRINT("--------------name:%s\n",nftl_dev->ntd->name);
     print_free_list(nftl_dev -> aml_nftl_part);
     print_block_invalid_list(nftl_dev -> aml_nftl_part);
 //    print_block_count_list(nftl_dev -> aml_nftl_part);

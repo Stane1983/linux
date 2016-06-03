@@ -10,8 +10,8 @@
 #endif
 //#define CONFIG_OF
 
-#define NAND_COMPATIBLE_REGION     2
-#define NAND_RESERVED_REGION	   1
+#define NAND_COMPATIBLE_REGION     1
+#define NAND_RESERVED_REGION	       1
 #define NAND_ADDNEW_REGION	       1
 #define NAND_BUG_FIX_REGION	       6
 
@@ -117,7 +117,6 @@ typedef union nand_core_clk {
 #define 	KEY_INFO_HEAD_MAGIC				"nkey"
 #define 	SECURE_INFO_HEAD_MAGIC 			"nsec"
 #define 	ENV_INFO_HEAD_MAGIC 			"nenv"
-#define 	PHY_PARTITION_HEAD_MAGIC 		"phyp"
 
 #define 	FBBT_COPY_NUM  						1
 
@@ -336,7 +335,7 @@ typedef union nand_core_clk {
 #define 	RETRY_NAND_COPY_NUM					4
 
 #define	READ_RETRY_REG_NUM   					8
-#define	READ_RETRY_CNT   						40
+#define	READ_RETRY_CNT   						30
 
 #define	EN_SLC_REG_NUM   						8
 
@@ -366,10 +365,6 @@ typedef union nand_core_clk {
 #define	NAND_CMD_SANDISK_DSP_OFF					0x25
 #define	NAND_CMD_SANDISK_DSP_ON						0x26
 #define	NAND_CMD_SANDISK_RETRY_STA					 0x5D
-#define	NAND_CMD_SANDISK_TEST_MODE1					0x5c
-#define	NAND_CMD_SANDISK_TEST_MODE2					0xc5
-#define	NAND_CMD_SANDISK_TEST_MODE_ACCESS			0x55
-
 //for hynix 20nm OTP
 #define 	HYNIX_OTP_COPY							8
 #define 	HYNIX_OTP_LEN							528
@@ -379,7 +374,7 @@ typedef union nand_core_clk {
 #define	HYNIX_26NM_8GB 							2		//H27UBG8T2BTR
 #define	HYNIX_20NM_4GB 							3		//
 #define	HYNIX_20NM_8GB 							4		//
-#define	HYNIX_1YNM 								6
+#define	HYNIX_1YNM_8GB 							6
 //for Toshiba
 #define	TOSHIBA_2XNM 							20		//TC58NVG5D2HTA00
 #define	TOSHIBA_A19NM 							21																//TC58NVG6D2GTA00
@@ -411,7 +406,6 @@ struct read_retry_info
 	unsigned char	retry_cnt_lp;
 	unsigned char	retry_cnt_up;
 	unsigned char	retry_cnt_tp;
-    unsigned char	retry_stage;
 
 	unsigned char	cur_cnt_lp[MAX_CHIP_NUM];
 	unsigned char	cur_cnt_up[MAX_CHIP_NUM];
@@ -551,8 +545,6 @@ struct hw_controller{
 
 	void	(*get_usr_byte)(struct hw_controller *controller, unsigned char *oob_buf, unsigned char byte_num);
 	void	(*set_usr_byte)(struct hw_controller *controller, unsigned char *oob_buf, unsigned char byte_num);
-	void	(*enter_standby)(struct hw_controller *controller);
-
 };
 
 /*** nand chip operation function ***/
@@ -651,12 +643,6 @@ struct dev_para{
 
 	unsigned option;
 };
-struct _phy_partition{
-	const char name[MAX_DEVICE_NAME_LEN];
-	uint64_t phy_off;
-	uint64_t phy_len;
-    uint64_t logic_len;
-};
 
 #define MAX_PART_NUM	16
 #define PART_NAME_LEN 16
@@ -673,11 +659,6 @@ struct nand_config{
 	unsigned int driver_version;
 	unsigned char dev_num;
 	unsigned short fbbt_blk_addr;
-};
-struct phy_partition_info{
-	unsigned int crc;
-	struct _phy_partition partition[MAX_DEVICE_NUM];
-	unsigned char dev_num;
 };
 
 struct nand_bbt {
@@ -743,7 +724,6 @@ struct amlnand_chip {
 
 	nand_arg_info 	config_msg;
 	struct nand_config * config_ptr;
-    struct phy_partition_info* phy_part_ptr;
 
 	nand_arg_info    nand_bbtinfo;
 	 nand_arg_info  shipped_bbtinfo;
@@ -752,7 +732,6 @@ struct amlnand_chip {
 	 nand_arg_info  nand_key;
 	nand_arg_info  nand_secure;
 	nand_arg_info  uboot_env;
-    nand_arg_info  nand_phy_partition;
 #ifndef AML_NAND_UBOOT
 	struct pinctrl *nand_pinctrl;
 	struct pinctrl_state *nand_pinstate;
@@ -798,14 +777,11 @@ extern void nand_boot_info_prepare(struct amlnand_phydev *phydev, unsigned char 
 extern void uboot_set_ran_mode(struct amlnand_phydev *phydev);
 extern void get_sys_clk_rate(int * rate);
 extern int aml_ubootenv_init(struct amlnand_chip *aml_chip);
-extern int aml_ubootenv_reinit(struct amlnand_chip *aml_chip);
-unsigned int aml_info_checksum(unsigned char *data,int lenth);
 
 #ifndef AML_NAND_UBOOT
 extern  void   nand_get_chip(void *aml_chip);
 extern void  nand_release_chip(void *aml_chip);
 extern int aml_key_init(struct amlnand_chip *aml_chip);
-extern int aml_key_reinit(struct amlnand_chip *aml_chip);
 extern int aml_secure_init(struct amlnand_chip *aml_chip);
 extern int amlnand_info_init(struct amlnand_chip *aml_chip,unsigned char * info,unsigned char * buf,unsigned char *name,unsigned size);
 extern int amlnand_check_info_by_name(struct amlnand_chip *aml_chip,unsigned char * info,unsigned char * name ,unsigned size);

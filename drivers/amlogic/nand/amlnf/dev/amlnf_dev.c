@@ -60,7 +60,7 @@ static struct class_attribute phydev_class_attrs[] = {
     __ATTR(verify,       S_IRUGO | S_IWUSR, NULL,    verify_nand_page),
     __ATTR(dump,       S_IRUGO | S_IWUSR, NULL,    dump_nand_page),
     __ATTR(bbt_table,       S_IRUGO | S_IWUSR, NULL,    show_bbt_table),
-    __ATTR(ioctl,       S_IRUGO | S_IWUSR, NULL,    nand_ioctl),
+    __ATTR(test_sync_flag,       S_IRUGO | S_IWUSR, NULL,    change_test_sync_flag),
     __ATTR(page_read,  S_IRUGO | S_IWUSR, NULL,    nand_page_read),
     __ATTR(page_write,  S_IRUGO | S_IWUSR, NULL,    nand_page_write),
     __ATTR(version,       S_IRUGO | S_IWUSR, show_amlnf_version_info,    NULL),
@@ -552,12 +552,12 @@ static int get_nand_platform(struct aml_nand_device *aml_nand_dev,struct platfor
 #define POR_CARD_BOOT() 	(POR_BOOT_VALUE == 0)
 
 
-#define SPI_BOOT_FLAG 		0
+#define SPI_BOOT_FLAG 			0
 #define NAND_BOOT_FLAG 		1
 #define EMMC_BOOT_FLAG 		2
 #define CARD_BOOT_FLAG 		3
-#define SPI_NAND_FLAG		4
-#define SPI_EMMC_FLAG		5
+#define SPI_NAND_FLAG			4
+#define SPI_EMMC_FLAG			5
 
 /***
 *boot_device_flag = 0 ; indicate spi+nand boot
@@ -568,27 +568,26 @@ int check_storage_device(void)
 {
 	int value = -1;
 	value = boot_device_flag;
-	/*  */
 	if((value == -1)||(value == 0)||(value == SPI_NAND_FLAG) ||(value == NAND_BOOT_FLAG) ){
-		/* not init, check poc */
-		if((value == 0)||(value == -1)){
-			if(POR_NAND_BOOT()){
-				boot_device_flag = 1;
-			}else if(POR_EMMC_BOOT()){
-				boot_device_flag = -1;
-			}else if(POR_SPI_BOOT()){
-				boot_device_flag = 0;
-			}else if(POR_CARD_BOOT()){	//why???
-				boot_device_flag = 1;
-			}
-		}else{ /*  */
-			boot_device_flag = 0;
-			if((value == NAND_BOOT_FLAG)){
-				boot_device_flag = 1;
-			}
-		}
+				if((value == 0)||(value == -1)){
 
-	} else {
+					if(POR_NAND_BOOT()){
+						boot_device_flag = 1;
+					}else if(POR_EMMC_BOOT()){
+						boot_device_flag = -1;
+					}else if(POR_SPI_BOOT()){
+						boot_device_flag = 0;
+					}else if(POR_CARD_BOOT()){
+						boot_device_flag = 1;
+					}
+				}else{
+					boot_device_flag = 0;
+					if((value == NAND_BOOT_FLAG)){
+						boot_device_flag = 1;
+					}
+				}
+
+		}else {
 		boot_device_flag = -1;
 	}
 	aml_nand_msg("boot_device_flag : %d",boot_device_flag);

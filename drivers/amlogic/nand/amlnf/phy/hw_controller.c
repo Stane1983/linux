@@ -148,7 +148,7 @@ static int controller_quene_rb(struct hw_controller *controller, unsigned char c
 {
 	unsigned time_out_limit, time_out_cnt = 0;
 	struct amlnand_chip *aml_chip = controller->aml_chip;
-	int ret = 0,status = 0;
+	int ret = 0;
 
 	if(aml_chip->state == CHIP_RESETING){
 		time_out_limit = AML_NAND_ERASE_BUSY_TIMEOUT;
@@ -189,8 +189,7 @@ static int controller_quene_rb(struct hw_controller *controller, unsigned char c
 
 		do{
 			//udelay(chip->chip_delay);
-				status = (int)controller->readbyte(controller);
-			if (status & NAND_STATUS_READY)
+			if ((int)controller->readbyte(controller) & NAND_STATUS_READY)
 				break;
 			udelay(1);
 		}while(time_out_cnt++ <= time_out_limit);   //200ms max
@@ -205,11 +204,9 @@ static int controller_quene_rb(struct hw_controller *controller, unsigned char c
 
 	}
 
-	if(time_out_cnt >=  time_out_limit){
+	if(time_out_cnt >=  time_out_limit)
 		ret = -NAND_BUSY_FAILURE;
-		printk("status:%x\n",status);
-		dump_stack();
-	}
+
 	return ret;
 }
 
@@ -235,7 +232,7 @@ static int controller_hwecc_correct(struct hw_controller *controller, unsigned s
 		cur_ecc = NAND_ECC_CNT(usr_info);
 		//aml_nand_dbg("uncorrected for cur_ecc:%d, usr_buf[%d]:%x", cur_ecc, ecc_step_num, usr_info);
 		if(cur_ecc == 0x3f){
-			controller->zero_cnt = NAND_ZERO_CNT(usr_info);
+		controller->zero_cnt = NAND_ZERO_CNT(usr_info);
 			if(max_ecc < controller->zero_cnt) {
 				max_ecc =  controller->zero_cnt;
 			}
@@ -508,12 +505,6 @@ static int controller_hw_init(struct hw_controller *controller)
 	aml_nand_dbg("init bus_cycle=%d, bus_timing=%d, system=%d.%dns",
 		bus_cycle, bus_timing, sys_time/10, sys_time%10);
 	return ret;
-}
-
-void controller_enter_standby(struct hw_controller *controller)
-{
-	//just enter standby status.
-	NFC_SEND_CMD_STANDBY(5);	//delay for 5 cycle.
 }
 
 static int controller_adjust_timing(struct hw_controller *controller)
@@ -836,8 +827,6 @@ static void controller_set_user_byte(struct hw_controller *controller, unsigned 
 		controller->get_usr_byte = controller_get_user_byte;
 	if (!controller->set_usr_byte)
 		controller->set_usr_byte = controller_set_user_byte;
-	if (!controller->enter_standby)
-		controller->enter_standby = controller_enter_standby;
 
 	for (i=0; i<MAX_CHIP_NUM; i++) {
 		controller->ce_enable[i] = (((CE_PAD_DEFAULT >> i*4) & 0xf) << 10);

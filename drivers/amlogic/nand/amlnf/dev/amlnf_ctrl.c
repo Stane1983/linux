@@ -136,21 +136,10 @@ int phydev_suspend(struct amlnand_phydev *phydev)
 		return 0;
 
 }
-int aml_sys_info_reinit(struct amlnand_chip *aml_chip);
 
 void phydev_resume(struct amlnand_phydev *phydev)
 {
-	struct amlnand_chip *aml_chip;
-
-	aml_chip = (struct amlnand_chip *)phydev->priv;
-
 	amlchip_resume(phydev);
-
-	/* fixme, reinit sysinfo...  only resume once!*/
-	if (!strncmp((char*)phydev->name, NAND_CODE_NAME, strlen((const char*)NAND_CODE_NAME)) ){
-		aml_sys_info_reinit(aml_chip);
-	}
-
 	return;
 }
 int nand_idleflag=0;
@@ -183,12 +172,8 @@ void   nand_get_chip(void *chip)
  void  nand_release_chip(void *chip)
 {
 	 struct amlnand_chip *aml_chip = (struct amlnand_chip *)chip;
-	 struct hw_controller *controller = &(aml_chip->controller);
-
-	int ret;
+	 int ret;
 	if(nand_idleflag){
-		//enter standby state.
-		controller->enter_standby(controller );
 		ret = pinctrl_select_state(aml_chip->nand_pinctrl , aml_chip->nand_idlestate);
 		if(ret<0)
 			printk("select idle state error\n");
@@ -438,7 +423,6 @@ void get_sys_clk_rate(int * rate)
 	#ifndef AML_NAND_UBOOT
 		sys_clk = clk_get_sys(NAND_SYS_CLK_NAME, NULL);
 		*rate = clk_get_rate(sys_clk);
-		*rate = *rate/1000000;
 	#else
 		*rate = get_clk81();
 	#endif
@@ -620,35 +604,6 @@ exit_error:
 		buf = NULL;
 	}
 
-	return ret;
-}
-/*
-  For fastboot, yyh.
- */
-int aml_sys_info_reinit(struct amlnand_chip *aml_chip)
-{
-	int ret =0;
-
-#ifdef CONFIG_AML_NAND_KEY
-	ret = aml_key_reinit(aml_chip);
-	if(ret < 0){
-		aml_nand_msg("nand key init failed");
-	}
-#endif
-
-#ifdef CONFIG_SECURE_NAND
-	ret = aml_secure_init(aml_chip);
-	if(ret < 0) {
-		aml_nand_msg("nand secure reinit failed");
-	}
-#endif
-
-	if(boot_device_flag == 1) {
-		ret = aml_ubootenv_reinit(aml_chip);
-		if(ret < 0) {
-			aml_nand_msg("nand uboot env reinit failed");
-		}
-	}
 	return ret;
 }
 

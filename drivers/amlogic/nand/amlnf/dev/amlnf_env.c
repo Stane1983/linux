@@ -226,7 +226,7 @@ int amlnf_env_save(unsigned char *buf,int len)
 	unsigned char *env_buf = NULL;
 	struct nand_flash *flash = &aml_chip_env->flash;
 	int ret=0;
-	aml_nand_dbg("uboot env amlnf_env_save : ####");
+	aml_nand_msg("uboot env amlnf_env_save : ####");
 
 	if(len > CONFIG_ENV_SIZE)
 	{
@@ -266,7 +266,7 @@ int amlnf_env_read(unsigned char *buf,int len)
 	int ret=0;
 	struct nand_flash *flash = &aml_chip_env->flash;
 
-	aml_nand_dbg("uboot env amlnf_env_read : ####");
+	aml_nand_msg("uboot env amlnf_env_read : ####");
 
 	if(len > CONFIG_ENV_SIZE)
 	{
@@ -323,7 +323,7 @@ int aml_ubootenv_init(struct amlnand_chip *aml_chip)
 
 	ret = amlnand_info_init(aml_chip, (unsigned char *)&(aml_chip->uboot_env),env_buf,ENV_INFO_HEAD_MAGIC, CONFIG_ENV_SIZE);
 	if(ret < 0){
-		aml_nand_msg("%s() failed\n", __func__);
+		aml_nand_msg("aml_ubootenv_init failed\n");
 		ret = -1;
 		goto exit_err;
 	}
@@ -336,7 +336,7 @@ int aml_ubootenv_init(struct amlnand_chip *aml_chip)
 		}
 	}*/
 #ifndef AML_NAND_UBOOT
-	aml_nand_dbg("%s() : register env chardev", __func__);
+	aml_nand_dbg("aml_ubootenv_init : register env chardev");
 	ret = alloc_chrdev_region(&uboot_env_no,0,1,ENV_NAME);
 	if(ret < 0){
 		aml_nand_msg("alloc uboot env dev_t no failed");
@@ -374,7 +374,7 @@ int aml_ubootenv_init(struct amlnand_chip *aml_chip)
 		goto exit_err3;
 	}
 
-	aml_nand_dbg("%s() : register env chardev OK", __func__);
+	aml_nand_dbg("aml_ubootenv_init : register env chardev OK");
 #endif
 
 	if(env_buf){
@@ -402,30 +402,3 @@ exit_err:
 	return ret;
 }
 
-int aml_ubootenv_reinit(struct amlnand_chip *aml_chip)
-{
-	int ret = 0;
-	unsigned char * env_buf = NULL;
-	aml_chip_env = aml_chip;
-
-	env_buf = aml_nand_malloc(CONFIG_ENV_SIZE);
-	if (env_buf == NULL){
-		aml_nand_msg("nand malloc for secure_ptr failed");
-		ret = -1;
-		goto exit_err;
-	}
-	memset(env_buf,0x0,CONFIG_ENV_SIZE);
-
-	ret = amlnand_info_init(aml_chip, (unsigned char *)&(aml_chip->uboot_env),env_buf, ENV_INFO_HEAD_MAGIC, CONFIG_ENV_SIZE);
-	if(ret < 0){
-		aml_nand_msg("%s() failed\n", __func__);
-		ret = -1;
-	}
-
-	if(env_buf){
-		kfree(env_buf);
-		env_buf = NULL;
-	}
-exit_err:
-	return ret;
-}
