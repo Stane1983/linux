@@ -145,6 +145,9 @@ extern int get_aml_key_kernel(const char* key_name, unsigned char* data, int asc
 extern int extenal_api_key_set_version(char *devvesion);
 static char print_buff[1025];
 #endif
+#if defined (CONFIG_EFUSE)
+extern int aml_efuse_get_item(unsigned char* key_name, unsigned char* data);
+#endif
 static int stmmac_probe_config_dt(struct platform_device *pdev,
 				  struct plat_stmmacenet_data *plat,
 				  const char **mac)
@@ -152,7 +155,7 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 	struct device_node *np = pdev->dev.of_node;
 	struct stmmac_dma_cfg *dma_cfg;
 	const struct of_device_id *device;
-#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
+#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY) || defined (CONFIG_EFUSE)
 	int i;
 	int ret;
 #endif
@@ -180,6 +183,15 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 		plat->exit = data->exit;
 	}
 
+#if defined (CONFIG_EFUSE)
+	ret = aml_efuse_get_item("mac", DEFMAC);
+	if (ret >= 0) {
+		printk("MAC address from eFuse: %02x:%02x:%02x:%02x:%02x:%02x\n",
+			DEFMAC[0],DEFMAC[1],DEFMAC[2],DEFMAC[3],DEFMAC[4],DEFMAC[5]);
+		g_mac_addr_setup++;
+	}
+#endif
+
 #if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
 	if (g_mac_addr_setup == 0)
 	{
@@ -197,6 +209,8 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 			}
 		}
 	}
+#endif
+#if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY) || defined (CONFIG_EFUSE)
 
 	*mac = DEFMAC;
 
