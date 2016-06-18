@@ -1446,6 +1446,12 @@ dwc_otg_transaction_type_e dwc_otg_hcd_select_transactions(dwc_otg_hcd_t * hcd)
 	dwc_otg_qh_t *qh;
 	int num_channels;
 	dwc_otg_transaction_type_e ret_val = DWC_OTG_TRANSACTION_NONE;
+	hfnum_data_t hfnum;
+	gintmsk_data_t intr_mask = {.d32 = 0 };
+	hfnum.d32 = DWC_READ_REG32(&hcd->core_if->host_if->host_global_regs->hfnum);
+	intr_mask.d32 = DWC_READ_REG32(&hcd->core_if->core_global_regs->gintmsk);
+	if ((hfnum.b.frrem < 3000) && intr_mask.b.sofintr) {return ret_val;}
+
 
 #ifdef DEBUG_SOF
 	DWC_DEBUGPL(DBG_HCD, "  Select Transactions\n");
