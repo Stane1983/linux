@@ -31,7 +31,6 @@ source "drivers/amlogic/wifi/rtl8812AU/Kconfig"
 source "drivers/amlogic/wifi/rtl8xxx_CU/Kconfig"
 source "drivers/amlogic/wifi/rtl8xxx_DU/Kconfig"
 source "drivers/amlogic/wifi/rtl8xxx_EU/Kconfig"
-source "drivers/amlogic/wifi/rtl8xxx_EU_MP/Kconfig"
 source "drivers/amlogic/wifi/bcmdhd/Kconfig"
 source "drivers/amlogic/wifi/ssv6xxx/Kconfig"
 
