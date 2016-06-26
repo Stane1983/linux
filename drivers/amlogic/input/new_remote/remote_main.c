@@ -260,7 +260,7 @@ void remote_send_key(struct input_dev *dev, unsigned int scancode, unsigned int 
 
 		if(type == 2 && key_map[gp_remote->map_num][scancode] == 0x0074) {
 			return;
-		} else {
+		} else if(!gp_remote->sleep) {
 			input_event(dev, EV_KEY, key_map[gp_remote->map_num][scancode], type);
 			input_sync(dev);
 		}
