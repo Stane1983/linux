@@ -52,7 +52,9 @@
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
 #include <linux/earlysuspend.h>
+#include <linux/suspend.h>
 static struct early_suspend early_suspend;
+extern void request_suspend_state(suspend_state_t new_state);
 #endif
 
 static bool key_pointer_switch = true;
@@ -280,6 +282,9 @@ void remote_send_key(struct input_dev *dev, unsigned int scancode, unsigned int 
 		if(gp_remote->sleep && key_map[gp_remote->map_num][scancode] == 0x0074) {
 			printk(" set AO_RTI_STATUS_REG2 0x4853ffff \n");
 			WRITE_AOBUS_REG(AO_RTI_STATUS_REG2, 0x4853ffff); // tell uboot don't suspend
+#ifdef CONFIG_EARLYSUSPEND
+			request_suspend_state(PM_SUSPEND_ON);
+#endif
 		}
 	}
 }
