@@ -614,6 +614,12 @@ static void remote_early_suspend(struct early_suspend *handler)
 	gp_remote->sleep = 1;
 	return;
 }
+static void remote_late_resume(struct early_suspend *handler)
+{
+	printk("remote_late_resume, set sleep 0 \n");
+	gp_remote->sleep = 0;
+	return;
+}
 #endif
 
 static const struct of_device_id remote_dt_match[]= {
@@ -691,7 +697,7 @@ static int remote_probe(struct platform_device *pdev)
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	early_suspend.level = EARLY_SUSPEND_LEVEL_STOP_DRAWING + 1;
 	early_suspend.suspend = remote_early_suspend;
-	early_suspend.resume = NULL;
+	early_suspend.resume = remote_late_resume;
 	early_suspend.param = gp_remote;
 	register_early_suspend(&early_suspend);
 #endif
