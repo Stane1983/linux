@@ -815,8 +815,8 @@ static int remote_resume(struct platform_device * pdev)
 
 static int remote_suspend(struct platform_device * pdev,pm_message_t state)
 {
-	printk("remote_suspend, set sleep 1 \n");
-	gp_remote->sleep = 1;
+	printk("remote_suspend, set sleep 0 \n");
+	gp_remote->sleep = 0;
 	return 0;
 }
 
