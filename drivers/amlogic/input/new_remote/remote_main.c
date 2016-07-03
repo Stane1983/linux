@@ -796,11 +796,6 @@ static int remote_resume(struct platform_device * pdev)
 	am_remote_read_reg(DURATION_REG1_AND_STATUS);
 	am_remote_read_reg(FRAME_BODY);
 	if (READ_AOBUS_REG(AO_RTI_STATUS_REG2) == 0x1234abcd) {
-		input_event(gp_remote->input, EV_KEY, KEY_POWER, 1);
-		input_sync(gp_remote->input);
-		input_event(gp_remote->input, EV_KEY, KEY_POWER, 0);
-		input_sync(gp_remote->input);
-
 		//aml_write_reg32(P_AO_RTC_ADDR0, (aml_read_reg32(P_AO_RTC_ADDR0) | (0x0000f000)));
 		WRITE_AOBUS_REG(AO_RTI_STATUS_REG2, 0);
 	}
