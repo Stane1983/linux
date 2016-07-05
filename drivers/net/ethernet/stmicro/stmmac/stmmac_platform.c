@@ -183,18 +183,6 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 		plat->exit = data->exit;
 	}
 
-#if defined (CONFIG_EFUSE)
-	if (g_mac_addr_setup == 0)
-	{
-		ret = aml_efuse_get_item("mac", DEFMAC);
-		if (ret >= 0) {
-			printk("MAC address from eFuse: %02x:%02x:%02x:%02x:%02x:%02x\n",
-				DEFMAC[0],DEFMAC[1],DEFMAC[2],DEFMAC[3],DEFMAC[4],DEFMAC[5]);
-			g_mac_addr_setup++;
-		}
-	}
-#endif
-
 #if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY)
 	if (g_mac_addr_setup == 0)
 	{
@@ -210,9 +198,23 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 			{
 				DEFMAC[i] = simple_strtol(&print_buff[3 * i], NULL, 16);
 			}
+			g_mac_addr_setup++;
 		}
 	}
 #endif
+
+#if defined (CONFIG_EFUSE)
+	if (g_mac_addr_setup == 0)
+	{
+		ret = aml_efuse_get_item("mac", DEFMAC);
+		if (ret >= 0) {
+			printk("MAC address from eFuse: %02x:%02x:%02x:%02x:%02x:%02x\n",
+				DEFMAC[0],DEFMAC[1],DEFMAC[2],DEFMAC[3],DEFMAC[4],DEFMAC[5]);
+			g_mac_addr_setup++;
+		}
+	}
+#endif
+
 #if defined (CONFIG_AML_NAND_KEY) || defined (CONFIG_SECURITYKEY) || defined (CONFIG_EFUSE)
 
 	*mac = DEFMAC;
