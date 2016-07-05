@@ -184,11 +184,14 @@ static int stmmac_probe_config_dt(struct platform_device *pdev,
 	}
 
 #if defined (CONFIG_EFUSE)
-	ret = aml_efuse_get_item("mac", DEFMAC);
-	if (ret >= 0) {
-		printk("MAC address from eFuse: %02x:%02x:%02x:%02x:%02x:%02x\n",
-			DEFMAC[0],DEFMAC[1],DEFMAC[2],DEFMAC[3],DEFMAC[4],DEFMAC[5]);
-		g_mac_addr_setup++;
+	if (g_mac_addr_setup == 0)
+	{
+		ret = aml_efuse_get_item("mac", DEFMAC);
+		if (ret >= 0) {
+			printk("MAC address from eFuse: %02x:%02x:%02x:%02x:%02x:%02x\n",
+				DEFMAC[0],DEFMAC[1],DEFMAC[2],DEFMAC[3],DEFMAC[4],DEFMAC[5]);
+			g_mac_addr_setup++;
+		}
 	}
 #endif
 
