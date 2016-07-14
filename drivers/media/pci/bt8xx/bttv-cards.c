@@ -131,7 +131,7 @@ MODULE_PARM_DESC(vsfx,"set VSFX pci config bit "
 		 "[yet another chipset flaw workaround]");
 MODULE_PARM_DESC(latency,"pci latency timer");
 MODULE_PARM_DESC(card,"specify TV/grabber card model, see CARDLIST file for a list");
-MODULE_PARM_DESC(pll, "specify installed crystal (0=none, 28=28 MHz, 35=35 MHz, 14=14 MHz)");
+MODULE_PARM_DESC(pll,"specify installed crystal (0=none, 28=28 MHz, 35=35 MHz)");
 MODULE_PARM_DESC(tuner,"specify installed tuner type");
 MODULE_PARM_DESC(autoload, "obsolete option, please do not use anymore");
 MODULE_PARM_DESC(audiodev, "specify audio device:\n"
@@ -2426,7 +2426,7 @@ struct tvcard bttv_tvcards[] = {
 	},
 		/* ---- card 0x87---------------------------------- */
 	[BTTV_BOARD_DVICO_FUSIONHDTV_5_LITE] = {
-		/* Michael Krufky <mkrufky@linuxtv.org> */
+		/* Michael Krufky <mkrufky@m1k.net> */
 		.name           = "DViCO FusionHDTV 5 Lite",
 		.tuner_type     = TUNER_LG_TDVS_H06XF, /* TDVS-H064F */
 		.tuner_addr	= ADDR_UNSET,
@@ -2705,7 +2705,7 @@ struct tvcard bttv_tvcards[] = {
 		.has_radio      = 1,
 		.has_remote     = 1,
 	},
-	[BTTV_BOARD_VD012] = {
+		[BTTV_BOARD_VD012] = {
 		/* D.Heer@Phytec.de */
 		.name           = "PHYTEC VD-012 (bt878)",
 		.video_inputs   = 4,
@@ -2718,7 +2718,7 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
-	[BTTV_BOARD_VD012_X1] = {
+		[BTTV_BOARD_VD012_X1] = {
 		/* D.Heer@Phytec.de */
 		.name           = "PHYTEC VD-012-X1 (bt878)",
 		.video_inputs   = 4,
@@ -2731,7 +2731,7 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
-	[BTTV_BOARD_VD012_X2] = {
+		[BTTV_BOARD_VD012_X2] = {
 		/* D.Heer@Phytec.de */
 		.name           = "PHYTEC VD-012-X2 (bt878)",
 		.video_inputs   = 4,
@@ -2744,7 +2744,7 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
-	[BTTV_BOARD_GEOVISION_GV800S] = {
+		[BTTV_BOARD_GEOVISION_GV800S] = {
 		/* Bruno Christo <bchristo@inf.ufsm.br>
 		 *
 		 * GeoVision GV-800(S) has 4 Conexant Fusion 878A:
@@ -2771,7 +2771,7 @@ struct tvcard bttv_tvcards[] = {
 		.no_tda7432	= 1,
 		.muxsel_hook    = gv800s_muxsel,
 	},
-	[BTTV_BOARD_GEOVISION_GV800S_SL] = {
+		[BTTV_BOARD_GEOVISION_GV800S_SL] = {
 		/* Bruno Christo <bchristo@inf.ufsm.br>
 		 *
 		 * GeoVision GV-800(S) has 4 Conexant Fusion 878A:
@@ -2808,7 +2808,6 @@ struct tvcard bttv_tvcards[] = {
 		.tuner_type     = TUNER_ABSENT,
 		.tuner_addr	= ADDR_UNSET,
 	},
-	/* ---- card 0xa0---------------------------------- */
 	[BTTV_BOARD_TVT_TD3116] = {
 		.name           = "Tongwei Video Technology TD-3116",
 		.video_inputs   = 16,
@@ -2826,51 +2825,7 @@ struct tvcard bttv_tvcards[] = {
 		.muxsel         = MUXSEL(2, 3, 1, 0),
 		.tuner_type     = TUNER_ABSENT,
 	},
-	[BTTV_BOARD_ADLINK_MPG24] = {
-		/* Adlink MPG24 */
-		.name           = "Adlink MPG24",
-		.video_inputs   = 1,
-		/* .audio_inputs= 1, */
-		.svhs           = NO_SVHS,
-		.muxsel         = MUXSEL(2, 2, 2, 2),
-		.tuner_type     = UNSET,
-		.tuner_addr	= ADDR_UNSET,
-		.pll            = PLL_28,
-	},
-	[BTTV_BOARD_BT848_CAP_14] = {
-		.name		= "Bt848 Capture 14MHz",
-		.video_inputs	= 4,
-		.svhs		= 2,
-		.muxsel		= MUXSEL(2, 3, 1, 0),
-		.pll		= PLL_14,
-		.tuner_type	= TUNER_ABSENT,
-	},
-	[BTTV_BOARD_CYBERVISION_CV06] = {
-		.name		= "CyberVision CV06 (SV)",
-		.video_inputs	= 4,
-		/* .audio_inputs= 0, */
-		.svhs		= NO_SVHS,
-		.muxsel		= MUXSEL(2, 3, 1, 0),
-		.pll		= PLL_28,
-		.tuner_type	= TUNER_ABSENT,
-		.tuner_addr	= ADDR_UNSET,
-	},
-	[BTTV_BOARD_KWORLD_VSTREAM_XPERT] = {
-		/* Pojar George <geoubuntu@gmail.com> */
-		.name           = "Kworld V-Stream Xpert TV PVR878",
-		.video_inputs   = 3,
-		/* .audio_inputs= 1, */
-		.svhs           = 2,
-		.gpiomask       = 0x001c0007,
-		.muxsel         = MUXSEL(2, 3, 1, 1),
-		.gpiomux        = { 0, 1, 2, 2 },
-		.gpiomute       = 3,
-		.pll            = PLL_28,
-		.tuner_type     = TUNER_TENA_9533_DI,
-		.tuner_addr    = ADDR_UNSET,
-		.has_remote     = 1,
-		.has_radio      = 1,
-	},
+
 };
 
 static const unsigned int bttv_num_tvcards = ARRAY_SIZE(bttv_tvcards);
@@ -3435,10 +3390,6 @@ void bttv_init_card2(struct bttv *btv)
 			btv->pll.pll_ifreq=35468950;
 			btv->pll.pll_crystal=BT848_IFORM_XT1;
 		}
-		if (PLL_14 == bttv_tvcards[btv->c.type].pll) {
-			btv->pll.pll_ifreq = 14318181;
-			btv->pll.pll_crystal = BT848_IFORM_XT0;
-		}
 		/* insmod options can override */
 		switch (pll[btv->c.nr]) {
 		case 0: /* none */
@@ -3457,12 +3408,6 @@ void bttv_init_card2(struct bttv *btv)
 			btv->pll.pll_ifreq   = 35468950;
 			btv->pll.pll_ofreq   = 0;
 			btv->pll.pll_crystal = BT848_IFORM_XT1;
-			break;
-		case 3: /* 14 MHz */
-		case 14:
-			btv->pll.pll_ifreq   = 14318181;
-			btv->pll.pll_ofreq   = 0;
-			btv->pll.pll_crystal = BT848_IFORM_XT0;
 			break;
 		}
 	}
@@ -4456,7 +4401,9 @@ static void tibetCS16_init(struct bttv *btv)
  * is {3, 0, 2, 1}, i.e. the first controller to be detected is logical
  * unit 3, the second (which is the master) is logical unit 0, etc.
  * We need to maintain the status of the analog switch (which of the 16
- * cameras is connected to which of the 4 controllers) in sw_status array.
+ * cameras is connected to which of the 4 controllers).  Rather than
+ * add to the bttv structure for this, we use the data reserved for
+ * the mbox (unused for this card type).
  */
 
 /*
@@ -4491,6 +4438,7 @@ static void kodicom4400r_write(struct bttv *btv,
  */
 static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
 {
+	char *sw_status;
 	int xaddr, yaddr;
 	struct bttv *mctlr;
 	static unsigned char map[4] = {3, 0, 2, 1};
@@ -4501,13 +4449,14 @@ static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
 	}
 	yaddr = (btv->c.nr - mctlr->c.nr + 1) & 3; /* the '&' is for safety */
 	yaddr = map[yaddr];
+	sw_status = (char *)(&mctlr->mbox_we);
 	xaddr = input & 0xf;
 	/* Check if the controller/camera pair has changed, else ignore */
-	if (mctlr->sw_status[yaddr] != xaddr)
+	if (sw_status[yaddr] != xaddr)
 	{
 		/* "open" the old switch, "close" the new one, save the new */
-		kodicom4400r_write(mctlr, mctlr->sw_status[yaddr], yaddr, 0);
-		mctlr->sw_status[yaddr] = xaddr;
+		kodicom4400r_write(mctlr, sw_status[yaddr], yaddr, 0);
+		sw_status[yaddr] = xaddr;
 		kodicom4400r_write(mctlr, xaddr, yaddr, 1);
 	}
 }
@@ -4520,6 +4469,7 @@ static void kodicom4400r_muxsel(struct bttv *btv, unsigned int input)
  */
 static void kodicom4400r_init(struct bttv *btv)
 {
+	char *sw_status = (char *)(&btv->mbox_we);
 	int ix;
 
 	gpio_inout(0x0003ff, 0x0003ff);
@@ -4527,7 +4477,7 @@ static void kodicom4400r_init(struct bttv *btv)
 	gpio_write(0);
 	/* Preset camera 0 to the 4 controllers */
 	for (ix = 0; ix < 4; ix++) {
-		btv->sw_status[ix] = ix;
+		sw_status[ix] = ix;
 		kodicom4400r_write(btv, ix, ix, 1);
 	}
 	/*
@@ -4804,6 +4754,7 @@ static void gv800s_write(struct bttv *btv,
 static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 {
 	struct bttv *mctlr;
+	char *sw_status;
 	int xaddr, yaddr;
 	static unsigned int map[4][4] = { { 0x0, 0x4, 0xa, 0x6 },
 					  { 0x1, 0x5, 0xb, 0x7 },
@@ -4816,13 +4767,14 @@ static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 		return;
 	}
 	yaddr = (btv->c.nr - mctlr->c.nr) & 3;
+	sw_status = (char *)(&mctlr->mbox_we);
 	xaddr = map[yaddr][input] & 0xf;
 
 	/* Check if the controller/camera pair has changed, ignore otherwise */
-	if (mctlr->sw_status[yaddr] != xaddr) {
+	if (sw_status[yaddr] != xaddr) {
 		/* disable the old switch, enable the new one and save status */
-		gv800s_write(mctlr, mctlr->sw_status[yaddr], yaddr, 0);
-		mctlr->sw_status[yaddr] = xaddr;
+		gv800s_write(mctlr, sw_status[yaddr], yaddr, 0);
+		sw_status[yaddr] = xaddr;
 		gv800s_write(mctlr, xaddr, yaddr, 1);
 	}
 }
@@ -4830,6 +4782,7 @@ static void gv800s_muxsel(struct bttv *btv, unsigned int input)
 /* GeoVision GV-800(S) "master" chip init */
 static void gv800s_init(struct bttv *btv)
 {
+	char *sw_status = (char *)(&btv->mbox_we);
 	int ix;
 
 	gpio_inout(0xf107f, 0xf107f);
@@ -4838,7 +4791,7 @@ static void gv800s_init(struct bttv *btv)
 
 	/* Preset camera 0 to the 4 controllers */
 	for (ix = 0; ix < 4; ix++) {
-		btv->sw_status[ix] = ix;
+		sw_status[ix] = ix;
 		gv800s_write(btv, ix, ix, 1);
 	}
 

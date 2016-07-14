@@ -614,20 +614,17 @@ static int buffer_prepare(struct vb2_buffer *vb)
 	return 0;
 }
 
-static void buffer_finish(struct vb2_buffer *vb)
+static int buffer_finish(struct vb2_buffer *vb)
 {
 	struct pwc_device *pdev = vb2_get_drv_priv(vb->vb2_queue);
 	struct pwc_frame_buf *buf = container_of(vb, struct pwc_frame_buf, vb);
 
-	if (vb->state == VB2_BUF_STATE_DONE) {
-		/*
-		 * Application has called dqbuf and is getting back a buffer
-		 * we've filled, take the pwc data we've stored in buf->data
-		 * and decompress it into a usable format, storing the result
-		 * in the vb2_buffer.
-		 */
-		pwc_decompress(pdev, buf);
-	}
+	/*
+	 * Application has called dqbuf and is getting back a buffer we've
+	 * filled, take the pwc data we've stored in buf->data and decompress
+	 * it into a usable format, storing the result in the vb2_buffer
+	 */
+	return pwc_decompress(pdev, buf);
 }
 
 static void buffer_cleanup(struct vb2_buffer *vb)
@@ -1004,7 +1001,7 @@ static int usb_pwc_probe(struct usb_interface *intf, const struct usb_device_id 
 	pdev->vb_queue.buf_struct_size = sizeof(struct pwc_frame_buf);
 	pdev->vb_queue.ops = &pwc_vb_queue_ops;
 	pdev->vb_queue.mem_ops = &vb2_vmalloc_memops;
-	pdev->vb_queue.timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+	pdev->vb_queue.timestamp_type = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	rc = vb2_queue_init(&pdev->vb_queue);
 	if (rc < 0) {
 		PWC_ERROR("Oops, could not initialize vb2 queue.\n");
@@ -1042,7 +1039,7 @@ static int usb_pwc_probe(struct usb_interface *intf, const struct usb_device_id 
 	/* Set the leds off */
 	pwc_set_leds(pdev, 0, 0);
 
-	/* Setup initial videomode */
+	/* Setup intial videomode */
 	rc = pwc_set_video_mode(pdev, MAX_WIDTH, MAX_HEIGHT,
 				V4L2_PIX_FMT_YUV420, 30, &compression, 1);
 	if (rc)
@@ -1081,6 +1078,7 @@ static int usb_pwc_probe(struct usb_interface *intf, const struct usb_device_id 
 	/* register webcam snapshot button input device */
 	pdev->button_dev = input_allocate_device();
 	if (!pdev->button_dev) {
+		PWC_ERROR("Err, insufficient memory for webcam snapshot button device.");
 		rc = -ENOMEM;
 		goto err_video_unreg;
 	}

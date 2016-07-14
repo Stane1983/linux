@@ -31,6 +31,7 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-fh.h>
 #include <media/v4l2-event.h>
+#include <media/v4l2-chip-ident.h>
 #include <media/videobuf2-vmalloc.h>
 
 #include <media/saa7115.h>
@@ -244,6 +245,11 @@ static int stk1160_stop_streaming(struct stk1160 *dev)
 	if (mutex_lock_interruptible(&dev->v4l_lock))
 		return -ERESTARTSYS;
 
+	/*
+	 * Once URBs are cancelled, the URB complete handler
+	 * won't be running. This is required to safely release the
+	 * current buffer (dev->isoc_ctl.buf).
+	 */
 	stk1160_cancel_isoc(dev);
 
 	/*
@@ -379,9 +385,6 @@ static int vidioc_s_std(struct file *file, void *priv, v4l2_std_id norm)
 	struct stk1160 *dev = video_drvdata(file);
 	struct vb2_queue *q = &dev->vb_vidq;
 
-	if (dev->norm == norm)
-		return 0;
-
 	if (vb2_is_busy(q))
 		return -EBUSY;
 
@@ -443,6 +446,9 @@ static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
 {
 	struct stk1160 *dev = video_drvdata(file);
 
+	if (vb2_is_busy(&dev->vb_vidq))
+		return -EBUSY;
+
 	if (i > STK1160_MAX_INPUT)
 		return -EINVAL;
 
@@ -453,6 +459,19 @@ static int vidioc_s_input(struct file *file, void *priv, unsigned int i)
 	return 0;
 }
 
+static int vidioc_g_chip_ident(struct file *file, void *priv,
+	       struct v4l2_dbg_chip_ident *chip)
+{
+	switch (chip->match.type) {
+	case V4L2_CHIP_MATCH_BRIDGE:
+		chip->ident = V4L2_IDENT_NONE;
+		chip->revision = 0;
+		return 0;
+	default:
+		return -EINVAL;
+	}
+}
+
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int vidioc_g_register(struct file *file, void *priv,
 			     struct v4l2_dbg_register *reg)
@@ -460,6 +479,19 @@ static int vidioc_g_register(struct file *file, void *priv,
 	struct stk1160 *dev = video_drvdata(file);
 	int rc;
 	u8 val;
+
+	switch (reg->match.type) {
+	case V4L2_CHIP_MATCH_I2C_DRIVER:
+		v4l2_device_call_all(&dev->v4l2_dev, 0, core, g_register, reg);
+		return 0;
+	case V4L2_CHIP_MATCH_I2C_ADDR:
+		/* TODO: is this correct? */
+		v4l2_device_call_all(&dev->v4l2_dev, 0, core, g_register, reg);
+		return 0;
+	default:
+		if (!v4l2_chip_match_host(&reg->match))
+			return -EINVAL;
+	}
 
 	/* Match host */
 	rc = stk1160_read_reg(dev, reg->reg, &val);
@@ -473,6 +505,19 @@ static int vidioc_s_register(struct file *file, void *priv,
 			     const struct v4l2_dbg_register *reg)
 {
 	struct stk1160 *dev = video_drvdata(file);
+
+	switch (reg->match.type) {
+	case V4L2_CHIP_MATCH_I2C_DRIVER:
+		v4l2_device_call_all(&dev->v4l2_dev, 0, core, s_register, reg);
+		return 0;
+	case V4L2_CHIP_MATCH_I2C_ADDR:
+		/* TODO: is this correct? */
+		v4l2_device_call_all(&dev->v4l2_dev, 0, core, s_register, reg);
+		return 0;
+	default:
+		if (!v4l2_chip_match_host(&reg->match))
+			return -EINVAL;
+	}
 
 	/* Match host */
 	return stk1160_write_reg(dev, reg->reg, cpu_to_le16(reg->val));
@@ -503,6 +548,7 @@ static const struct v4l2_ioctl_ops stk1160_ioctl_ops = {
 	.vidioc_log_status  = v4l2_ctrl_log_status,
 	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
+	.vidioc_g_chip_ident = vidioc_g_chip_ident,
 
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 	.vidioc_g_register = vidioc_g_register,
@@ -624,8 +670,16 @@ void stk1160_clear_queue(struct stk1160 *dev)
 		stk1160_info("buffer [%p/%d] aborted\n",
 				buf, buf->vb.v4l2_buf.index);
 	}
-	/* It's important to clear current buffer */
-	dev->isoc_ctl.buf = NULL;
+
+	/* It's important to release the current buffer */
+	if (dev->isoc_ctl.buf) {
+		buf = dev->isoc_ctl.buf;
+		dev->isoc_ctl.buf = NULL;
+
+		vb2_buffer_done(&buf->vb, VB2_BUF_STATE_ERROR);
+		stk1160_info("buffer [%p/%d] aborted\n",
+				buf, buf->vb.v4l2_buf.index);
+	}
 	spin_unlock_irqrestore(&dev->buf_lock, flags);
 }
 
@@ -641,7 +695,7 @@ int stk1160_vb2_setup(struct stk1160 *dev)
 	q->buf_struct_size = sizeof(struct stk1160_buffer);
 	q->ops = &stk1160_video_qops;
 	q->mem_ops = &vb2_vmalloc_memops;
-	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
+	q->timestamp_type = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 
 	rc = vb2_queue_init(q);
 	if (rc < 0)

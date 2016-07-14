@@ -413,7 +413,7 @@ uvc_register_video(struct uvc_device *uvc)
 	if (video == NULL)
 		return -ENOMEM;
 
-	video->dev_parent = &cdev->gadget->dev;
+	video->parent = &cdev->gadget->dev;
 	video->fops = &uvc_v4l2_fops;
 	video->release = video_device_release;
 	strlcpy(video->name, cdev->gadget->name, sizeof(video->name));

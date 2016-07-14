@@ -122,7 +122,7 @@ static struct fimc_fmt fimc_formats[] = {
 	}, {
 		.name		= "YUV 4:2:2 planar, Y/Cb/Cr",
 		.fourcc		= V4L2_PIX_FMT_YUV422P,
-		.depth		= { 16 },
+		.depth		= { 12 },
 		.color		= FIMC_FMT_YCBYCR422,
 		.memplanes	= 1,
 		.colplanes	= 3,
@@ -211,6 +211,17 @@ struct fimc_fmt *fimc_get_format(unsigned int index)
 		return NULL;
 
 	return &fimc_formats[index];
+}
+
+void __fimc_vidioc_querycap(struct device *dev, struct v4l2_capability *cap,
+						unsigned int caps)
+{
+	strlcpy(cap->driver, dev->driver->name, sizeof(cap->driver));
+	strlcpy(cap->card, dev->driver->name, sizeof(cap->card));
+	snprintf(cap->bus_info, sizeof(cap->bus_info),
+				"platform:%s", dev_name(dev));
+	cap->device_caps = caps;
+	cap->capabilities = cap->device_caps | V4L2_CAP_DEVICE_CAPS;
 }
 
 int fimc_check_scaler_ratio(struct fimc_ctx *ctx, int sw, int sh,
@@ -998,53 +1009,48 @@ static int fimc_probe(struct platform_device *pdev)
 
 	ret = devm_request_irq(dev, res->start, fimc_irq_handler,
 			       0, dev_name(dev), fimc);
-	if (ret < 0) {
+	if (ret) {
 		dev_err(dev, "failed to install irq (%d)\n", ret);
-		goto err_sclk;
+		goto err_clk;
 	}
 
 	ret = fimc_initialize_capture_subdev(fimc);
-	if (ret < 0)
-		goto err_sclk;
+	if (ret)
+		goto err_clk;
 
 	platform_set_drvdata(pdev, fimc);
 	pm_runtime_enable(dev);
-
-	if (!pm_runtime_enabled(dev)) {
-		ret = clk_enable(fimc->clock[CLK_GATE]);
-		if (ret < 0)
-			goto err_sd;
-	}
-
+	ret = pm_runtime_get_sync(dev);
+	if (ret < 0)
+		goto err_sd;
 	/* Initialize contiguous memory allocator */
 	fimc->alloc_ctx = vb2_dma_contig_init_ctx(dev);
 	if (IS_ERR(fimc->alloc_ctx)) {
 		ret = PTR_ERR(fimc->alloc_ctx);
-		goto err_gclk;
+		goto err_pm;
 	}
 
 	dev_dbg(dev, "FIMC.%d registered successfully\n", fimc->id);
-	return 0;
 
-err_gclk:
-	if (!pm_runtime_enabled(dev))
-		clk_disable(fimc->clock[CLK_GATE]);
+	pm_runtime_put(dev);
+	return 0;
+err_pm:
+	pm_runtime_put(dev);
 err_sd:
 	fimc_unregister_capture_subdev(fimc);
-err_sclk:
+err_clk:
 	clk_disable(fimc->clock[CLK_BUS]);
 	fimc_clk_put(fimc);
 	return ret;
 }
 
-#ifdef CONFIG_PM_RUNTIME
 static int fimc_runtime_resume(struct device *dev)
 {
 	struct fimc_dev *fimc =	dev_get_drvdata(dev);
 
 	dbg("fimc%d: state: 0x%lx", fimc->id, fimc->state);
 
-	/* Enable clocks and perform basic initialization */
+	/* Enable clocks and perform basic initalization */
 	clk_enable(fimc->clock[CLK_GATE]);
 	fimc_hw_reset(fimc);
 
@@ -1070,7 +1076,6 @@ static int fimc_runtime_suspend(struct device *dev)
 	dbg("fimc%d: state: 0x%lx", fimc->id, fimc->state);
 	return ret;
 }
-#endif
 
 #ifdef CONFIG_PM_SLEEP
 static int fimc_resume(struct device *dev)
@@ -1116,8 +1121,6 @@ static int fimc_remove(struct platform_device *pdev)
 	struct fimc_dev *fimc = platform_get_drvdata(pdev);
 
 	pm_runtime_disable(&pdev->dev);
-	if (!pm_runtime_status_suspended(&pdev->dev))
-		clk_disable(fimc->clock[CLK_GATE]);
 	pm_runtime_set_suspended(&pdev->dev);
 
 	fimc_unregister_capture_subdev(fimc);

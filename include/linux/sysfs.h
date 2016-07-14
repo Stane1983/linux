@@ -81,14 +81,6 @@ struct attribute_group {
 
 #define __ATTR_NULL { .attr = { .name = NULL } }
 
-#define __ATTR_WO(_name) {                                              \
-    .attr   = { .name = __stringify(_name), .mode = S_IWUSR },      \
-    .store  = _name##_store,                                        \
-}
-
-#define __ATTR_RW(_name) __ATTR(_name, (S_IWUSR | S_IRUGO),             \
-				         _name##_show, _name##_store)
-
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 #define __ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store) {	\
 	.attr = {.name = __stringify(_name), .mode = _mode,	\
@@ -99,18 +91,6 @@ struct attribute_group {
 #else
 #define __ATTR_IGNORE_LOCKDEP	__ATTR
 #endif
-
-#define __ATTRIBUTE_GROUPS(_name)                               \
-static const struct attribute_group *_name##_groups[] = {       \
-        &_name##_group,                                         \
-        NULL,                                                   \
-}
-
-#define ATTRIBUTE_GROUPS(_name)                                 \
-static const struct attribute_group _name##_group = {           \
-        .attrs = _name##_attrs,                                 \
-};                                                              \
-__ATTRIBUTE_GROUPS(_name)
 
 #define attr_name(_attr) (_attr).attr.name
 

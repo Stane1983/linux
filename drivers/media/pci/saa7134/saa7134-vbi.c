@@ -117,7 +117,8 @@ static int buffer_prepare(struct videobuf_queue *q,
 			  struct videobuf_buffer *vb,
 			  enum v4l2_field field)
 {
-	struct saa7134_dev *dev = q->priv_data;
+	struct saa7134_fh *fh   = q->priv_data;
+	struct saa7134_dev *dev = fh->dev;
 	struct saa7134_buf *buf = container_of(vb,struct saa7134_buf,vb);
 	struct saa7134_tvnorm *norm = dev->tvnorm;
 	unsigned int lines, llength, size;
@@ -140,7 +141,7 @@ static int buffer_prepare(struct videobuf_queue *q,
 		buf->vb.width  = llength;
 		buf->vb.height = lines;
 		buf->vb.size   = size;
-		buf->pt        = &dev->pt_vbi;
+		buf->pt        = &fh->pt_vbi;
 
 		err = videobuf_iolock(q,&buf->vb,NULL);
 		if (err)
@@ -165,7 +166,8 @@ static int buffer_prepare(struct videobuf_queue *q,
 static int
 buffer_setup(struct videobuf_queue *q, unsigned int *count, unsigned int *size)
 {
-	struct saa7134_dev *dev = q->priv_data;
+	struct saa7134_fh *fh   = q->priv_data;
+	struct saa7134_dev *dev = fh->dev;
 	int llength,lines;
 
 	lines   = dev->tvnorm->vbi_v_stop_0 - dev->tvnorm->vbi_v_start_0 +1;
@@ -179,7 +181,8 @@ buffer_setup(struct videobuf_queue *q, unsigned int *count, unsigned int *size)
 
 static void buffer_queue(struct videobuf_queue *q, struct videobuf_buffer *vb)
 {
-	struct saa7134_dev *dev = q->priv_data;
+	struct saa7134_fh *fh = q->priv_data;
+	struct saa7134_dev *dev = fh->dev;
 	struct saa7134_buf *buf = container_of(vb,struct saa7134_buf,vb);
 
 	saa7134_buffer_queue(dev,&dev->vbi_q,buf);

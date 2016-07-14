@@ -44,7 +44,7 @@
 #include <media/videobuf-dma-contig.h>
 #include <media/videobuf-vmalloc.h>
 #include <media/videobuf-dma-sg.h>
-//#include <media/videobuf-res.h>
+#include <media/videobuf-res.h>
 //#include <linux/amlogic/picdecapi.h>
 #include <linux/amlogic/tvin/tvin_v4l2.h>
 #include <linux/ctype.h>

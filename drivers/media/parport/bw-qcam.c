@@ -667,15 +667,12 @@ static void buffer_queue(struct vb2_buffer *vb)
 	vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
 }
 
-static void buffer_finish(struct vb2_buffer *vb)
+static int buffer_finish(struct vb2_buffer *vb)
 {
 	struct qcam *qcam = vb2_get_drv_priv(vb->vb2_queue);
 	void *vbuf = vb2_plane_vaddr(vb, 0);
 	int size = vb->vb2_queue->plane_sizes[0];
 	int len;
-
-	if (!vb2_is_streaming(vb->vb2_queue))
-		return;
 
 	mutex_lock(&qcam->lock);
 	parport_claim_or_block(qcam->pdev);
@@ -690,10 +687,10 @@ static void buffer_finish(struct vb2_buffer *vb)
 
 	parport_release(qcam->pdev);
 	mutex_unlock(&qcam->lock);
-	v4l2_get_timestamp(&vb->v4l2_buf.timestamp);
 	if (len != size)
 		vb->state = VB2_BUF_STATE_ERROR;
 	vb2_set_plane_payload(vb, 0, len);
+	return 0;
 }
 
 static struct vb2_ops qcam_video_qops = {
@@ -967,7 +964,6 @@ static struct qcam *qcam_init(struct parport *port)
 	q->drv_priv = qcam;
 	q->ops = &qcam_video_qops;
 	q->mem_ops = &vb2_vmalloc_memops;
-	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
 	err = vb2_queue_init(q);
 	if (err < 0) {
 		v4l2_err(v4l2_dev, "couldn't init vb2_queue for %s.\n", port->name);

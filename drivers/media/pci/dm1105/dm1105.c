@@ -1178,6 +1178,7 @@ err_pci_release_regions:
 err_pci_disable_device:
 	pci_disable_device(pdev);
 err_kfree:
+	pci_set_drvdata(pdev, NULL);
 	kfree(dev);
 	return ret;
 }
@@ -1201,7 +1202,8 @@ static void dm1105_remove(struct pci_dev *pdev)
 	dvb_dmxdev_release(&dev->dmxdev);
 	dvb_dmx_release(dvbdemux);
 	dvb_unregister_adapter(dvb_adapter);
-	i2c_del_adapter(&dev->i2c_adap);
+	if (&dev->i2c_adap)
+		i2c_del_adapter(&dev->i2c_adap);
 
 	dm1105_hw_exit(dev);
 	synchronize_irq(pdev->irq);
@@ -1209,6 +1211,7 @@ static void dm1105_remove(struct pci_dev *pdev)
 	pci_iounmap(pdev, dev->io_mem);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+	pci_set_drvdata(pdev, NULL);
 	dm1105_devcount--;
 	kfree(dev);
 }
@@ -1238,7 +1241,18 @@ static struct pci_driver dm1105_driver = {
 	.remove = dm1105_remove,
 };
 
-module_pci_driver(dm1105_driver);
+static int __init dm1105_init(void)
+{
+	return pci_register_driver(&dm1105_driver);
+}
+
+static void __exit dm1105_exit(void)
+{
+	pci_unregister_driver(&dm1105_driver);
+}
+
+module_init(dm1105_init);
+module_exit(dm1105_exit);
 
 MODULE_AUTHOR("Igor M. Liplianin <liplianin@me.by>");
 MODULE_DESCRIPTION("SDMC DM1105 DVB driver");

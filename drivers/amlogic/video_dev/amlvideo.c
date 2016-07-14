@@ -946,9 +946,8 @@ static const struct v4l2_ioctl_ops amlvideo_ioctl_ops = {
     };
 
 static struct video_device amlvideo_template = { .name = "amlvideo", .fops = &amlvideo_fops, .ioctl_ops = &amlvideo_ioctl_ops, .release = video_device_release,
-.tvnorms = V4L2_STD_525_60,
-//.current_norm = V4L2_STD_NTSC_M ,
-};
+
+.tvnorms = V4L2_STD_525_60, .current_norm = V4L2_STD_NTSC_M , };
 
 /* -----------------------------------------------------------------
  Initialization and module stuff

@@ -290,11 +290,9 @@ static int isp_xclk_init(struct isp_device *isp)
 	struct clk_init_data init;
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(isp->xclks); ++i)
-		isp->xclks[i].clk = ERR_PTR(-EINVAL);
-
 	for (i = 0; i < ARRAY_SIZE(isp->xclks); ++i) {
 		struct isp_xclk *xclk = &isp->xclks[i];
+		struct clk *clk;
 
 		xclk->isp = isp;
 		xclk->id = i == 0 ? ISP_XCLK_A : ISP_XCLK_B;
@@ -307,15 +305,10 @@ static int isp_xclk_init(struct isp_device *isp)
 		init.num_parents = 1;
 
 		xclk->hw.init = &init;
-		/*
-		 * The first argument is NULL in order to avoid circular
-		 * reference, as this driver takes reference on the
-		 * sensor subdevice modules and the sensors would take
-		 * reference on this module through clk_get().
-		 */
-		xclk->clk = clk_register(NULL, &xclk->hw);
-		if (IS_ERR(xclk->clk))
-			return PTR_ERR(xclk->clk);
+
+		clk = devm_clk_register(isp->dev, &xclk->hw);
+		if (IS_ERR(clk))
+			return PTR_ERR(clk);
 
 		if (pdata->xclks[i].con_id == NULL &&
 		    pdata->xclks[i].dev_id == NULL)
@@ -327,7 +320,7 @@ static int isp_xclk_init(struct isp_device *isp)
 
 		xclk->lookup->con_id = pdata->xclks[i].con_id;
 		xclk->lookup->dev_id = pdata->xclks[i].dev_id;
-		xclk->lookup->clk = xclk->clk;
+		xclk->lookup->clk = clk;
 
 		clkdev_add(xclk->lookup);
 	}
@@ -341,9 +334,6 @@ static void isp_xclk_cleanup(struct isp_device *isp)
 
 	for (i = 0; i < ARRAY_SIZE(isp->xclks); ++i) {
 		struct isp_xclk *xclk = &isp->xclks[i];
-
-		if (!IS_ERR(xclk->clk))
-			clk_unregister(xclk->clk);
 
 		if (xclk->lookup)
 			clkdev_drop(xclk->lookup);
@@ -391,7 +381,7 @@ static void isp_disable_interrupts(struct isp_device *isp)
  * @isp: OMAP3 ISP device
  * @idle: Consider idle state.
  *
- * Set the power settings for the ISP and SBL bus and configure the HS/VS
+ * Set the power settings for the ISP and SBL bus and cConfigure the HS/VS
  * interrupt source.
  *
  * We need to configure the HS/VS interrupt source before interrupts get
@@ -588,6 +578,9 @@ static void isp_isr_sbl(struct isp_device *isp)
  * @_isp: Pointer to the OMAP3 ISP device
  *
  * Handles the corresponding callback if plugged in.
+ *
+ * Returns IRQ_HANDLED when IRQ was correctly handled, or IRQ_NONE when the
+ * IRQ wasn't handled.
  */
 static irqreturn_t isp_isr(int irq, void *_isp)
 {
@@ -799,9 +792,9 @@ int omap3isp_pipeline_pm_use(struct media_entity *entity, int use)
 
 /*
  * isp_pipeline_link_notify - Link management notification callback
- * @link: The link
+ * @source: Pad at the start of the link
+ * @sink: Pad at the end of the link
  * @flags: New link flags that will be applied
- * @notification: The link's state change notification type (MEDIA_DEV_NOTIFY_*)
  *
  * React to link management on powered pipelines by updating the use count of
  * all entities in the source and sink sides of the link. Entities are powered
@@ -811,38 +804,29 @@ int omap3isp_pipeline_pm_use(struct media_entity *entity, int use)
  * off is assumed to never fail. This function will not fail for disconnection
  * events.
  */
-static int isp_pipeline_link_notify(struct media_link *link, u32 flags,
-				    unsigned int notification)
+static int isp_pipeline_link_notify(struct media_pad *source,
+				    struct media_pad *sink, u32 flags)
 {
-	struct media_entity *source = link->source->entity;
-	struct media_entity *sink = link->sink->entity;
-	int source_use = isp_pipeline_pm_use_count(source);
-	int sink_use = isp_pipeline_pm_use_count(sink);
+	int source_use = isp_pipeline_pm_use_count(source->entity);
+	int sink_use = isp_pipeline_pm_use_count(sink->entity);
 	int ret;
 
-	if (notification == MEDIA_DEV_NOTIFY_POST_LINK_CH &&
-	    !(link->flags & MEDIA_LNK_FL_ENABLED)) {
+	if (!(flags & MEDIA_LNK_FL_ENABLED)) {
 		/* Powering off entities is assumed to never fail. */
-		isp_pipeline_pm_power(source, -sink_use);
-		isp_pipeline_pm_power(sink, -source_use);
+		isp_pipeline_pm_power(source->entity, -sink_use);
+		isp_pipeline_pm_power(sink->entity, -source_use);
 		return 0;
 	}
 
-	if (notification == MEDIA_DEV_NOTIFY_POST_LINK_CH &&
-		(flags & MEDIA_LNK_FL_ENABLED)) {
-
-		ret = isp_pipeline_pm_power(source, sink_use);
-		if (ret < 0)
-			return ret;
-
-		ret = isp_pipeline_pm_power(sink, source_use);
-		if (ret < 0)
-			isp_pipeline_pm_power(source, -sink_use);
-
+	ret = isp_pipeline_pm_power(source->entity, sink_use);
+	if (ret < 0)
 		return ret;
-	}
 
-	return 0;
+	ret = isp_pipeline_pm_power(sink->entity, source_use);
+	if (ret < 0)
+		isp_pipeline_pm_power(source->entity, -sink_use);
+
+	return ret;
 }
 
 /* -----------------------------------------------------------------------------
@@ -870,12 +854,15 @@ static int isp_pipeline_enable(struct isp_pipeline *pipe,
 	unsigned long flags;
 	int ret;
 
-	/* Refuse to start streaming if an entity included in the pipeline has
-	 * crashed. This check must be performed before the loop below to avoid
-	 * starting entities if the pipeline won't start anyway (those entities
-	 * would then likely fail to stop, making the problem worse).
+	/* If the preview engine crashed it might not respond to read/write
+	 * operations on the L4 bus. This would result in a bus fault and a
+	 * kernel oops. Refuse to start streaming in that case. This check must
+	 * be performed before the loop below to avoid starting entities if the
+	 * pipeline won't start anyway (those entities would then likely fail to
+	 * stop, making the problem worse).
 	 */
-	if (pipe->entities & isp->crashed)
+	if ((pipe->entities & isp->crashed) &
+	    (1U << isp->isp_prev.subdev.entity.id))
 		return -EIO;
 
 	spin_lock_irqsave(&pipe->lock, flags);
@@ -890,7 +877,7 @@ static int isp_pipeline_enable(struct isp_pipeline *pipe,
 		if (!(pad->flags & MEDIA_PAD_FL_SINK))
 			break;
 
-		pad = media_entity_remote_pad(pad);
+		pad = media_entity_remote_source(pad);
 		if (pad == NULL ||
 		    media_entity_type(pad->entity) != MEDIA_ENT_T_V4L2_SUBDEV)
 			break;
@@ -980,7 +967,7 @@ static int isp_pipeline_disable(struct isp_pipeline *pipe)
 		if (!(pad->flags & MEDIA_PAD_FL_SINK))
 			break;
 
-		pad = media_entity_remote_pad(pad);
+		pad = media_entity_remote_source(pad);
 		if (pad == NULL ||
 		    media_entity_type(pad->entity) != MEDIA_ENT_T_V4L2_SUBDEV)
 			break;
@@ -1008,23 +995,13 @@ static int isp_pipeline_disable(struct isp_pipeline *pipe)
 		else
 			ret = 0;
 
-		/* Handle stop failures. An entity that fails to stop can
-		 * usually just be restarted. Flag the stop failure nonetheless
-		 * to trigger an ISP reset the next time the device is released,
-		 * just in case.
-		 *
-		 * The preview engine is a special case. A failure to stop can
-		 * mean a hardware crash. When that happens the preview engine
-		 * won't respond to read/write operations on the L4 bus anymore,
-		 * resulting in a bus fault and a kernel oops next time it gets
-		 * accessed. Mark it as crashed to prevent pipelines including
-		 * it from being started.
-		 */
 		if (ret) {
 			dev_info(isp->dev, "Unable to stop %s\n", subdev->name);
-			isp->stop_failure = true;
-			if (subdev == &isp->isp_prev.subdev)
-				isp->crashed |= 1U << subdev->entity.id;
+			/* If the entity failed to stopped, assume it has
+			 * crashed. Mark it as such, the ISP will be reset when
+			 * applications will release it.
+			 */
+			isp->crashed |= 1U << subdev->entity.id;
 			failure = -ETIMEDOUT;
 		}
 	}
@@ -1058,23 +1035,6 @@ int omap3isp_pipeline_set_stream(struct isp_pipeline *pipe,
 		pipe->stream_state = state;
 
 	return ret;
-}
-
-/*
- * omap3isp_pipeline_cancel_stream - Cancel stream on a pipeline
- * @pipe: ISP pipeline
- *
- * Cancelling a stream mark all buffers on all video nodes in the pipeline as
- * erroneous and makes sure no new buffer can be queued. This function is called
- * when a fatal error that prevents any further operation on the pipeline
- * occurs.
- */
-void omap3isp_pipeline_cancel_stream(struct isp_pipeline *pipe)
-{
-	if (pipe->input)
-		omap3isp_video_cancel_stream(pipe->input);
-	if (pipe->output)
-		omap3isp_video_cancel_stream(pipe->output);
 }
 
 /*
@@ -1123,7 +1083,7 @@ static int isp_pipeline_is_last(struct media_entity *me)
 	pipe = to_isp_pipeline(me);
 	if (pipe->stream_state == ISP_PIPELINE_STREAM_STOPPED)
 		return 0;
-	pad = media_entity_remote_pad(&pipe->output->pad);
+	pad = media_entity_remote_source(&pipe->output->pad);
 	return pad->entity == me;
 }
 
@@ -1229,7 +1189,6 @@ static int isp_reset(struct isp_device *isp)
 		udelay(1);
 	}
 
-	isp->stop_failure = false;
 	isp->crashed = 0;
 	return 0;
 }
@@ -1417,7 +1376,7 @@ int omap3isp_module_sync_idle(struct media_entity *me, wait_queue_head_t *wait,
 }
 
 /*
- * omap3isp_module_sync_is_stopping - Helper to verify if module was stopping
+ * omap3isp_module_sync_is_stopped - Helper to verify if module was stopping
  * @wait: ISP submodule's wait queue for streamoff/interrupt synchronization
  * @stopping: flag which tells module wants to stop
  *
@@ -1641,7 +1600,7 @@ void omap3isp_put(struct isp_device *isp)
 		/* Reset the ISP if an entity has failed to stop. This is the
 		 * only way to recover from such conditions.
 		 */
-		if (isp->crashed || isp->stop_failure)
+		if (isp->crashed)
 			isp_reset(isp);
 		isp_disable_clocks(isp);
 	}
@@ -1705,7 +1664,7 @@ void omap3isp_print_status(struct isp_device *isp)
  * ISP clocks get disabled in suspend(). Similarly, the clocks are reenabled in
  * resume(), and the the pipelines are restarted in complete().
  *
- * TODO: PM dependencies between the ISP and sensors are not modelled explicitly
+ * TODO: PM dependencies between the ISP and sensors are not modeled explicitly
  * yet.
  */
 static int isp_pm_prepare(struct device *dev)
@@ -2152,13 +2111,28 @@ static int isp_map_mem_resource(struct platform_device *pdev,
 	/* request the mem region for the camera registers */
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, res);
+	if (!mem) {
+		dev_err(isp->dev, "no mem resource?\n");
+		return -ENODEV;
+	}
+
+	if (!devm_request_mem_region(isp->dev, mem->start, resource_size(mem),
+				     pdev->name)) {
+		dev_err(isp->dev,
+			"cannot reserve camera register I/O region\n");
+		return -ENODEV;
+	}
+	isp->mmio_base_phys[res] = mem->start;
+	isp->mmio_size[res] = resource_size(mem);
 
 	/* map the region */
-	isp->mmio_base[res] = devm_ioremap_resource(isp->dev, mem);
-	if (IS_ERR(isp->mmio_base[res]))
-		return PTR_ERR(isp->mmio_base[res]);
-
-	isp->mmio_base_phys[res] = mem->start;
+	isp->mmio_base[res] = devm_ioremap_nocache(isp->dev,
+						   isp->mmio_base_phys[res],
+						   isp->mmio_size[res]);
+	if (!isp->mmio_base[res]) {
+		dev_err(isp->dev, "cannot map camera register I/O region\n");
+		return -ENODEV;
+	}
 
 	return 0;
 }
@@ -2199,9 +2173,9 @@ static int isp_probe(struct platform_device *pdev)
 	isp->pdata = pdata;
 	isp->ref_count = 0;
 
-	ret = dma_coerce_mask_and_coherent(isp->dev, DMA_BIT_MASK(32));
-	if (ret)
-		return ret;
+	isp->raw_dmamask = DMA_BIT_MASK(32);
+	isp->dev->dma_mask = &isp->raw_dmamask;
+	isp->dev->coherent_dma_mask = DMA_BIT_MASK(32);
 
 	platform_set_drvdata(pdev, isp);
 
@@ -2319,6 +2293,8 @@ error_isp:
 	isp_xclk_cleanup(isp);
 	omap3isp_put(isp);
 error:
+	platform_set_drvdata(pdev, NULL);
+
 	mutex_destroy(&isp->isp_mutex);
 
 	return ret;

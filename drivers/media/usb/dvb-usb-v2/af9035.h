@@ -62,8 +62,6 @@ struct state {
 	u8 dual_mode:1;
 	u16 eeprom_addr;
 	struct af9033_config af9033_config[2];
-
-	struct af9033_ops ops;
 };
 
 static const u32 clock_lut_af9035[] = {
@@ -102,13 +100,8 @@ static const u32 clock_lut_it9135[] = {
  * eeprom is memory mapped as read only. Writing that memory mapped address
  * will not corrupt eeprom.
  *
- * TS mode:
- * 0  TS
- * 1  DCA + PIP
- * 3  PIP
- * n  DCA
- *
- * Values 0 and 3 are seen to this day. 0 for single TS and 3 for dual TS.
+ * eeprom has value 0x00 single mode and 0x03 for dual mode as far as I have
+ * seen to this day.
  */
 
 #define EEPROM_BASE_AF9035        0x42fd
@@ -116,7 +109,7 @@ static const u32 clock_lut_it9135[] = {
 #define EEPROM_SHIFT                0x10
 
 #define EEPROM_IR_MODE              0x10
-#define EEPROM_TS_MODE              0x29
+#define EEPROM_DUAL_MODE            0x29
 #define EEPROM_2ND_DEMOD_ADDR       0x2a
 #define EEPROM_IR_TYPE              0x2c
 #define EEPROM_1_IF_L               0x30

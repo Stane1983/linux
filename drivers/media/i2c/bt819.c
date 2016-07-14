@@ -36,6 +36,7 @@
 #include <linux/videodev2.h>
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
+#include <media/v4l2-chip-ident.h>
 #include <media/v4l2-ctrls.h>
 #include <media/bt819.h>
 
@@ -56,6 +57,7 @@ struct bt819 {
 	unsigned char reg[32];
 
 	v4l2_std_id norm;
+	int ident;
 	int input;
 	int enable;
 };
@@ -215,17 +217,15 @@ static int bt819_status(struct v4l2_subdev *sd, u32 *pstatus, v4l2_std_id *pstd)
 	struct bt819 *decoder = to_bt819(sd);
 	int status = bt819_read(decoder, 0x00);
 	int res = V4L2_IN_ST_NO_SIGNAL;
-	v4l2_std_id std = pstd ? *pstd : V4L2_STD_ALL;
+	v4l2_std_id std;
 
 	if ((status & 0x80))
 		res = 0;
-	else
-		std = V4L2_STD_UNKNOWN;
 
 	if ((status & 0x10))
-		std &= V4L2_STD_PAL;
+		std = V4L2_STD_PAL;
 	else
-		std &= V4L2_STD_NTSC;
+		std = V4L2_STD_NTSC;
 	if (pstd)
 		*pstd = std;
 	if (pstatus)
@@ -373,6 +373,14 @@ static int bt819_s_ctrl(struct v4l2_ctrl *ctrl)
 	return 0;
 }
 
+static int bt819_g_chip_ident(struct v4l2_subdev *sd, struct v4l2_dbg_chip_ident *chip)
+{
+	struct bt819 *decoder = to_bt819(sd);
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+
+	return v4l2_chip_ident_i2c_client(client, chip, decoder->ident, 0);
+}
+
 /* ----------------------------------------------------------------------- */
 
 static const struct v4l2_ctrl_ops bt819_ctrl_ops = {
@@ -380,6 +388,7 @@ static const struct v4l2_ctrl_ops bt819_ctrl_ops = {
 };
 
 static const struct v4l2_subdev_core_ops bt819_core_ops = {
+	.g_chip_ident = bt819_g_chip_ident,
 	.g_ext_ctrls = v4l2_subdev_g_ext_ctrls,
 	.try_ext_ctrls = v4l2_subdev_try_ext_ctrls,
 	.s_ext_ctrls = v4l2_subdev_s_ext_ctrls,
@@ -416,7 +425,7 @@ static int bt819_probe(struct i2c_client *client,
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	decoder = devm_kzalloc(&client->dev, sizeof(*decoder), GFP_KERNEL);
+	decoder = kzalloc(sizeof(struct bt819), GFP_KERNEL);
 	if (decoder == NULL)
 		return -ENOMEM;
 	sd = &decoder->sd;
@@ -426,12 +435,15 @@ static int bt819_probe(struct i2c_client *client,
 	switch (ver & 0xf0) {
 	case 0x70:
 		name = "bt819a";
+		decoder->ident = V4L2_IDENT_BT819A;
 		break;
 	case 0x60:
 		name = "bt817a";
+		decoder->ident = V4L2_IDENT_BT817A;
 		break;
 	case 0x20:
 		name = "bt815a";
+		decoder->ident = V4L2_IDENT_BT815A;
 		break;
 	default:
 		v4l2_dbg(1, debug, sd,
@@ -464,6 +476,7 @@ static int bt819_probe(struct i2c_client *client,
 		int err = decoder->hdl.error;
 
 		v4l2_ctrl_handler_free(&decoder->hdl);
+		kfree(decoder);
 		return err;
 	}
 	v4l2_ctrl_handler_setup(&decoder->hdl);
@@ -477,6 +490,7 @@ static int bt819_remove(struct i2c_client *client)
 
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&decoder->hdl);
+	kfree(decoder);
 	return 0;
 }
 

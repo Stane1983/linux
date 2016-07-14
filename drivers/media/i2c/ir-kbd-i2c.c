@@ -295,7 +295,7 @@ static int ir_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	unsigned short addr = client->addr;
 	int err;
 
-	ir = devm_kzalloc(&client->dev, sizeof(*ir), GFP_KERNEL);
+	ir = kzalloc(sizeof(struct IR_i2c), GFP_KERNEL);
 	if (!ir)
 		return -ENOMEM;
 
@@ -394,12 +394,14 @@ static int ir_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
 	if (!rc) {
 		/*
-		 * If platform_data doesn't specify rc_dev, initialize it
+		 * If platform_data doesn't specify rc_dev, initilize it
 		 * internally
 		 */
 		rc = rc_allocate_device();
-		if (!rc)
-			return -ENOMEM;
+		if (!rc) {
+			err = -ENOMEM;
+			goto err_out_free;
+		}
 	}
 	ir->rc = rc;
 
@@ -431,8 +433,8 @@ static int ir_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	 * Initialize the other fields of rc_dev
 	 */
 	rc->map_name       = ir->ir_codes;
-	rc_set_allowed_protocols(rc, rc_type);
-	rc_set_enabled_protocols(rc, rc_type);
+	rc->allowed_protos = rc_type;
+	rc->enabled_protocols = rc_type;
 	if (!rc->driver_name)
 		rc->driver_name = MODULE_NAME;
 
@@ -452,6 +454,7 @@ static int ir_probe(struct i2c_client *client, const struct i2c_device_id *id)
  err_out_free:
 	/* Only frees rc if it were allocated internally */
 	rc_free_device(rc);
+	kfree(ir);
 	return err;
 }
 
@@ -467,6 +470,7 @@ static int ir_remove(struct i2c_client *client)
 		rc_unregister_device(ir->rc);
 
 	/* free memory */
+	kfree(ir);
 	return 0;
 }
 

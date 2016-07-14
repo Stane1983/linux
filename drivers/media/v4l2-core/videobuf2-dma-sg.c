@@ -35,62 +35,17 @@ struct vb2_dma_sg_buf {
 	struct page			**pages;
 	int				write;
 	int				offset;
-	struct sg_table			sg_table;
-	size_t				size;
-	unsigned int			num_pages;
+	struct vb2_dma_sg_desc		sg_desc;
 	atomic_t			refcount;
 	struct vb2_vmarea_handler	handler;
-	struct vm_area_struct		*vma;
 };
 
 static void vb2_dma_sg_put(void *buf_priv);
 
-static int vb2_dma_sg_alloc_compacted(struct vb2_dma_sg_buf *buf,
-		gfp_t gfp_flags)
-{
-	unsigned int last_page = 0;
-	int size = buf->size;
-
-	while (size > 0) {
-		struct page *pages;
-		int order;
-		int i;
-
-		order = get_order(size);
-		/* Dont over allocate*/
-		if ((PAGE_SIZE << order) > size)
-			order--;
-
-		pages = NULL;
-		while (!pages) {
-			pages = alloc_pages(GFP_KERNEL | __GFP_ZERO |
-					__GFP_NOWARN | gfp_flags, order);
-			if (pages)
-				break;
-
-			if (order == 0) {
-				while (last_page--)
-					__free_page(buf->pages[last_page]);
-				return -ENOMEM;
-			}
-			order--;
-		}
-
-		split_page(pages, order);
-		for (i = 0; i < (1 << order); i++)
-			buf->pages[last_page++] = &pages[i];
-
-		size -= PAGE_SIZE << order;
-	}
-
-	return 0;
-}
-
 static void *vb2_dma_sg_alloc(void *alloc_ctx, unsigned long size, gfp_t gfp_flags)
 {
 	struct vb2_dma_sg_buf *buf;
-	int ret;
-	int num_pages;
+	int i;
 
 	buf = kzalloc(sizeof *buf, GFP_KERNEL);
 	if (!buf)
@@ -99,23 +54,29 @@ static void *vb2_dma_sg_alloc(void *alloc_ctx, unsigned long size, gfp_t gfp_fla
 	buf->vaddr = NULL;
 	buf->write = 0;
 	buf->offset = 0;
-	buf->size = size;
+	buf->sg_desc.size = size;
 	/* size is already page aligned */
-	buf->num_pages = size >> PAGE_SHIFT;
+	buf->sg_desc.num_pages = size >> PAGE_SHIFT;
 
-	buf->pages = kzalloc(buf->num_pages * sizeof(struct page *),
+	buf->sg_desc.sglist = vzalloc(buf->sg_desc.num_pages *
+				      sizeof(*buf->sg_desc.sglist));
+	if (!buf->sg_desc.sglist)
+		goto fail_sglist_alloc;
+	sg_init_table(buf->sg_desc.sglist, buf->sg_desc.num_pages);
+
+	buf->pages = kzalloc(buf->sg_desc.num_pages * sizeof(struct page *),
 			     GFP_KERNEL);
 	if (!buf->pages)
 		goto fail_pages_array_alloc;
 
-	ret = vb2_dma_sg_alloc_compacted(buf, gfp_flags);
-	if (ret)
-		goto fail_pages_alloc;
-
-	ret = sg_alloc_table_from_pages(&buf->sg_table, buf->pages,
-			buf->num_pages, 0, size, gfp_flags);
-	if (ret)
-		goto fail_table_alloc;
+	for (i = 0; i < buf->sg_desc.num_pages; ++i) {
+		buf->pages[i] = alloc_page(GFP_KERNEL | __GFP_ZERO |
+					   __GFP_NOWARN | gfp_flags);
+		if (NULL == buf->pages[i])
+			goto fail_pages_alloc;
+		sg_set_page(&buf->sg_desc.sglist[i],
+			    buf->pages[i], PAGE_SIZE, 0);
+	}
 
 	buf->handler.refcount = &buf->refcount;
 	buf->handler.put = vb2_dma_sg_put;
@@ -124,16 +85,18 @@ static void *vb2_dma_sg_alloc(void *alloc_ctx, unsigned long size, gfp_t gfp_fla
 	atomic_inc(&buf->refcount);
 
 	dprintk(1, "%s: Allocated buffer of %d pages\n",
-		__func__, buf->num_pages);
+		__func__, buf->sg_desc.num_pages);
 	return buf;
 
-fail_table_alloc:
-	num_pages = buf->num_pages;
-	while (num_pages--)
-		__free_page(buf->pages[num_pages]);
 fail_pages_alloc:
+	while (--i >= 0)
+		__free_page(buf->pages[i]);
 	kfree(buf->pages);
+
 fail_pages_array_alloc:
+	vfree(buf->sg_desc.sglist);
+
+fail_sglist_alloc:
 	kfree(buf);
 	return NULL;
 }
@@ -141,14 +104,14 @@ fail_pages_array_alloc:
 static void vb2_dma_sg_put(void *buf_priv)
 {
 	struct vb2_dma_sg_buf *buf = buf_priv;
-	int i = buf->num_pages;
+	int i = buf->sg_desc.num_pages;
 
 	if (atomic_dec_and_test(&buf->refcount)) {
 		dprintk(1, "%s: Freeing buffer of %d pages\n", __func__,
-			buf->num_pages);
+			buf->sg_desc.num_pages);
 		if (buf->vaddr)
-			vm_unmap_ram(buf->vaddr, buf->num_pages);
-		sg_free_table(&buf->sg_table);
+			vm_unmap_ram(buf->vaddr, buf->sg_desc.num_pages);
+		vfree(buf->sg_desc.sglist);
 		while (--i >= 0)
 			__free_page(buf->pages[i]);
 		kfree(buf->pages);
@@ -156,18 +119,12 @@ static void vb2_dma_sg_put(void *buf_priv)
 	}
 }
 
-static inline int vma_is_io(struct vm_area_struct *vma)
-{
-	return !!(vma->vm_flags & (VM_IO | VM_PFNMAP));
-}
-
 static void *vb2_dma_sg_get_userptr(void *alloc_ctx, unsigned long vaddr,
 				    unsigned long size, int write)
 {
 	struct vb2_dma_sg_buf *buf;
 	unsigned long first, last;
-	int num_pages_from_user;
-	struct vm_area_struct *vma;
+	int num_pages_from_user, i;
 
 	buf = kzalloc(sizeof *buf, GFP_KERNEL);
 	if (!buf)
@@ -176,76 +133,56 @@ static void *vb2_dma_sg_get_userptr(void *alloc_ctx, unsigned long vaddr,
 	buf->vaddr = NULL;
 	buf->write = write;
 	buf->offset = vaddr & ~PAGE_MASK;
-	buf->size = size;
+	buf->sg_desc.size = size;
 
 	first = (vaddr           & PAGE_MASK) >> PAGE_SHIFT;
 	last  = ((vaddr + size - 1) & PAGE_MASK) >> PAGE_SHIFT;
-	buf->num_pages = last - first + 1;
+	buf->sg_desc.num_pages = last - first + 1;
 
-	buf->pages = kzalloc(buf->num_pages * sizeof(struct page *),
+	buf->sg_desc.sglist = vzalloc(
+		buf->sg_desc.num_pages * sizeof(*buf->sg_desc.sglist));
+	if (!buf->sg_desc.sglist)
+		goto userptr_fail_sglist_alloc;
+
+	sg_init_table(buf->sg_desc.sglist, buf->sg_desc.num_pages);
+
+	buf->pages = kzalloc(buf->sg_desc.num_pages * sizeof(struct page *),
 			     GFP_KERNEL);
 	if (!buf->pages)
-		goto userptr_fail_alloc_pages;
+		goto userptr_fail_pages_array_alloc;
 
-	vma = find_vma(current->mm, vaddr);
-	if (!vma) {
-		dprintk(1, "no vma for address %lu\n", vaddr);
-		goto userptr_fail_find_vma;
-	}
-
-	if (vma->vm_end < vaddr + size) {
-		dprintk(1, "vma at %lu is too small for %lu bytes\n",
-			vaddr, size);
-		goto userptr_fail_find_vma;
-	}
-
-	buf->vma = vb2_get_vma(vma);
-	if (!buf->vma) {
-		dprintk(1, "failed to copy vma\n");
-		goto userptr_fail_find_vma;
-	}
-
-	if (vma_is_io(buf->vma)) {
-		for (num_pages_from_user = 0;
-		     num_pages_from_user < buf->num_pages;
-		     ++num_pages_from_user, vaddr += PAGE_SIZE) {
-			unsigned long pfn;
-
-			if (follow_pfn(buf->vma, vaddr, &pfn)) {
-				dprintk(1, "no page for address %lu\n", vaddr);
-				break;
-			}
-			buf->pages[num_pages_from_user] = pfn_to_page(pfn);
-		}
-	} else
-		num_pages_from_user = get_user_pages(current, current->mm,
+	num_pages_from_user = get_user_pages(current, current->mm,
 					     vaddr & PAGE_MASK,
-					     buf->num_pages,
+					     buf->sg_desc.num_pages,
 					     write,
 					     1, /* force */
 					     buf->pages,
 					     NULL);
 
-	if (num_pages_from_user != buf->num_pages)
+	if (num_pages_from_user != buf->sg_desc.num_pages)
 		goto userptr_fail_get_user_pages;
 
-	if (sg_alloc_table_from_pages(&buf->sg_table, buf->pages,
-			buf->num_pages, buf->offset, size, 0))
-		goto userptr_fail_alloc_table_from_pages;
-
+	sg_set_page(&buf->sg_desc.sglist[0], buf->pages[0],
+		    PAGE_SIZE - buf->offset, buf->offset);
+	size -= PAGE_SIZE - buf->offset;
+	for (i = 1; i < buf->sg_desc.num_pages; ++i) {
+		sg_set_page(&buf->sg_desc.sglist[i], buf->pages[i],
+			    min_t(size_t, PAGE_SIZE, size), 0);
+		size -= min_t(size_t, PAGE_SIZE, size);
+	}
 	return buf;
 
-userptr_fail_alloc_table_from_pages:
 userptr_fail_get_user_pages:
 	dprintk(1, "get_user_pages requested/got: %d/%d]\n",
-		buf->num_pages, num_pages_from_user);
-	if (!vma_is_io(buf->vma))
-		while (--num_pages_from_user >= 0)
-			put_page(buf->pages[num_pages_from_user]);
-	vb2_put_vma(buf->vma);
-userptr_fail_find_vma:
+	       num_pages_from_user, buf->sg_desc.num_pages);
+	while (--num_pages_from_user >= 0)
+		put_page(buf->pages[num_pages_from_user]);
 	kfree(buf->pages);
-userptr_fail_alloc_pages:
+
+userptr_fail_pages_array_alloc:
+	vfree(buf->sg_desc.sglist);
+
+userptr_fail_sglist_alloc:
 	kfree(buf);
 	return NULL;
 }
@@ -257,21 +194,19 @@ userptr_fail_alloc_pages:
 static void vb2_dma_sg_put_userptr(void *buf_priv)
 {
 	struct vb2_dma_sg_buf *buf = buf_priv;
-	int i = buf->num_pages;
+	int i = buf->sg_desc.num_pages;
 
 	dprintk(1, "%s: Releasing userspace buffer of %d pages\n",
-	       __func__, buf->num_pages);
+	       __func__, buf->sg_desc.num_pages);
 	if (buf->vaddr)
-		vm_unmap_ram(buf->vaddr, buf->num_pages);
-	sg_free_table(&buf->sg_table);
+		vm_unmap_ram(buf->vaddr, buf->sg_desc.num_pages);
 	while (--i >= 0) {
 		if (buf->write)
 			set_page_dirty_lock(buf->pages[i]);
-		if (!vma_is_io(buf->vma))
-			put_page(buf->pages[i]);
+		put_page(buf->pages[i]);
 	}
+	vfree(buf->sg_desc.sglist);
 	kfree(buf->pages);
-	vb2_put_vma(buf->vma);
 	kfree(buf);
 }
 
@@ -283,7 +218,7 @@ static void *vb2_dma_sg_vaddr(void *buf_priv)
 
 	if (!buf->vaddr)
 		buf->vaddr = vm_map_ram(buf->pages,
-					buf->num_pages,
+					buf->sg_desc.num_pages,
 					-1,
 					PAGE_KERNEL);
 
@@ -339,7 +274,7 @@ static void *vb2_dma_sg_cookie(void *buf_priv)
 {
 	struct vb2_dma_sg_buf *buf = buf_priv;
 
-	return &buf->sg_table;
+	return &buf->sg_desc;
 }
 
 const struct vb2_mem_ops vb2_dma_sg_memops = {

@@ -1072,8 +1072,8 @@ static int alsa_card_saa7134_create(struct saa7134_dev *dev, int devnum)
 	if (!enable[devnum])
 		return -ENODEV;
 
-	err = snd_card_new(&dev->pci->dev, index[devnum], id[devnum],
-			   THIS_MODULE, sizeof(snd_card_saa7134_t), &card);
+	err = snd_card_create(index[devnum], id[devnum], THIS_MODULE,
+			      sizeof(snd_card_saa7134_t), &card);
 	if (err < 0)
 		return err;
 
@@ -1096,7 +1096,7 @@ static int alsa_card_saa7134_create(struct saa7134_dev *dev, int devnum)
 
 
 	err = request_irq(dev->pci->irq, saa7134_alsa_irq,
-				IRQF_SHARED, dev->name,
+				IRQF_SHARED | IRQF_DISABLED, dev->name,
 				(void*) &dev->dmasound);
 
 	if (err < 0) {
@@ -1114,6 +1114,8 @@ static int alsa_card_saa7134_create(struct saa7134_dev *dev, int devnum)
 
 	if ((err = snd_card_saa7134_pcm(chip, 0)) < 0)
 		goto __nodev;
+
+	snd_card_set_dev(card, &chip->pci->dev);
 
 	/* End of "creation" */
 

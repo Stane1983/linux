@@ -65,7 +65,7 @@ struct mxr_format {
 	int num_subframes;
 	/** specifies to which subframe belong given plane */
 	int plane2subframe[MXR_MAX_PLANES];
-	/** internal code, driver dependent */
+	/** internal code, driver dependant */
 	unsigned long cookie;
 };
 

@@ -98,7 +98,7 @@ int bttv_sub_add_device(struct bttv_core *core, char *name)
 
 	err = device_register(&sub->dev);
 	if (0 != err) {
-		put_device(&sub->dev);
+		kfree(sub);
 		return err;
 	}
 	pr_info("%d: add subdevice \"%s\"\n", core->nr, dev_name(&sub->dev));

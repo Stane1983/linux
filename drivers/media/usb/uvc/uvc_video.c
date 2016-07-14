@@ -29,7 +29,7 @@
 /* ------------------------------------------------------------------------
  * UVC Controls
  */
-
+static int first_probe;
 static int __uvc_query_ctrl(struct uvc_device *dev, __u8 query, __u8 unit,
 			__u8 intfnum, __u8 cs, void *data, __u16 size,
 			int timeout)
@@ -564,7 +564,7 @@ static u16 uvc_video_clock_host_sof(const struct uvc_clock_sample *sample)
  *
  * SOF = ((SOF2 - SOF1) * PTS + SOF1 * STC2 - SOF2 * STC1) / (STC2 - STC1)   (1)
  *
- * to avoid losing precision in the division. Similarly, the host timestamp is
+ * to avoid loosing precision in the division. Similarly, the host timestamp is
  * computed with
  *
  * TS = ((TS2 - TS1) * PTS + TS1 * SOF2 - TS2 * SOF1) / (SOF2 - SOF1)	     (2)
@@ -688,8 +688,7 @@ void uvc_video_clock_update(struct uvc_streaming *stream,
 		  stream->dev->name,
 		  sof >> 16, div_u64(((u64)sof & 0xffff) * 1000000LLU, 65536),
 		  y, ts.tv_sec, ts.tv_nsec / NSEC_PER_USEC,
-		  v4l2_buf->timestamp.tv_sec,
-		  (unsigned long)v4l2_buf->timestamp.tv_usec,
+		  v4l2_buf->timestamp.tv_sec, v4l2_buf->timestamp.tv_usec,
 		  x1, first->host_sof, first->dev_sof,
 		  x2, last->host_sof, last->dev_sof, y1, y2);
 
@@ -1458,9 +1457,6 @@ static unsigned int uvc_endpoint_max_bpi(struct usb_device *dev,
 	case USB_SPEED_HIGH:
 		psize = usb_endpoint_maxp(&ep->desc);
 		return (psize & 0x07ff) * (1 + ((psize >> 11) & 3));
-	case USB_SPEED_WIRELESS:
-		psize = usb_endpoint_maxp(&ep->desc);
-		return psize;
 	default:
 		psize = usb_endpoint_maxp(&ep->desc);
 		return psize & 0x07ff;
@@ -1756,6 +1752,7 @@ int uvc_video_init(struct uvc_streaming *stream)
 	unsigned int i;
 	int ret;
 
+	first_probe =1;
 	if (stream->nformats == 0) {
 		uvc_printk(KERN_INFO, "No supported video formats found.\n");
 		return -EINVAL;
@@ -1895,6 +1892,30 @@ int uvc_video_enable(struct uvc_streaming *stream, int enable)
 	ret = uvc_init_video(stream, GFP_KERNEL);
 	if (ret < 0)
 		goto error_video;
+
+	if(stream->dev->udev->descriptor.idVendor == 0x046D && \
+			(stream->dev->udev->descriptor.idProduct == 0x081B||stream->dev->udev->descriptor.idProduct == 0x0825)){
+		if(first_probe){
+			first_probe = 0;
+			stream->frozen = 1;
+			uvc_uninit_video(stream, 0);
+			usb_set_interface(stream->dev->udev, stream->intfnum, 0);
+			stream->frozen = 0;
+			uvc_video_clock_reset(stream);
+			ret = uvc_commit_video(stream, &stream->ctrl);
+			if (ret < 0) {
+				uvc_queue_enable(&stream->queue, 0);
+				return ret;
+			}
+
+		if (!uvc_queue_streaming(&stream->queue))
+			return 0;
+
+		ret = uvc_init_video(stream, GFP_NOIO);
+		if (ret < 0)
+			uvc_queue_enable(&stream->queue, 0);
+		}
+	}
 
 	return 0;
 

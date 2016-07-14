@@ -3509,7 +3509,7 @@ static struct video_device amlvideo2_template = {
 	.release	= video_device_release,
 
 	.tvnorms              = V4L2_STD_525_60,
-	//.current_norm         = V4L2_STD_NTSC_M,
+	.current_norm         = V4L2_STD_NTSC_M,
 };
 
 static int amlvideo2_receiver_event_fun(int type, void* data, void* private_data)

@@ -359,7 +359,10 @@ static int sh_veu_context_init(struct sh_veu_dev *veu)
 	veu->m2m_ctx = v4l2_m2m_ctx_init(veu->m2m_dev, veu,
 					 sh_veu_queue_init);
 
-	return PTR_ERR_OR_ZERO(veu->m2m_ctx);
+	if (IS_ERR(veu->m2m_ctx))
+		return PTR_ERR(veu->m2m_ctx);
+
+	return 0;
 }
 
 static int sh_veu_querycap(struct file *file, void *priv,

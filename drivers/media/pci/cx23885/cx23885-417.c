@@ -427,7 +427,7 @@ int mc417_register_read(struct cx23885_dev *dev, u16 address, u32 *value)
 	cx_write(MC417_RWD, regval);
 
 	/* Transition RD to effect read transaction across bus.
-	 * Transition 0x5000 -> 0x9000 correct (RD/RDY -> WR/RDY)?
+	 * Transtion 0x5000 -> 0x9000 correct (RD/RDY -> WR/RDY)?
 	 * Should it be 0x9000 -> 0xF000 (also why is RDY being set, its
 	 * input only...)
 	 */
@@ -1217,7 +1217,8 @@ static int vidioc_g_std(struct file *file, void *priv, v4l2_std_id *id)
 	struct cx23885_fh  *fh  = file->private_data;
 	struct cx23885_dev *dev = fh->dev;
 
-	*id = dev->tvnorm;
+	call_all(dev, core, g_std, id);
+
 	return 0;
 }
 
@@ -1660,6 +1661,7 @@ static struct v4l2_file_operations mpeg_fops = {
 };
 
 static const struct v4l2_ioctl_ops mpeg_ioctl_ops = {
+	.vidioc_querystd	 = vidioc_g_std,
 	.vidioc_g_std		 = vidioc_g_std,
 	.vidioc_s_std		 = vidioc_s_std,
 	.vidioc_enum_input	 = vidioc_enum_input,
@@ -1688,8 +1690,8 @@ static const struct v4l2_ioctl_ops mpeg_ioctl_ops = {
 	.vidioc_log_status	 = vidioc_log_status,
 	.vidioc_querymenu	 = vidioc_querymenu,
 	.vidioc_queryctrl	 = vidioc_queryctrl,
+	.vidioc_g_chip_ident	 = cx23885_g_chip_ident,
 #ifdef CONFIG_VIDEO_ADV_DEBUG
-	.vidioc_g_chip_info	 = cx23885_g_chip_info,
 	.vidioc_g_register	 = cx23885_g_register,
 	.vidioc_s_register	 = cx23885_s_register,
 #endif
@@ -1700,6 +1702,7 @@ static struct video_device cx23885_mpeg_template = {
 	.fops          = &mpeg_fops,
 	.ioctl_ops     = &mpeg_ioctl_ops,
 	.tvnorms       = CX23885_NORMS,
+	.current_norm  = V4L2_STD_NTSC_M,
 };
 
 void cx23885_417_unregister(struct cx23885_dev *dev)
@@ -1732,7 +1735,7 @@ static struct video_device *cx23885_video_dev_alloc(
 	*vfd = *template;
 	snprintf(vfd->name, sizeof(vfd->name), "%s (%s)",
 		cx23885_boards[tsport->dev->board].name, type);
-	vfd->v4l2_dev = &dev->v4l2_dev;
+	vfd->parent  = &pci->dev;
 	vfd->release = video_device_release;
 	return vfd;
 }

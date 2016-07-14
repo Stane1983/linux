@@ -486,31 +486,30 @@ static int uvc_v4l2_open(struct file *file)
 
 	if (stream->dev->state & UVC_DEV_DISCONNECTED)
 		return -ENODEV;
-
-	ret = usb_autopm_get_interface(stream->dev->intf);
-	if (ret < 0)
-		return ret;
+	if(stream->dev->intf->auto_suspend){
+		ret = usb_autopm_get_interface(stream->dev->intf);
+		if (ret < 0)
+			return ret;
+	}
 
 	/* Create the device handle. */
 	handle = kzalloc(sizeof *handle, GFP_KERNEL);
 	if (handle == NULL) {
-		usb_autopm_put_interface(stream->dev->intf);
+		if(stream->dev->intf->auto_suspend)
+			usb_autopm_put_interface(stream->dev->intf);
 		return -ENOMEM;
 	}
 
-	mutex_lock(&stream->dev->lock);
-	if (stream->dev->users == 0) {
-		ret = uvc_status_start(stream->dev, GFP_KERNEL);
+	if (atomic_inc_return(&stream->dev->users) == 1) {
+		ret = uvc_status_start(stream->dev);
 		if (ret < 0) {
-			mutex_unlock(&stream->dev->lock);
-			usb_autopm_put_interface(stream->dev->intf);
+			atomic_dec(&stream->dev->users);
+			if(stream->dev->intf->auto_suspend)
+				usb_autopm_put_interface(stream->dev->intf);
 			kfree(handle);
 			return ret;
 		}
 	}
-
-	stream->dev->users++;
-	mutex_unlock(&stream->dev->lock);
 
 	v4l2_fh_init(&handle->vfh, stream->vdev);
 	v4l2_fh_add(&handle->vfh);
@@ -542,10 +541,8 @@ static int uvc_v4l2_release(struct file *file)
 	kfree(handle);
 	file->private_data = NULL;
 
-	mutex_lock(&stream->dev->lock);
-	if (--stream->dev->users == 0)
+	if (atomic_dec_return(&stream->dev->users) == 0)
 		uvc_status_stop(stream->dev);
-	mutex_unlock(&stream->dev->lock);
 
 	usb_autopm_put_interface(stream->dev->intf);
 	return 0;
@@ -998,17 +995,6 @@ static long uvc_v4l2_do_ioctl(struct file *file, unsigned int cmd, void *arg)
 			return -EBUSY;
 
 		return uvc_query_buffer(&stream->queue, buf);
-	}
-
-	case VIDIOC_CREATE_BUFS:
-	{
-		struct v4l2_create_buffers *cb = arg;
-
-		ret = uvc_acquire_privileges(handle);
-		if (ret < 0)
-			return ret;
-
-		return uvc_create_buffers(&stream->queue, cb);
 	}
 
 	case VIDIOC_QBUF:

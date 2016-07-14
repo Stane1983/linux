@@ -17,8 +17,11 @@
 #define DAVINCIHD_DISPLAY_H
 
 /* Header files */
-#include <media/videobuf2-dma-contig.h>
+#include <linux/videodev2.h>
+#include <media/v4l2-common.h>
 #include <media/v4l2-device.h>
+#include <media/videobuf2-dma-contig.h>
+#include <media/davinci/vpif_types.h>
 
 #include "vpif.h"
 
@@ -148,8 +151,7 @@ struct vpif_device {
 	struct v4l2_device v4l2_dev;
 	struct channel_obj *dev[VPIF_DISPLAY_NUM_CHANNELS];
 	struct v4l2_subdev **sd;
-	struct v4l2_async_notifier notifier;
-	struct vpif_display_config *config;
+
 };
 
 struct vpif_config_params {
