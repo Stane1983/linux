@@ -1006,6 +1006,8 @@ static int __init amlvideo_create_instance(int inst) {
 
     *vfd = amlvideo_template;
     // vfd->debug = debug;
+    vfd->v4l2_dev = &dev->v4l2_dev;
+
     ret = video_register_device(vfd, VFL_TYPE_GRABBER, video_nr);
     if (ret < 0)
         goto rel_vdev;
