@@ -13,4 +13,3 @@ obj-$(CONFIG_RTL8192CU) += rtl8xxx_CU/
 obj-$(CONFIG_RTL8192DU) += rtl8xxx_DU/
 obj-$(CONFIG_RTL8188EU) += rtl8xxx_EU/
 obj-$(CONFIG_BCMDHD) += bcmdhd/
-obj-$(CONFIG_SSV6XXX) += ssv6xxx/
