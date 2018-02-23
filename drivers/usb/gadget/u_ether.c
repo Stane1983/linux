@@ -641,46 +641,10 @@ netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 	 */
 	if (dev->req->zero && !dev->zlp && (length % in->maxpacket) == 0)
 		length++;
-		
-	if (length > MAX_BUFFER_SIZE) {
-		printk("[%s]: length = %d\n", __func__, length);
-		dev_kfree_skb_any(skb);	
-        spin_unlock_irqrestore(&dev->req_lock, flags);
-		goto drop;
-	}
-	
-	/* copy data to req buffer for 4-byte align */
-	memcpy(dev->req->buf + dev->req->length, skb->data, length);
-	ctx->length += skb->len;
-	ctx->count++;
-	dev_kfree_skb_any(skb);
- 	dev->req->length += length;
-  if((dev->req->length + 1600) < MAX_BUFFER_SIZE){
-		eth_tx_timeout_start(dev);
-        spin_unlock_irqrestore(&dev->req_lock, flags);
-        return NETDEV_TX_OK;
-  }
-  else{
-    	goto xmit_send;
-  }
-                
-  spin_unlock_irqrestore(&dev->req_lock, flags);
 
-timeout_send:
-	spin_lock_irqsave(&dev->req_lock, flags);
-        
-xmit_send:
-        if(dev->req && dev->port_usb){
-        	if(dev->req->length)
-	        	retval = usb_ep_queue(dev->port_usb->in_ep, dev->req, GFP_ATOMIC);
-            dev->req = NULL;
-        	spin_unlock_irqrestore(&dev->req_lock, flags);
-        }
-        else{
-        	spin_unlock_irqrestore(&dev->req_lock, flags);
-	        return NETDEV_TX_OK;
-        }
-        
+	req->length = length;
+
+	retval = usb_ep_queue(in, req, GFP_ATOMIC);
 	switch (retval) {
 	default:
 		DBG(dev, "tx queue err %d\n", retval);
