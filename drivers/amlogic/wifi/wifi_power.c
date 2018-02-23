@@ -36,6 +36,7 @@ static struct cdev *wifi_power_cdev = NULL;
 static struct device *devp=NULL;
 struct wifi_power_platform_data *pdata = NULL;
 int wifi_power_on_pin2 = 0;
+int wifi_power_on_pin3 = 0;
 static int power = 1;
 static int usb_wifi = 0;
     
@@ -106,6 +107,9 @@ static long wifi_power_ioctl(struct file *filp, unsigned int cmd, unsigned long 
 
 	if(wifi_power_on_pin2)
  	   amlogic_gpio_request(pdata->power_gpio2,WIFI_POWER_MODULE_NAME);
+
+	if(wifi_power_on_pin3)
+ 	   amlogic_gpio_request(pdata->power_gpio3,WIFI_POWER_MODULE_NAME);
     
 	switch (cmd) 
 	{
@@ -291,7 +295,12 @@ static void usb_wifi_power(int is_power)
 	   	if(pdata->power_gpio2 > 0)
 	    	amlogic_gpio_direction_output(pdata->power_gpio2, is_power, WIFI_POWER_MODULE_NAME); 	  
 	}
-	
+
+	if(wifi_power_on_pin3){
+	   	if(pdata->power_gpio3 > 0)
+	    	amlogic_gpio_direction_output(pdata->power_gpio3, is_power, WIFI_POWER_MODULE_NAME); 	  
+	}
+
 #else    
     CLEAR_CBUS_REG_MASK(PREG_PAD_GPIO6_EN_N, (1<<11));
     if (is_power)//is_power
@@ -358,7 +367,23 @@ static int wifi_power_probe(struct platform_device *pdev)
 		        printk("wifi_power power_gpio2 is %d\n",pdata->power_gpio2);
 		     }
 	   }
-		 
+
+	   if(!(ret = of_property_read_string(pdev->dev.of_node, "power_gpio3", &str)))
+			wifi_power_on_pin3 = 1;
+	   else{
+			printk("wifi_dev_probe : there is no wifi_power_on_pin3 setup in DTS file!\n");
+	   }
+	   
+	   if(wifi_power_on_pin3){
+		    if(ret)
+		     {  
+		        printk("Error: can not get power_gpio3 name------%s %d\n",__func__,__LINE__);
+		        return -1;
+		     }else{
+				pdata->power_gpio3 = amlogic_gpio_name_map_num(str);
+		        printk("wifi_power power_gpio3 is %d\n",pdata->power_gpio3);
+		     }
+	   } 
 	}
     pdev->dev.platform_data = pdata;
     

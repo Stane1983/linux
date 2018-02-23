@@ -15,6 +15,7 @@
 
 int wifi_power_gpio = 0;
 int wifi_power_gpio2 = 0;
+int wifi_power_gpio3 = 0;
 
 struct wifi_plat_info {
 	int interrupt_pin;
@@ -24,6 +25,7 @@ struct wifi_plat_info {
 	int power_on_pin;
 	int power_on_pin_level;
 	int power_on_pin2;
+	int power_on_pin3;
 
 	int clock_32k_pin;
 
@@ -127,6 +129,13 @@ static int wifi_dev_probe(struct platform_device *pdev)
 			CHECK_PROP(ret, "power_on_pin2", value);
 			wifi_power_gpio2 = 1;
 			plat->power_on_pin2 = amlogic_gpio_name_map_num(value);
+		}
+
+		ret = of_property_read_string(pdev->dev.of_node, "power_on_pin3", &value);
+		if(!ret){
+			CHECK_PROP(ret, "power_on_pin3", value);
+			wifi_power_gpio3 = 1;
+			plat->power_on_pin3 = amlogic_gpio_name_map_num(value);
 		}
 
 		ret = of_property_read_string(pdev->dev.of_node, "clock_32k_pin", &value);
@@ -251,6 +260,15 @@ int wifi_setup_dt()
 		SHOW_PIN_OWN("power_on_pin2", wifi_info.power_on_pin2);
 	}
 
+	if(wifi_power_gpio3){
+		SHOW_PIN_OWN("power_on_pin3", wifi_info.power_on_pin3);
+		ret = amlogic_gpio_request(wifi_info.power_on_pin3, OWNER_NAME);
+		CHECK_RET(ret);
+		ret = amlogic_gpio_direction_output(wifi_info.power_on_pin3, 0, OWNER_NAME);
+		CHECK_RET(ret);
+		SHOW_PIN_OWN("power_on_pin3", wifi_info.power_on_pin2);
+	}
+
 	return 0;
 }
 EXPORT_SYMBOL(wifi_setup_dt);
@@ -273,6 +291,12 @@ void wifi_teardown_dt()
 	if(wifi_power_gpio2)
 	{
 		ret = amlogic_gpio_free(wifi_info.power_on_pin2, OWNER_NAME);
+		CHECK_RET(ret);
+	}
+
+	if(wifi_power_gpio3)
+	{
+		ret = amlogic_gpio_free(wifi_info.power_on_pin3, OWNER_NAME);
 		CHECK_RET(ret);
 	}
 	ret = amlogic_gpio_free(wifi_info.interrupt_pin, OWNER_NAME);
@@ -361,6 +385,10 @@ void extern_wifi_set_enable(int is_on)
 			ret = amlogic_gpio_direction_output(wifi_info.power_on_pin2, 1, OWNER_NAME);
 			CHECK_RET(ret);
 		}
+		if(wifi_power_gpio3){
+			ret = amlogic_gpio_direction_output(wifi_info.power_on_pin3, 1, OWNER_NAME);
+			CHECK_RET(ret);
+		}
 		printk("WIFI  Enable! %d\n", wifi_info.power_on_pin);
 	} else {
 		if(wifi_power_gpio){
@@ -374,7 +402,10 @@ void extern_wifi_set_enable(int is_on)
 			ret = amlogic_gpio_direction_output(wifi_info.power_on_pin2, 0, OWNER_NAME);
 			CHECK_RET(ret);
 		}
-		
+		if(wifi_power_gpio3){
+			ret = amlogic_gpio_direction_output(wifi_info.power_on_pin3, 0, OWNER_NAME);
+			CHECK_RET(ret);
+		}
 		printk("WIFI  Disable! %d\n", wifi_info.power_on_pin);
 	
 	}
