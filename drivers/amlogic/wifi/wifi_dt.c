@@ -28,6 +28,7 @@ struct wifi_plat_info {
 	int clock_32k_pin;
 
 	int plat_info_valid;
+	struct device	*dev;
 };
 
 static struct wifi_plat_info wifi_info;
@@ -49,6 +50,9 @@ static struct wifi_plat_info * wifi_get_driver_data(struct platform_device *pdev
 #else
 #define wifi_match NULL
 #endif
+
+#define WIFI_INFO(fmt, args...) \
+		dev_info(wifi_info.dev, "[%s] " fmt, __func__, ##args);
 
 #define CHECK_PROP(ret, msg, value)	\
 {	\
@@ -376,6 +380,57 @@ void extern_wifi_set_enable(int is_on)
 	}
 }
 EXPORT_SYMBOL(extern_wifi_set_enable);
+
+/**************** wifi mac *****************/
+u8 WIFI_MAC[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+static unsigned char chartonum(char c)
+{
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	if (c >= 'A' && c <= 'F')
+		return (c - 'A') + 10;
+	if (c >= 'a' && c <= 'f')
+		return (c - 'a') + 10;
+	return 0;
+}
+
+static int __init mac_addr_set(char *line)
+{
+	unsigned char mac[6];
+	int i = 0;
+	WIFI_INFO("try to wifi mac from emmc key!\n");
+	for (i = 0; i < 6 && line[0] != '\0' && line[1] != '\0'; i++) {
+		mac[i] = chartonum(line[0]) << 4 | chartonum(line[1]);
+		line += 3;
+	}
+	memcpy(WIFI_MAC, mac, 6);
+	WIFI_INFO("uboot setup mac-addr: %x:%x:%x:%x:%x:%x\n",
+	WIFI_MAC[0], WIFI_MAC[1], WIFI_MAC[2], WIFI_MAC[3], WIFI_MAC[4],
+	WIFI_MAC[5]);
+
+	return 1;
+}
+
+__setup("mac_wifi=", mac_addr_set);
+
+u8 *wifi_get_mac(void)
+{
+	return WIFI_MAC;
+}
+EXPORT_SYMBOL(wifi_get_mac);
+
+int wifi_irq_num(void)
+{
+	return wifi_info.irq_num;
+}
+EXPORT_SYMBOL(wifi_irq_num);
+
+int wifi_irq_trigger_level(void)
+{
+	return wifi_info.irq_trigger_type;
+}
+EXPORT_SYMBOL(wifi_irq_trigger_level);
+
 #else
 
 int wifi_setup_dt()

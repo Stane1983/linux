@@ -7,14 +7,14 @@ config BCMDHD
 config BCMDHD_FW_PATH
 	depends on BCMDHD
 	string "Firmware path"
-	default "/lib/firmware/brcm/ap6212/fw_bcm43438a0.bin"
+	default "/usr/lib/firmware/brcm/fw_bcmdhd.bin"
 	---help---
 	  Path to the firmware file.
 
 config BCMDHD_NVRAM_PATH
 	depends on BCMDHD
 	string "NVRAM path"
-	default "/lib/firmware/brcm/ap6212/nvram.txt"
+	default "/usr/lib/firmware/brcm/nvram.txt"
 	---help---
 	  Path to the calibration file.
 
@@ -56,3 +56,10 @@ config BCMDHD_SDIO_IRQ
 	---help---
 	  Interrupt from SDIO DAT[1]
 endchoice
+
+config CONFIG_RANDOM_MAC_ENABLE
+	depends on BCMDHD
+	bool "Enable random MAC generation"
+	default n
+	---help---
+	  Enable random MAC generation (used in VideoStrong devices)
